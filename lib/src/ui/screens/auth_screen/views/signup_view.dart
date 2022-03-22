@@ -5,111 +5,63 @@ import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
 import '../../../../res/app_images.dart';
 import '../../../../res/app_strings.dart';
+import '../widgets/or_divider.dart';
 
-
-class SignupView extends StatelessWidget {
+class SignupView extends StatefulWidget {
   const SignupView({Key? key}) : super(key: key);
 
   @override
+  State<SignupView> createState() => _SignupViewState();
+}
+
+class _SignupViewState extends State<SignupView> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        SizedBox(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.3,
-        ),
-        Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              AppLogo(),
-              _buildLoginWithFacebook(context),
-              Column(
-                children: <Widget>[
-                  _buildOrDivider(context),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  FlatButton(
-                    child: Text(
-                      AppStrings.signUpWithEmailOrPhoneNumber,
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () {
-                      // NavigationFunctions.navigateToPage(context, SignUpPage());
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+    return _buildContent();
   }
 
-  Row _buildOrDivider(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-            child: Divider(
-              color: AppColors.grey,
-            )),
-        SizedBox(width: 5,),
-        Expanded(
-            child: Divider(
-              color: AppColors.grey,
-            )),
-      ],
+  Widget _buildContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+          ),
+          AppLogo(),
+          SizedBox(
+            height: 100,
+          ),
+          _buildLoginWithFacebook(context),
+          SizedBox(
+            height: 50,
+          ),
+          OrDivider(),
+          SizedBox(
+            height: 15,
+          ),
+          AppButton(
+            title: AppStrings.signUpWithEmailOrPhoneNumber,
+            color: AppColors.scaffoldBackgroundColor,
+            titleStyle:
+                TextStyle(color: AppColors.blue, fontWeight: FontWeight.bold),
+            disabledColor: AppColors.scaffoldBackgroundColor,
+          )
+        ],
+      ),
     );
   }
 
   Widget _buildLoginWithFacebook(BuildContext context) {
-    return AppButton(title: AppStrings.logInWithFacebook,
-        prefixIcon: SvgPicture.asset(
-          AppImages.faceBookLogoSvg,
-          width: 15,
-          height: 15,
-          color: Colors.white,
-        ), width: double.infinity,);
-    // return Padding(
-    //   padding: const EdgeInsets.only(top: 50),
-    //   child: Container(
-    //     width: MediaQuery.of(context).size.width * 0.9,
-    //     height: 45,
-    //     child: RaisedButton(
-    //       color: Colors.blue,
-    //       onPressed: () {},
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         children: <Widget>[
-    //           SvgPicture.asset(
-    //             AppImages.faceBookLogoSvg,
-    //             width: 15,
-    //             height: 15,
-    //             color: Colors.white,
-    //           ),
-    //           SizedBox(
-    //             width: 5,
-    //           ),
-    //           Text(
-    //             AppStrings.logInWithFacebook,
-    //             style: TextStyle(color: Colors.white),
-    //           )
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
+    return AppButton(
+      title: AppStrings.logInWithFacebook,
+      prefixIcon: SvgPicture.asset(
+        AppImages.faceBookLogoSvg,
+        width: 15,
+        height: 15,
+        color: Colors.white,
+      ),
+      width: double.infinity,
+    );
   }
-
 }

@@ -6,6 +6,8 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
 
+import '../widgets/or_divider.dart';
+
 class LoginView extends StatefulWidget {
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -46,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
           SizedBox(height: 10),
           _buildForgotYourLoginDetails(),
           SizedBox(height: 10),
-          _buildOrDivider(),
+          OrDivider(),
           SizedBox(height: 20),
           _buildLoginWithFacebook(),
         ],
@@ -80,12 +82,13 @@ class _LoginViewState extends State<LoginView> {
   Widget _buildLoginButton() {
     return AppButton(
       title: AppStrings.login,
-      color: AppColors.blue,
-      titleColor: emailController.text != '' && passwordController.text != ''
-          ? Colors.white
-          : Colors.white70,
+      titleStyle: TextStyle(
+        color: emailController.text.isNotEmpty &&
+                passwordController.text.isNotEmpty
+            ? Colors.white
+            : Colors.white70,
+      ),
       width: double.infinity,
-      disabledColor: AppColors.disabledBlue,
       onTap:
           emailController.text.isNotEmpty && passwordController.text.isNotEmpty
               ? onLoginTapped
@@ -113,54 +116,16 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Row _buildOrDivider() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-            child: Divider(
-          color: AppColors.grey,
-        )),
-        SizedBox(
-          width: 10,
-        ),
-        Text(
-          AppStrings.or,
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.grey),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Expanded(
-            child: Divider(
-          color: AppColors.grey,
-        )),
-      ],
-    );
-  }
-
   Widget _buildLoginWithFacebook() {
-    return FlatButton(
-      onPressed: () {},
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset(
-            AppImages.faceBookLogoSvg,
-            width: 15,
-            height: 15,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text(
-            AppStrings.logInWithFacebook,
-            style: TextStyle(
-                color: AppColors.blue,
-                fontWeight: FontWeight.bold,
-                fontSize: 15),
-          )
-        ],
+    return AppButton(
+      title: AppStrings.logInWithFacebook,
+      titleStyle: TextStyle(
+          color: AppColors.blue, fontWeight: FontWeight.bold, fontSize: 15),
+      disabledColor: AppColors.scaffoldBackgroundColor,
+      prefixIcon: SvgPicture.asset(
+        AppImages.faceBookLogoSvg,
+        width: 15,
+        height: 15,
       ),
     );
   }

@@ -5,13 +5,12 @@ import 'package:instagramapp/src/ui/screens/unknown_route_screen.dart';
 import 'src/ui/screens/auth_screen/auth_screen.dart';
 
 class AppRoutes {
-  static const String splashScreen = "/splashScreen";
+  static const String splashScreen = "/";
   static const String mainHomeScreen = "/mainHomeScreen";
-  static const String authScreen = "/";
+  static const String authScreen = "/authScreen";
 }
 
 class AppRouter {
-
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.splashScreen:
@@ -27,5 +26,4 @@ class AppRouter {
 
   MaterialPageRoute _customMaterialPageRoute(Widget widget) =>
       MaterialPageRoute(builder: (context) => widget);
-
 }

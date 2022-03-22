@@ -12,4 +12,6 @@ class AppStrings {
   static const alreadyHaveAnAccount = 'Already have an account? ';
   static const dontHaveAnAccount = 'Don\'t have an account? ';
   static const or = 'Or';
+  static const welcomeToInstagram = 'Welcome To Instagram';
+  static const followPeopleToStartSeeingPhotos = 'Follow people to start seeing the photos and videos they share.';
 }

@@ -22,13 +22,13 @@ class _AuthScreenState extends State<AuthScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           authState == AuthState.login ? LoginView() : SignupView(),
-          buildBottomLoginAndSignupButtons()
+          _buildBottomLoginAndSignupButtons()
         ],
       ),
     );
   }
 
-  Widget buildBottomLoginAndSignupButtons() {
+  Widget _buildBottomLoginAndSignupButtons() {
     return Container(
       height: 50,
       padding: const EdgeInsets.only(bottom: 10),

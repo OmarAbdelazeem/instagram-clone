@@ -8,17 +8,17 @@ class AppButton extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final double? height;
+  final TextStyle? titleStyle;
   final double? width;
-  final Color? titleColor;
   final void Function()? onTap;
 
   const AppButton(
       {Key? key,
       this.color,
       this.onTap,
+      this.titleStyle,
       this.prefixIcon,
       this.suffixIcon,
-      this.titleColor,
       required this.title,
       this.width,
       this.height,
@@ -27,6 +27,9 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final defaultTitleStyle = TextStyle(
+      color: AppColors.white,
+    );
     return InkWell(
         onTap: onTap,
         child: Container(
@@ -34,15 +37,24 @@ class AppButton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-              color: onTap == null ? disabledColor : color ?? AppColors.blue,
+              color: onTap == null
+                  ? disabledColor ?? AppColors.disabledBlue
+                  : color ?? AppColors.blue,
               borderRadius: BorderRadius.circular(5)),
           child: Center(
               child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               prefixIcon ?? Container(),
+              SizedBox(
+                width: 5,
+              ),
               Text(
                 title,
-                style: TextStyle(color: titleColor ?? AppColors.white),
+                style: titleStyle ?? defaultTitleStyle,
+              ),
+              SizedBox(
+                width: 5,
               ),
               suffixIcon ?? Container()
             ],

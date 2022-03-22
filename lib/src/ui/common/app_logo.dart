@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:instagramapp/src/res/app_colors.dart';
 import '../../res/app_strings.dart';
 
 class AppLogo extends StatelessWidget {
@@ -9,8 +9,8 @@ class AppLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       AppStrings.instagram,
-      style:
-      TextStyle(color: Colors.black, fontFamily: 'Signatra', fontSize: 60),
+      style: TextStyle(
+          color: AppColors.black, fontFamily: 'Signatra', fontSize: 60),
     );
   }
 }
