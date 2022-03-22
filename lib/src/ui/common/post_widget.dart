@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../models/post.dart';
+import '../../models/post_model/post_model.dart';
+
 
 class PostWidget extends StatefulWidget {
   final PostModel post;
@@ -13,42 +14,41 @@ class PostWidget extends StatefulWidget {
 
 class _PostWidgetState extends State<PostWidget> {
   bool isLiking = false;
-  int postLikesCount;
-  PostServices postServices = PostServices();
+  int? postLikesCount;
+  // PostServices postServices = PostServices();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Data.changeCurrentPost(widget.post);
+    // Data.changeCurrentPost(widget.post);
 
-    postServices.checkIfUserLikesPost().then((value) {
-      getLikesCount();
-      setState(() {
-        isLiking = value;
-      });
-    });
+    // postServices.checkIfUserLikesPost().then((value) {
+    //   getLikesCount();
+    //   setState(() {
+    //     isLiking = value;
+    //   });
+    // });
   }
   void getLikesCount(){
     postLikesCount = widget.post.postLikes.length;
   }
   void likeButton() {
-    Data.changeCurrentPost(widget.post);
-    setState(() {
-      isLiking ? postLikesCount-= 1: postLikesCount+= 1;
-      isLiking = !isLiking;
-    });
-    postServices.handleLiking(isLiking: !isLiking);
+    // Data.changeCurrentPost(widget.post);
+    // setState(() {
+    //   isLiking ? postLikesCount-= 1: postLikesCount+= 1;
+    //   isLiking = !isLiking;
+    // });
+    // postServices.handleLiking(isLiking: !isLiking);
   }
 
   void commentButton() {
-    Data.changeCurrentPost(widget.post);
-    print('comment button pressed');
-    NavigationFunctions.pushPage(
-        context: context,
-        isHorizontalNavigation: false,
-        page: CommentsScreen());
-//    NavigationFunctions.navigateToPage(context, CommentsScreen());
+    // Data.changeCurrentPost(widget.post);
+    // print('comment button pressed');
+    // NavigationFunctions.pushPage(
+    //     context: context,
+    //     isHorizontalNavigation: false,
+    //     page: CommentsScreen());
   }
 
   @override
@@ -69,7 +69,7 @@ class _PostWidgetState extends State<PostWidget> {
                     children: <Widget>[
                       Container(
                         child: userProfilePhoto(
-                            photoUrl: widget.post.publisherProfilePhotoUrl),
+                            photoUrl: widget.post.ownerProfilePhoto),
                         width: 50,
                         height: 50,
                       ),
@@ -148,4 +148,31 @@ class _PostWidgetState extends State<PostWidget> {
       ],
     );
   }
+  Widget userProfilePhoto({String? photoUrl}) {
+    return photoUrl != null
+        ? Container(
+      height: 85,
+      width: 85,
+      child: CircleAvatar(
+        radius: 30,
+        backgroundColor: Color(0xffFDCF09),
+        child: CircleAvatar(
+            radius: 50, backgroundImage: NetworkImage(photoUrl)),
+      ),
+    )
+        : Container(
+      height: 85,
+      width: 85,
+      child: CircleAvatar(
+        radius: 30,
+        backgroundColor: Colors.grey,
+        child: Icon(
+          Icons.person_outline,
+          size: 40,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
 }

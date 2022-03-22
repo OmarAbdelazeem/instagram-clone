@@ -1,17 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
-import '../models/post.dart';
-
-class Repository {
+class DataRepository {
   final DateTime timestamp = DateTime.now();
 
-//  static Post currentPost;
-
   final timelineRef = FirebaseFirestore.instance.collection('timeline');
-  final notificationsRef = FirebaseFirestore.instance.collection('notifications');
-  final likesRef = FirebaseFirestore.instance.collection('likes');
-  final commentsRef = FirebaseFirestore.instance.collection('comments');
+  final notificationsRef =
+      FirebaseFirestore.instance.collection('notifications');
   final postsRef = FirebaseFirestore.instance.collection('posts');
+  final postsLikesRef = FirebaseFirestore.instance.collection('postsLikes');
+  final postsCommentsRef =
+      FirebaseFirestore.instance.collection('postsComments');
+  final usersRef = FirebaseFirestore.instance.collection('usersComments');
+  final users = FirebaseFirestore.instance.collection("users");
+  final usersComments = FirebaseFirestore.instance.collection("usersComments");
+  final usersLikes = FirebaseFirestore.instance.collection("usersLikes");
 
   Future getPosts(String userId) async {
     return await postsRef
@@ -35,11 +38,9 @@ class Repository {
     return await postReference.get();
   }
 
-  Future<bool> checkIfUserLikesPost(String userId , String postId) async {
-    DocumentSnapshot doc = await likesRef
-        .doc(userId)
-        .collection('likes').doc(postId)
-        .get();
+  Future<bool> checkIfUserLikesPost(String userId, String postId) async {
+    DocumentSnapshot doc =
+        await postsLikesRef.doc(userId).collection('likes').doc(postId).get();
     print('doc.exists is ${doc.exists}');
     return doc.exists;
   }
@@ -111,21 +112,20 @@ class Repository {
 //    currentPost = post;
 //  }
 
-  void addComment(String comment , String postId) async {
-//    final commentId = await _commentsRef.get();
+  void addComment(String comment, String postId, String commentOwnerId) async {
     String commentId = Uuid().v4();
-    await commentsRef
-        .doc(Data.currentPost.postId)
+    await postsCommentsRef
+        .doc(postId)
         .collection('postComments')
         .doc(commentId)
         .set({
-      'userId': Data.defaultUser.id,
-      'userName': Data.defaultUser.userName,
-      'userPhotoUrl': Data.defaultUser.photoUrl,
-      'commentId': commentId,
-      'userComment': comment,
-      'timestamp': timestamp,
-      'postId': Data.currentPost.postId
+      // 'commentOwnerId': commentOwnerId,
+      // 'commentOwnerName': Data.defaultUser.userName,
+      // 'commentOwnerPhoto': Data.defaultUser.photoUrl,
+      // 'commentId': commentId,
+      // 'comment': comment,
+      // 'timestamp': timestamp,
+      // 'postId': postId
     });
 
     // await notificationRef
