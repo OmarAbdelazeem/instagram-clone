@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
+import 'package:instagramapp/src/ui/common/post_widget.dart';
 import 'package:meta/meta.dart';
-
 import '../../repository/data_repository.dart';
 
 part 'time_line_event.dart';
@@ -13,27 +11,24 @@ part 'time_line_event.dart';
 part 'time_line_state.dart';
 
 class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
-  final DataRepository dataRepository;
+  final DataRepository _dataRepository;
+  final AuthRepository _authRepository;
 
-  TimeLineBloc(this.dataRepository) : super(TimeLineInitial());
-
-
-  @override
-  Stream<TimeLineState> mapEventToState(
-    TimeLineEvent event,
-  ) async* {
-    // TODO: implement mapEventToState
+  TimeLineBloc(this._dataRepository, this._authRepository)
+      : super(TimeLineInitial()) {
+    on<TimeLineLoadStarted>(_onLoadStarted);
   }
 
-  // void _onLoadStarted(
-  //     TimeLineLoadStarted event, Emitter<TimeLineState> emit) async {
-  //   try {
-  //     emit(TimeLineLoading());
-  //     dataRepository.getPosts(userId);
-  //
-  //   } on Exception catch (e) {
-  //     emit(state.asLoadFailure(e));
-  //   }
-  // }
+  List<PostWidget> _posts = [];
 
+  void _onLoadStarted(
+      TimeLineLoadStarted event, Emitter<TimeLineState> emit) async {
+    try {
+      emit(TimeLineLoading());
+      _dataRepository.getPosts(_authRepository.loggedInUser!.uid);
+      emit(TimeLineLoaded(_posts));
+    } on Exception catch (e) {
+      emit(TimeLineError(e.toString()));
+    }
+  }
 }

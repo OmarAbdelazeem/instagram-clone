@@ -114,7 +114,8 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: AppLogo(),
+      automaticallyImplyLeading: false,
+      // title: AppLogo(),
       actions: <Widget>[
         IconButton(
           onPressed: () {},

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:uuid/uuid.dart';
 
 class DataRepository {
@@ -112,35 +113,13 @@ class DataRepository {
 //    currentPost = post;
 //  }
 
-  void addComment(String comment, String postId, String commentOwnerId) async {
+  void addComment(CommentModel commentModel) async {
     String commentId = Uuid().v4();
     await postsCommentsRef
-        .doc(postId)
+        .doc(commentModel.ownerId)
         .collection('postComments')
         .doc(commentId)
-        .set({
-      // 'commentOwnerId': commentOwnerId,
-      // 'commentOwnerName': Data.defaultUser.userName,
-      // 'commentOwnerPhoto': Data.defaultUser.photoUrl,
-      // 'commentId': commentId,
-      // 'comment': comment,
-      // 'timestamp': timestamp,
-      // 'postId': postId
-    });
+        .set(commentModel.toJson());
 
-    // await notificationRef
-    //     .doc(Data.currentPost.publisherId)
-    //     .collection('userNotification')
-    //     .doc(commentId)
-    //     .set({
-    //   'ownerId': Data.defaultUser.id,
-    //   'type': 'comment',
-    //   'timestamp': timestamp,
-    //   'postUrl': Data.currentPost.photoUrl,
-    //   'comment': comment,
-    //   'ownerName': Data.defaultUser.userName,
-    //   'postId': Data.currentPost.postId,
-    //   'userPhotoUrl': Data.defaultUser.photoUrl
-    // });
   }
 }
