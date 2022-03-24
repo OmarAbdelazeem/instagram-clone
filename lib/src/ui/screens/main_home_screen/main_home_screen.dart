@@ -17,7 +17,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     TimeLineScreen(),
     const SearchScreen(),
     const ExploreVideosScreen(),
-    const ProfileScreen(),
+     ProfileScreen(),
   ];
   final List<BottomNavigationBarItemModel> bottomNavigationBarItems = [
     BottomNavigationBarItemModel(

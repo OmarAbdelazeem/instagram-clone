@@ -17,6 +17,14 @@ class DataRepository {
   final usersComments = FirebaseFirestore.instance.collection("usersComments");
   final usersLikes = FirebaseFirestore.instance.collection("usersLikes");
 
+  Future getUserDetails(String userId) async {
+    return await users.doc(userId).get();
+  }
+
+  searchForUser(String term) {
+    users.where("userName", isGreaterThanOrEqualTo: term).snapshots();
+  }
+
   Future getPosts(String userId) async {
     return await postsRef
         .doc(userId)
@@ -120,6 +128,5 @@ class DataRepository {
         .collection('postComments')
         .doc(commentId)
         .set(commentModel.toJson());
-
   }
 }

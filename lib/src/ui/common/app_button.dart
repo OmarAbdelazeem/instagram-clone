@@ -10,6 +10,7 @@ class AppButton extends StatelessWidget {
   final double? height;
   final TextStyle? titleStyle;
   final double? width;
+  final Color? borderColor;
   final void Function()? onTap;
 
   const AppButton(
@@ -22,6 +23,7 @@ class AppButton extends StatelessWidget {
       required this.title,
       this.width,
       this.height,
+      this.borderColor,
       this.disabledColor})
       : super(key: key);
 
@@ -30,6 +32,8 @@ class AppButton extends StatelessWidget {
     final defaultTitleStyle = TextStyle(
       color: AppColors.white,
     );
+    final Color _borderColor = borderColor ?? color ?? AppColors.blue;
+
     return InkWell(
         onTap: onTap,
         child: Container(
@@ -37,6 +41,7 @@ class AppButton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
+              border: Border.all(color: _borderColor, width: 0.6),
               color: onTap == null
                   ? disabledColor ?? AppColors.disabledBlue
                   : color ?? AppColors.blue,

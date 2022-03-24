@@ -14,4 +14,9 @@ class AppStrings {
   static const or = 'Or';
   static const welcomeToInstagram = 'Welcome To Instagram';
   static const followPeopleToStartSeeingPhotos = 'Follow people to start seeing the photos and videos they share.';
+  static const posts = 'Posts';
+  static const post = 'Post';
+  static const followers = 'Followers';
+  static const following = 'Following';
+  static const editProfile = 'Edit Profile';
 }
