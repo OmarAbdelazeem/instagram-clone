@@ -7,23 +7,24 @@ part of 'post_model.dart';
 // **************************************************************************
 
 PostModel _$PostModelFromJson(Map<String, dynamic> json) => PostModel(
-      name: json['name'] as String,
+      publisherName: json['publisherName'] as String,
       caption: json['caption'] as String,
       photoUrl: json['photoUrl'] as String,
       postId: json['postId'] as String,
-      ownerId: json['ownerId'] as String,
-      timestamp: json['timestamp'] as String,
-      postLikes: json['postLikes'] as List<dynamic>,
-      ownerProfilePhoto: json['ownerProfilePhoto'] as String,
+      publisherId: json['publisherId'] as String,
+      timestamp:
+          const TimestampConverter().fromJson(json['timestamp'] as Timestamp),
+      likesCount: json['likesCount'] as int,
+      publisherProfilePhotoUrl: json['publisherProfilePhotoUrl'] as String,
     );
 
 Map<String, dynamic> _$PostModelToJson(PostModel instance) => <String, dynamic>{
       'caption': instance.caption,
-      'name': instance.name,
+      'publisherName': instance.publisherName,
       'photoUrl': instance.photoUrl,
       'postId': instance.postId,
-      'postLikes': instance.postLikes,
-      'ownerId': instance.ownerId,
-      'ownerProfilePhoto': instance.ownerProfilePhoto,
-      'timestamp': instance.timestamp,
+      'likesCount': instance.likesCount,
+      'publisherId': instance.publisherId,
+      'publisherProfilePhotoUrl': instance.publisherProfilePhotoUrl,
+      'timestamp': const TimestampConverter().toJson(instance.timestamp),
     };

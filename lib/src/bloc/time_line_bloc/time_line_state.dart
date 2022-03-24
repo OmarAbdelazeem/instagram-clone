@@ -8,7 +8,7 @@ class TimeLineInitial extends TimeLineState {}
 class TimeLineLoading extends TimeLineState {}
 
 class TimeLineLoaded extends TimeLineState {
-  final List<PostWidget> posts;
+  final List<PostModel> posts;
 
   TimeLineLoaded(this.posts);
 }

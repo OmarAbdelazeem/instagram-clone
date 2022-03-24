@@ -31,7 +31,7 @@ class _PostWidgetState extends State<PostWidget> {
     // });
   }
   void getLikesCount(){
-    postLikesCount = widget.post.postLikes.length;
+    postLikesCount = widget.post.likesCount;
   }
   void likeButton() {
     // Data.changeCurrentPost(widget.post);
@@ -69,13 +69,13 @@ class _PostWidgetState extends State<PostWidget> {
                     children: <Widget>[
                       Container(
                         child: userProfilePhoto(
-                            photoUrl: widget.post.ownerProfilePhoto),
+                            photoUrl: widget.post.publisherProfilePhotoUrl),
                         width: 50,
                         height: 50,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.post.name),
+                        child: Text(widget.post.publisherName),
                       )
                     ],
                   ),
@@ -131,7 +131,7 @@ class _PostWidgetState extends State<PostWidget> {
           child: Row(
             children: <Widget>[
               Text(
-                widget.post.name,
+                widget.post.publisherName,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(

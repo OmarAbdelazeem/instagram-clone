@@ -4,6 +4,7 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/post_widget.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/widgets/way_of_view_tabs.dart';
 import 'widgets/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -49,28 +50,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(
                 height: 12,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: AppButton(
-                  borderColor: AppColors.grey.shade500,
-                  height: 35,
-                  title: AppStrings.editProfile,
-                  color: AppColors.white,
-                  titleStyle:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-                  disabledColor: AppColors.scaffoldBackgroundColor,
-                ),
-              ),
+              _buildEditProfileButton(),
               SizedBox(
                 height: 10,
               ),
-              _buildTabsView(context)
+              WayOfViewTabs()
             ],
           ),
           // isOwnPosts ? userOwnPhotos(posts) : noMentionedPhotos()
         ],
       ),
     );
+  }
+
+  Padding _buildEditProfileButton() {
+    return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: AppButton(
+                borderColor: AppColors.grey.shade500,
+                height: 35,
+                title: AppStrings.editProfile,
+                color: AppColors.white,
+                titleStyle:
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                disabledColor: AppColors.scaffoldBackgroundColor,
+              ),
+            );
   }
 
   AppBar _buildAppBar() {
@@ -88,55 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {},
         ),
       ],
-    );
-  }
-
-  Widget _buildTabsView(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.grid_on,
-                    color: Colors.black87,
-                  ),
-                  Divider(
-                    thickness: 1.5,
-                    color: Colors.black87,
-                  )
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.person_outline,
-                    color: Colors.black87,
-                  ),
-                  Divider(
-                    thickness: 1.5,
-                    color: Colors.black87,
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

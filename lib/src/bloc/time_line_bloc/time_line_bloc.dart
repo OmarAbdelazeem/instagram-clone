@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
+import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
-import 'package:instagramapp/src/ui/common/post_widget.dart';
 import 'package:meta/meta.dart';
 import '../../repository/data_repository.dart';
 
@@ -19,13 +17,16 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
     on<TimeLineLoadStarted>(_onLoadStarted);
   }
 
-  List<PostWidget> _posts = [];
+  List<PostModel> _posts = [];
 
   void _onLoadStarted(
       TimeLineLoadStarted event, Emitter<TimeLineState> emit) async {
     try {
       emit(TimeLineLoading());
-      _dataRepository.getPosts(_authRepository.loggedInUser!.uid);
+      final data =
+          (await _dataRepository.getPosts(_authRepository.loggedInUser!.uid))
+              .docs;
+      _posts = data.map((e) => PostModel.fromJson(e.data())).toList();
       emit(TimeLineLoaded(_posts));
     } on Exception catch (e) {
       emit(TimeLineError(e.toString()));

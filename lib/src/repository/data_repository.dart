@@ -25,20 +25,23 @@ class DataRepository {
     users.where("userName", isGreaterThanOrEqualTo: term).snapshots();
   }
 
-  Future getPosts(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getPosts(String userId) async {
+    print("getPosts callled");
+    //Todo return collection to userPosts as before
     return await postsRef
         .doc(userId)
-        .collection('posts')
+        .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .get();
   }
 
-  Future getTimeline(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getTimeline(String userId) async {
+    //Todo return collection to timelinePosts as before
     return await timelineRef
-        .doc(userId)
-        .collection('timeline')
-        .orderBy('timestamp', descending: true)
-        .get();
+            .doc(userId)
+            .collection('timelinePosts')
+            .orderBy('timestamp', descending: true)
+            .get();
   }
 
   Future getPostDetails(String postId, String userId) async {

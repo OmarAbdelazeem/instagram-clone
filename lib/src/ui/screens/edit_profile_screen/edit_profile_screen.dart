@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
-
-import '../../../../models/user_model/user_model.dart';
+import '../../../models/user_model/user_model.dart';
 
 
 class EditProfile extends StatefulWidget {
