@@ -12,117 +12,64 @@ class DataRepository {
   final postsLikesRef = FirebaseFirestore.instance.collection('postsLikes');
   final postsCommentsRef =
       FirebaseFirestore.instance.collection('postsComments');
-  final usersRef = FirebaseFirestore.instance.collection('usersComments');
-  final users = FirebaseFirestore.instance.collection("users");
-  final usersComments = FirebaseFirestore.instance.collection("usersComments");
+  final usersRef = FirebaseFirestore.instance.collection("users");
+  final usersCommentsRef =
+      FirebaseFirestore.instance.collection("usersComments");
   final usersLikes = FirebaseFirestore.instance.collection("usersLikes");
 
   Future getUserDetails(String userId) async {
-    return await users.doc(userId).get();
+    return await usersRef.doc(userId).get();
   }
 
   searchForUser(String term) {
-    users.where("userName", isGreaterThanOrEqualTo: term).snapshots();
+    usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getPosts(String userId) async {
-    print("getPosts callled");
-    //Todo return collection to userPosts as before
     return await postsRef
         .doc(userId)
-        .collection('userPosts')
+        .collection('posts')
         .orderBy('timestamp', descending: true)
         .get();
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getTimeline(String userId) async {
-    //Todo return collection to timelinePosts as before
     return await timelineRef
-            .doc(userId)
-            .collection('timelinePosts')
-            .orderBy('timestamp', descending: true)
-            .get();
+        .doc(userId)
+        .collection('timeline')
+        .orderBy('timestamp', descending: true)
+        .get();
   }
 
-  Future getPostDetails(String postId, String userId) async {
-    DocumentReference postReference =
-        postsRef.doc(userId).collection("posts").doc(postId);
-    return await postReference.get();
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPostDetails(
+      String postId, String userId) async {
+    return await postsRef.doc(userId).collection("posts").doc(postId).get();
   }
 
   Future<bool> checkIfUserLikesPost(String userId, String postId) async {
-    DocumentSnapshot doc =
-        await postsLikesRef.doc(userId).collection('likes').doc(postId).get();
-    print('doc.exists is ${doc.exists}');
-    return doc.exists;
+    return (await usersLikes
+            .doc(userId)
+            .collection("usersLikes")
+            .doc(postId)
+            .get())
+        .exists;
   }
 
-  // void handleLiking({bool isLiking}) async {
-  //   if (isLiking) {
-  //     await usersLikesRef
-  //         .doc(Data.defaultUser.id)
-  //         .collection('userLikes')
-  //         .doc(Data.currentPost.postId)
-  //         .delete();
-  //     postsRef
-  //         .doc(Data.currentPost.publisherId)
-  //         .collection('userPosts')
-  //         .doc(Data.currentPost.postId)
-  //         .update({
-  //       'likes': FieldValue.arrayRemove([Data.defaultUser.id])
-  //     });
-  //
-  //     await notificationRef
-  //         .doc(Data.currentPost.publisherId)
-  //         .collection('userNotification')
-  //         .doc(Data.currentPost.postId)
-  //         .get()
-  //         .then((doc) {
-  //       if (doc.exists) doc.reference.delete();
-  //     });
-  //   } else {
-  //     await usersLikesRef
-  //         .doc(Data.defaultUser.id)
-  //         .collection('userLikes')
-  //         .doc(Data.currentPost.postId)
-  //         .set({});
-  //     print('current post id is ${Data.currentPost.postId}');
-  //
-  //     postsRef
-  //         .doc(Data.currentPost.publisherId)
-  //         .collection('userPosts')
-  //         .doc(Data.currentPost.postId)
-  //         .update({
-  //       'likes': FieldValue.arrayUnion([Data.defaultUser.id])
-  //     });
-  //
-  //     postsRef
-  //         .doc(Data.currentPost.publisherId)
-  //         .collection('userPosts')
-  //         .doc(Data.currentPost.postId)
-  //         .update({
-  //       'likes': FieldValue.arrayUnion([Data.defaultUser.id])
-  //     });
-  //
-  //     await notificationRef
-  //         .doc(Data.currentPost.publisherId)
-  //         .collection('userNotification')
-  //         .doc(Data.currentPost.postId)
-  //         .set({
-  //       'ownerId': Data.defaultUser.id,
-  //       'type': 'like',
-  //       'timestamp': timestamp,
-  //       'postUrl': Data.currentPost.photoUrl,
-  //       'ownerName': Data.defaultUser.userName,
-  //       'postId': Data.currentPost.postId,
-  //       'userPhotoUrl': Data.defaultUser.photoUrl
-  //     });
-  //   }
-  // }
+  addLikeToPost(String postId, String userId) async {
+    await postsLikesRef
+        .doc(postId)
+        .collection("postsLikes")
+        .doc(userId)
+        .set({});
+  }
 
-//  void changeCurrentPost(Post post) {
-//    currentPost = post;
-//  }
+  removeLikeFromPost(String postId, String userId)async{
+    await postsLikesRef
+        .doc(postId)
+        .collection("postsLikes")
+        .doc(userId)
+        .delete();
+  }
 
   void addComment(CommentModel commentModel) async {
     String commentId = Uuid().v4();

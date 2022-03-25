@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:instagramapp/src/core/utils/image_utils.dart';
+import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../res/app_images.dart';
 
 class AppDropDownButton extends StatefulWidget {
@@ -10,12 +12,30 @@ class AppDropDownButton extends StatefulWidget {
 
 class _AppDropDownButtonState extends State<AppDropDownButton> {
   String? _dropDownValue;
+  XFile? _imageFile;
+
   List<DropDownItemModel> items = [
-    DropDownItemModel(title: "Post", icon: Icons.grid_on),
-    DropDownItemModel(title: "Story", icon: Icons.add_circle_outline),
-    DropDownItemModel(title: "Reel", icon: Icons.video_library),
-    DropDownItemModel(title: "Live", icon: Icons.wifi_tethering),
+    DropDownItemModel(title: AppStrings.post, icon: Icons.grid_on),
+    DropDownItemModel(title: AppStrings.story, icon: Icons.add_circle_outline),
+    DropDownItemModel(title: AppStrings.reel, icon: Icons.video_library),
+    DropDownItemModel(title: AppStrings.live, icon: Icons.wifi_tethering),
   ];
+
+  void pickImage() async {
+    ImageUtils.pickImage(ImageSource.gallery).then((value) {
+      setState(() {
+        _imageFile = value;
+      });
+    });
+  }
+
+  void onChanged(String? val) {
+    // Todo implement all functions
+    switch (val) {
+      case AppStrings.post:
+        pickImage();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +50,11 @@ class _AppDropDownButtonState extends State<AppDropDownButton> {
         (val) {
           return DropdownMenuItem<String>(
             value: val.title,
-            child: _buildDropDownItem(val.title,val.icon),
+            child: _buildDropDownItem(val.title, val.icon),
           );
         },
       ).toList(),
-      onChanged: (val) {
-        setState(
-          () {
-            // _dropDownValue = val;
-          },
-        );
-      },
+      onChanged: onChanged,
     );
   }
 

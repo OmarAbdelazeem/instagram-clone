@@ -21,7 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          authState == AuthState.login ? LoginView() : SignupView(),
+          authState == AuthState.login ? LoginView() : SignUpView(),
           _buildBottomLoginAndSignupButtons()
         ],
       ),

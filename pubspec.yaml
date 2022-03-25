@@ -46,6 +46,7 @@ dependencies:
   persistent_bottom_nav_bar:
   firebase_core:
   json_annotation:
+  video_player:
 
 dev_dependencies:
   flutter_test:

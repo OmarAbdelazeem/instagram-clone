@@ -19,8 +19,6 @@ class AppBottomNavigationBar extends StatefulWidget {
 }
 
 class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
-  int selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(

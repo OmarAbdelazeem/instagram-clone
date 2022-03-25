@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/app_drop_down_button.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
@@ -17,6 +18,7 @@ class TimeLineScreen extends StatefulWidget {
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
   List<PostWidget> posts = [];
+
   List<UserModel> users = [
     UserModel(
         photoUrl:
@@ -52,6 +54,9 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         followingCount: 5,
         timestamp: "546843"),
   ];
+
+
+
 
   @override
   void initState() {

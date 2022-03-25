@@ -19,4 +19,9 @@ class AppStrings {
   static const followers = 'Followers';
   static const following = 'Following';
   static const editProfile = 'Edit Profile';
+  static const story = "Story";
+  static const reel = "Reel";
+  static const live = "Live";
+  static const phone = "Phone";
+  static const email = "Email";
 }

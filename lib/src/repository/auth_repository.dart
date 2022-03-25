@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:instagramapp/src/models/user_model/user_model.dart';
 
 class AuthRepository {
   final FirebaseAuth _firebaseInstance = FirebaseAuth.instance;
