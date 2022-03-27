@@ -3,10 +3,10 @@ import 'package:instagramapp/src/res/app_strings.dart';
 
 import '../../common/post_widget.dart';
 
-class PostScreen extends StatelessWidget {
+class PostDetailsScreen extends StatelessWidget {
   final post;
 
-  PostScreen({this.post});
+  PostDetailsScreen({this.post});
 
   @override
   Widget build(BuildContext context) {

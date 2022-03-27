@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/app_drop_down_button.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
+import '../../../../router.dart';
 import '../../../bloc/time_line_bloc/time_line_bloc.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../../res/app_strings.dart';
@@ -17,7 +19,21 @@ class TimeLineScreen extends StatefulWidget {
 }
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
-  List<PostWidget> posts = [];
+  List<PostWidget> posts = [
+    PostWidget(
+      post: PostModel(
+          timestamp: DateTime.now(),
+          postId: "1",
+          caption: "test",
+          likesCount: 12,
+          photoUrl:
+              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+          publisherId: "12",
+          publisherName: "Omar",
+          publisherProfilePhotoUrl:
+              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
+    )
+  ];
 
   List<UserModel> users = [
     UserModel(
@@ -55,9 +71,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         timestamp: "546843"),
   ];
 
-
-
-
   @override
   void initState() {
     getTimeLinePosts();
@@ -86,7 +99,10 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
           width: 12,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            NavigationUtils.pushNamed(
+                route: AppRoutes.activityScreen, context: context);
+          },
           icon: Icon(Icons.favorite_outline),
         ),
         IconButton(
@@ -151,6 +167,4 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
       ),
     );
   }
-
-
 }

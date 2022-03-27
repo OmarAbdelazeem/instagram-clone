@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagramapp/pages/sign_up/profile_photo_added.dart';
+import 'package:instagramapp/services/navigation_functions.dart';
+import 'package:instagramapp/services/storage_service.dart';
 
+import '../people_suggestion.dart';
 
 class AddPhoto extends StatefulWidget {
   @override
@@ -11,28 +15,28 @@ class AddPhoto extends StatefulWidget {
 }
 
 class _AddPhotoState extends State<AddPhoto> {
-  // StorageService storageService = StorageService();
-  File? _selectedPhoto;
-  //
-  // handleImage(ImageSource source) async {
-  //   if (source == ImageSource.camera) {
-  //     _selectedPhoto = await storageService.getImage(ImageSource.camera);
-  //     print('_selectedFile is $_selectedPhoto');
-  //   } else if (source == ImageSource.gallery) {
-  //     _selectedPhoto = await storageService.getImage(ImageSource.gallery);
-  //     print('_selectedFile is $_selectedPhoto');
-  //   }
-  //
-  //   if (_selectedPhoto != null) {
-  //     final photoUrl =
-  //         await storageService.uploadFile(selectedFile: _selectedPhoto,isProfilePhoto: true);
-  //     await storageService.setPhotoData(
-  //         isProfilePhoto: true, fileURL: photoUrl);
-  //     NavigationFunctions.navigateToPageAndRemoveRoot(
-  //         context, ProfilePhotoAdded(_selectedPhoto),
-  //     );
-  //   }
-  // }
+  StorageService storageService = StorageService();
+  File _selectedPhoto;
+
+  handleImage(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      _selectedPhoto = await storageService.getImage(ImageSource.camera);
+      print('_selectedFile is $_selectedPhoto');
+    } else if (source == ImageSource.gallery) {
+      _selectedPhoto = await storageService.getImage(ImageSource.gallery);
+      print('_selectedFile is $_selectedPhoto');
+    }
+
+    if (_selectedPhoto != null) {
+      final photoUrl =
+          await storageService._uploadFile(selectedFile: _selectedPhoto,isProfilePhoto: true);
+      await storageService.setPhotoData(
+          isProfilePhoto: true, fileURL: photoUrl);
+      NavigationFunctions.navigateToPageAndRemoveRoot(
+          context, ProfilePhotoAdded(_selectedPhoto),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +82,9 @@ class _AddPhotoState extends State<AddPhoto> {
                       fontWeight: FontWeight.bold,
                       fontSize: 17)),
               onPressed: () {
-                // print('_selectedFile is $_selectedPhoto');
-                // NavigationFunctions.navigateToPageAndRemoveRoot(
-                //     context, PeopleSuggestion());
+                print('_selectedFile is $_selectedPhoto');
+                NavigationFunctions.navigateToPageAndRemoveRoot(
+                    context, PeopleSuggestion());
               },
             )
           ],
@@ -107,7 +111,7 @@ class _AddPhotoState extends State<AddPhoto> {
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
-                  // handleImage(ImageSource.camera);
+                  handleImage(ImageSource.camera);
                 },
                 child: Text(
                   'Take Photo',
@@ -120,7 +124,7 @@ class _AddPhotoState extends State<AddPhoto> {
               SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(context);
-                    // handleImage(ImageSource.gallery);
+                    handleImage(ImageSource.gallery);
                   },
                   child: Text(
                     'Choose from Library',

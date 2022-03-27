@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class EmailOrPhoneOption extends StatelessWidget {
   final bool isActive;
   final String optionType;
-  EmailOrPhoneOption({required this.isActive,required this.optionType});
+  EmailOrPhoneOption({this.isActive,this.optionType});
 
   @override
   Widget build(BuildContext context) {

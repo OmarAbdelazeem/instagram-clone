@@ -37,15 +37,6 @@ class _AppTabsState extends State<AppTabs> {
         setState(() {
           widget.onItemChanged(index);
         });
-        // setState(() {
-        //   if (currentIndex == 0) {
-        //     currentIndex = 1;
-        //     currentView = _buildMentionedPosts([]);
-        //   } else {
-        //     currentIndex = 0;
-        //     currentView = _buildOwnPosts([]);
-        //   }
-        // });
       },
       child: Column(
         children: <Widget>[

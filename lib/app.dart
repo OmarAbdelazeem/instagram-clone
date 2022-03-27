@@ -5,6 +5,7 @@ import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
+import 'package:instagramapp/src/repository/storage_repository.dart';
 
 import 'src/repository/auth_repository.dart';
 
@@ -12,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
+
         ///
         /// Repositories
         ///
@@ -22,6 +24,9 @@ class MyApp extends StatelessWidget {
           RepositoryProvider<DataRepository>(
             create: (context) => DataRepository(),
           ),
+          RepositoryProvider<StorageRepository>(
+            create: (context) => StorageRepository(),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -29,7 +34,10 @@ class MyApp extends StatelessWidget {
             /// BLoCs
             ///
             BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(context.read<AuthRepository>()),
+              create: (context) => AuthBloc(
+                  context.read<AuthRepository>(),
+                  context.read<DataRepository>(),
+                  context.read<StorageRepository>()),
             ),
             BlocProvider<TimeLineBloc>(
               create: (context) => TimeLineBloc(context.read<DataRepository>(),

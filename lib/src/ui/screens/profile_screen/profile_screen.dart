@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/post_widget.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/widgets/way_of_view_tabs.dart';
+import '../../../../router.dart';
 import 'widgets/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -65,17 +67,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Padding _buildEditProfileButton() {
     return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: AppButton(
-                borderColor: AppColors.grey.shade500,
-                height: 35,
-                title: AppStrings.editProfile,
-                color: AppColors.white,
-                titleStyle:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-                disabledColor: AppColors.scaffoldBackgroundColor,
-              ),
-            );
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: AppButton(
+        onTap: () {
+          NavigationUtils.pushNamed(
+              route: AppRoutes.editProfileScreen, context: context);
+        },
+        borderColor: AppColors.grey.shade500,
+        height: 35,
+        title: AppStrings.editProfile,
+        color: AppColors.white,
+        titleStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+        disabledColor: AppColors.scaffoldBackgroundColor,
+      ),
+    );
   }
 
   AppBar _buildAppBar() {

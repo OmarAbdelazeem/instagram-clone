@@ -3,17 +3,27 @@ import "package:flutter/material.dart";
 import '../../../models/user_model/user_model.dart';
 
 
-class EditProfile extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   @override
-  _EditProfileState createState() => _EditProfileState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController displayNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   bool isLoading = false;
-  UserModel? user;
+  UserModel? user = UserModel(
+      photoUrl:
+      "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+      userName: "Omar Abdelazeem",
+      bio: "this is a bio",
+      id: "123",
+      email: "omar@email.com",
+      postsCount: 1,
+      followersCount: 3,
+      followingCount: 5,
+      timestamp: "546843");
   bool _displayNameValid = true;
   bool _bioValid = true;
 

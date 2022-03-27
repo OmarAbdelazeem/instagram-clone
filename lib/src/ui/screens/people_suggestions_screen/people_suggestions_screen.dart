@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import '../../../../router.dart';
 
 class PeopleSuggestionsScreen extends StatelessWidget {
   @override
@@ -14,11 +15,8 @@ class PeopleSuggestionsScreen extends StatelessWidget {
                   icon: Icon(
                     Icons.arrow_forward,
                   ),
-                  onPressed: () {
-
-                    // NavigationFunctions.navigateToPageAndRemoveRoot(
-                    //     context, Home());
-                  }))
+                  onPressed: () => NavigationUtils.pushNamed(
+                      route: AppRoutes.mainHomeScreen, context: context)))
         ],
       ),
     );

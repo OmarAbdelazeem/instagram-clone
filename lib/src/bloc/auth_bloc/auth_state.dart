@@ -9,8 +9,14 @@ class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {}
 
-class AuthFailed extends AuthState {
+class AuthError extends AuthState {
   final String error;
 
-  AuthFailed(this.error);
+  AuthError(this.error);
+}
+
+class ProfileImagePicked extends AuthState {
+  final String imageUrl;
+
+  ProfileImagePicked(this.imageUrl);
 }

@@ -3,11 +3,24 @@ part of 'auth_bloc.dart';
 @immutable
 abstract class AuthEvent {}
 
-class AuthEventStarted extends AuthEvent {
+class LoginButtonTapped extends AuthEvent {
   final String email;
   final String password;
 
-  AuthEventStarted({required this.password, required this.email});
+  LoginButtonTapped({required this.password, required this.email});
 }
 
+class SignUpButtonTapped extends AuthEvent {
+  final String name;
+  final String email;
+  final String password;
 
+  SignUpButtonTapped(
+      {required this.password, required this.email, required this.name});
+}
+
+class PickProfilePhotoTapped extends AuthEvent {
+  final ImageSource imageSource;
+
+  PickProfilePhotoTapped(this.imageSource);
+}

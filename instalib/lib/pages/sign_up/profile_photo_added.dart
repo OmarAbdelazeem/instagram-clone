@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
-
+import 'package:instagramapp/pages/people_suggestion.dart';
+import 'package:instagramapp/services/navigation_functions.dart';
 
 class ProfilePhotoAdded extends StatefulWidget {
  final File selectedFile;
@@ -84,13 +84,8 @@ class _ProfilePhotoAddedState extends State<ProfilePhotoAdded> {
                 child: RaisedButton(
                   color: Colors.blue,
                   onPressed: () {
-                    // Todo fix this as before
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            PeopleSuggestionsScreen()));
-                    // NavigationFunctions.navigateToPageAndRemoveRoot(context, PeopleSuggestion(),
+                    NavigationFunctions.navigateToPageAndRemoveRoot(context, PeopleSuggestion(),
+                    );
                   },
                   child: Text(
                     'Next',

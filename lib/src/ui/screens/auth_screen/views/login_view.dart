@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:instagramapp/router.dart';
+import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
-
+import 'package:instagramapp/src/ui/common/app_text_field.dart';
+import 'package:instagramapp/src/ui/common/loading_dialogue.dart';
 import '../widgets/or_divider.dart';
 
 class LoginView extends StatefulWidget {
@@ -16,10 +21,26 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
+  bool loginEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    //Todo fix this as before
+    // emailController.addListener(() {
+    //   setState(() {
+    //     loginEnabled = emailController.text.isNotEmpty &&
+    //         passwordController.text.isNotEmpty;
+    //   });
+    // });
+    //
+    // passwordController.addListener(() {
+    //   setState(() {
+    //     loginEnabled = passwordController.text.isNotEmpty &&
+    //         emailController.text.isNotEmpty;
+    //   });
+    // });
   }
 
   @override
@@ -57,42 +78,44 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _buildUserNameField() {
-    return TextFormField(
+    return AppTextField(
       controller: emailController,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        hintText: AppStrings.phoneNumberOrEmailOrUserName,
-        filled: true,
-      ),
+      hintText: AppStrings.phoneNumberOrEmailOrUserName,
     );
   }
 
   Widget _buildPasswordField() {
-    return TextFormField(
-      obscureText: true,
+    return AppTextField(
       controller: passwordController,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        hintText: AppStrings.password,
-        filled: true,
-      ),
+      hintText: AppStrings.password,
+      obscureText: true,
     );
   }
 
   Widget _buildLoginButton() {
-    return AppButton(
-      title: AppStrings.login,
-      titleStyle: TextStyle(
-        color: emailController.text.isNotEmpty &&
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (BuildContext context, AuthState state) {
+        if (state is AuthLoading)
+          showLoadingDialog(context, _keyLoader);
+        else if (state is AuthSuccess) {
+          print("state is AuthSuccess");
+          Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+          NavigationUtils.pushNamed(
+              route: AppRoutes.mainHomeScreen, context: context);
+        } else if (state is AuthError)
+          Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      },
+      child: AppButton(
+        title: AppStrings.login,
+        titleStyle: TextStyle(
+          color: loginEnabled ? Colors.white : Colors.white70,
+        ),
+        width: double.infinity,
+        onTap: emailController.text.isNotEmpty &&
                 passwordController.text.isNotEmpty
-            ? Colors.white
-            : Colors.white70,
+            ? onLoginTapped
+            : null,
       ),
-      width: double.infinity,
-      onTap:
-          emailController.text.isNotEmpty && passwordController.text.isNotEmpty
-              ? onLoginTapped
-              : null,
     );
   }
 
@@ -131,13 +154,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void onLoginTapped() {
-    // _auth
-    //     .signInWithEmail(emailController.text, passwordController.text)
-    //     .then((value) {
-    //   if (value != null) {
-    //     Navigator.pushAndRemoveUntil(context,
-    //         MaterialPageRoute(builder: (context) => Home()), (route) => false);
-    //   }
-    // });
+    context.read<AuthBloc>().add(LoginButtonTapped(
+        email: emailController.text, password: passwordController.text));
   }
 }

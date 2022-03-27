@@ -1,4 +1,5 @@
 class AppStrings {
+  AppStrings._();
   static const instagram = "Instagram";
   static const forgotYourLoginDetails = "Forgot your login details?";
   static const getHelpSigningIn = "Get help signing in";
@@ -24,4 +25,12 @@ class AppStrings {
   static const live = "Live";
   static const phone = "Phone";
   static const email = "Email";
+  static const next = "Next";
+  static const nameAndPassword = 'NAME AND PASSWORD';
+  static const name = 'Name';
+  static const continuE = 'Continue';
+  static const activity = 'Activity';
+  static const likedYourPhoto = 'Liked your photo';
+  static const commentedOnYourPost = 'Commented on your post';
+  static const startedFollowingYou = 'Started following you';
 }

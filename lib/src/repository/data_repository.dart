@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
+import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:uuid/uuid.dart';
 
 class DataRepository {
@@ -63,7 +64,7 @@ class DataRepository {
         .set({});
   }
 
-  removeLikeFromPost(String postId, String userId)async{
+  removeLikeFromPost(String postId, String userId) async {
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
@@ -78,5 +79,19 @@ class DataRepository {
         .collection('postComments')
         .doc(commentId)
         .set(commentModel.toJson());
+  }
+
+  Future addProfilePhoto(String userId, String photoUrl) async {
+    await usersRef.doc(userId).update({
+      'profilePhotoUrl': photoUrl,
+    });
+  }
+
+  void addPost(PostModel post, String userId) async {
+    await postsRef
+        .doc(userId)
+        .collection("posts")
+        .doc(post.postId)
+        .set(post.toJson());
   }
 }

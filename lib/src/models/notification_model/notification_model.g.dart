@@ -12,6 +12,7 @@ NotificationModel _$NotificationModelFromJson(Map<String, dynamic> json) =>
       ownerId: json['ownerId'] as String,
       timestamp: json['timestamp'] as String,
       comment: json['comment'] as String,
+      notificationTypeNum: json['notificationTypeNum'] as int,
       postId: json['postId'] as String,
       ownerName: json['ownerName'] as String,
       userPhotoUrl: json['userPhotoUrl'] as String,
@@ -21,6 +22,7 @@ Map<String, dynamic> _$NotificationModelToJson(NotificationModel instance) =>
     <String, dynamic>{
       'ownerId': instance.ownerId,
       'postUrl': instance.postUrl,
+      'notificationTypeNum': instance.notificationTypeNum,
       'timestamp': instance.timestamp,
       'ownerName': instance.ownerName,
       'comment': instance.comment,

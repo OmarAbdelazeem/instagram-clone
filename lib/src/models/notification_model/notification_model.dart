@@ -7,6 +7,7 @@ part 'notification_model.g.dart';
 class NotificationModel {
   final String ownerId;
   final String postUrl;
+  final int notificationTypeNum;
   final String timestamp;
   final String ownerName;
   final String comment;
@@ -18,6 +19,7 @@ class NotificationModel {
       required this.ownerId,
       required this.timestamp,
       required this.comment,
+        required this.notificationTypeNum,
       required this.postId,
       required this.ownerName,
       required this.userPhotoUrl});
