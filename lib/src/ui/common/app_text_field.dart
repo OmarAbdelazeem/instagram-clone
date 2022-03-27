@@ -6,11 +6,13 @@ class AppTextField extends StatefulWidget {
   final TextInputType? keyBoardType;
   final Widget? suffixIcon;
   final Widget? icon;
+  final String? Function(String?)? validator;
   final bool obscureText;
 
   AppTextField(
       {required this.controller,
       this.hintText,
+      this.validator,
       this.obscureText = false,
       this.keyBoardType,
       this.icon,
@@ -26,6 +28,7 @@ class _AppTextFieldState extends State<AppTextField> {
     return TextFormField(
       keyboardType: widget.keyBoardType,
       controller: widget.controller,
+      validator: widget.validator,
       obscureText: widget.obscureText,
       decoration: InputDecoration(
           border: InputBorder.none,

@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/res/app_colors.dart';
+import 'package:instagramapp/src/ui/common/app_text_field.dart';
+import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/widgets/comment.dart';
 
+import '../../../res/app_strings.dart';
 
 class CommentsScreen extends StatefulWidget {
   @override
@@ -10,89 +14,85 @@ class CommentsScreen extends StatefulWidget {
 
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
-
-  // PostServices postServices = PostServices();
-  final commentsRef = FirebaseFirestore.instance.collection('comments');
-  List<CommentWidget> comments = [CommentWidget(
-    postCaption: "test",
-    postName: "test",
-    postPhotoUrl: "test",
-    timestamp: Timestamp.now(),)
+  List<CommentWidget> comments = [
+    CommentWidget(
+      postCaption: "test",
+      postName: "test",
+      postPhotoUrl:
+          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+      timestamp: Timestamp.now(),
+    )
   ];
 
-  void postButton() {
-    // if (commentController.text.isNotEmpty) {
-    //   String comment = commentController.text;
-    //   commentController.clear();
-    //   postServices.addComment(comment);
-    // }
+  void onPostButtonTapped() {
+    if (commentController.text.isNotEmpty) {
+      commentController.clear();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.black, //change your color here
-        ),
-        backgroundColor: Color(0xfffafafa),
-        title: Text('Comments', style: TextStyle(color: Colors.black),),
-        actions: <Widget>[
-          Icon(Icons.more_vert),
-        ],
-      ),
+      appBar: _buildAppBar(),
       body: Container(
         padding: const EdgeInsets.all(8.0),
         height: double.infinity,
         child: Column(
           children: <Widget>[
-            Column(
-              children: <Widget>[
-
-                // commentWidget(
-                //   postCaption: Data.currentPost.caption,
-                //   postName: Data.currentPost.name,
-                //     timestamp: Data.currentPost.timestamp,
-                //     postPhotoUrl: Data.currentPost.publisherProfilePhotoUrl
-                // ),
-                Divider(
-                  thickness: 0.2,
-                  color: Colors.black,
-                )
-              ],
-            ),
-            ListView.builder(
-              itemBuilder: (context, index) => comments[index],
-              shrinkWrap: true,
-              itemCount: comments.length,
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: TextFormField(
-                  controller: commentController,
-                  decoration: InputDecoration(
-                    hintText: 'Add a comment',
-                    icon: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.grey,
-                      child: Icon(
-                        Icons.person_outline,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    ),
-                    suffixIcon: FlatButton(
-                      child: Text('Post'),
-                      onPressed: postButton,
-                    ),
-                  ),
-                ),
-              ),
-            )
+            _buildPostCaption(),
+            Expanded(child: _buildComments()),
+            _buildCommentTextField()
           ],
         ),
       ),
+    );
+  }
+
+  Column _buildPostCaption() {
+    return Column(
+      children: <Widget>[
+        CommentWidget(
+          postCaption: "test",
+          postName: "test",
+          postPhotoUrl:
+              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+          timestamp: Timestamp.now(),
+        ),
+        Divider(
+          thickness: 0.2,
+          color: Colors.black,
+        )
+      ],
+    );
+  }
+
+  ListView _buildComments() {
+    return ListView.builder(
+      itemBuilder: (context, index) => comments[index],
+      itemCount: comments.length,
+    );
+  }
+
+  Widget _buildCommentTextField() {
+    return AppTextField(
+      controller: commentController,
+      icon: ProfilePhoto(radius: 20),
+      suffixIcon: TextButton(
+          child:
+              Text(AppStrings.post, style: TextStyle(color: AppColors.black)),
+          onPressed: onPostButtonTapped),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text(
+        AppStrings.comments,
+        style: TextStyle(color: Colors.black),
+      ),
+      actions: <Widget>[
+        Icon(Icons.more_vert),
+      ],
     );
   }
 }

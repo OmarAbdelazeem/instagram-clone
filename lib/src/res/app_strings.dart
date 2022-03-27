@@ -33,4 +33,19 @@ class AppStrings {
   static const likedYourPhoto = 'Liked your photo';
   static const commentedOnYourPost = 'Commented on your post';
   static const startedFollowingYou = 'Started following you';
+  static const changeProfilePhoto = "Change Profile Photo";
+  static const takePhoto = 'Take Photo';
+  static const chooseFromLibrary = 'Choose from Library';
+  static const addProfilePhoto = 'Add Profile Photo';
+  static const addProfilePhotoSoYourFriends = 'Add a profile photo so your friends know it\'s you';
+  static const addAPhoto = 'Add a photo';
+  static const skip = 'Skip';
+  static const comments = 'Comments';
+  static const addAComment = 'Add a comment';
+  static const profile = 'Profile';
+  static const whenYouSharePhotosAndVideosTheyWillAppear = 'When you share photos and videos,they will appear on your profile';
+  static const shareYourFirstPhotoOrVideo = 'Share your first photo or video';
+  static const photosAndVideosOfYou = 'Photos and Videos of You';
+  static const whenPeopleTagYouIn = 'When people tag you in photos and videos,they\'ll appear here';
+  static const pleaseEnterAValidEmail = "Please enter a valid email";
 }

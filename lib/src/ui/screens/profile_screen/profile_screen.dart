@@ -5,8 +5,10 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/post_widget.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/widgets/way_of_view_tabs.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
 import '../../../../router.dart';
+import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,6 +17,27 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  int selectedIndex = 0;
+  List<AppTabItemModel> tabsItems = [
+    AppTabItemModel(
+        selectedItem: Icon(
+          Icons.grid_on,
+          color: AppColors.black,
+        ),
+        unSelectedItem: Icon(
+          Icons.grid_on,
+          color: AppColors.grey,
+        )),
+    AppTabItemModel(
+        selectedItem: Icon(
+          Icons.person_outline,
+          color: AppColors.black,
+        ),
+        unSelectedItem: Icon(
+          Icons.person_outline,
+          color: AppColors.grey,
+        ))
+  ];
   UserModel user = UserModel(
       photoUrl:
           "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
@@ -26,7 +49,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       followersCount: 3,
       followingCount: 5,
       timestamp: "546843");
-  List<PostWidget> posts = [];
+  List<Widget> _views = [UserOwnPostsView(), UserMentionedPostsView()];
+
+  void onItemChanged(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -44,24 +73,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onRefresh: () async {
         // setProfileInfo();
       },
-      child: ListView(
+      child: Column(
         children: <Widget>[
-          Column(
-            children: <Widget>[
-              ProfileDetails(user: user),
-              SizedBox(
-                height: 12,
-              ),
-              _buildEditProfileButton(),
-              SizedBox(
-                height: 10,
-              ),
-              WayOfViewTabs()
-            ],
-          ),
-          // isOwnPosts ? userOwnPhotos(posts) : noMentionedPhotos()
+          _buildUpperDetails(),
+          Expanded(child: _views[selectedIndex])
         ],
       ),
+    );
+  }
+
+  Widget _buildUpperDetails() {
+    return Column(
+      children: [
+        ProfileDetails(user: user),
+        SizedBox(
+          height: 12,
+        ),
+        _buildEditProfileButton(),
+        SizedBox(
+          height: 10,
+        ),
+        AppTabs(
+          items: tabsItems,
+          selectedIndex: selectedIndex,
+          onItemChanged: onItemChanged,
+        ),
+      ],
     );
   }
 
@@ -100,6 +137,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
-
-  void editProfile() {}
 }

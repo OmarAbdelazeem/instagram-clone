@@ -2,32 +2,25 @@ import 'package:flutter/material.dart';
 
 class ProfilePhoto extends StatelessWidget {
   final String? photoUrl;
-  ProfilePhoto(this.photoUrl);
+  final double radius;
+
+  ProfilePhoto({
+    this.photoUrl,
+    this.radius = 20,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return photoUrl != null
-        ? Container(
-      height: 85,
-      width: 85,
-      child: CircleAvatar(
-        radius: 30,
-        backgroundColor: Color(0xffFDCF09),
-        child: CircleAvatar(
-            radius: 50, backgroundImage: NetworkImage(photoUrl!)),
-      ),
-    )
-        : Container(
-      height: 85,
-      width: 85,
-      child: CircleAvatar(
-        radius: 30,
+    return CircleAvatar(
+        radius: radius,
         backgroundColor: Colors.grey,
-        child: Icon(
-          Icons.person_outline,
-          size: 40,
-          color: Colors.white,
-        ),
-      ),
-    );
+        child: photoUrl != null
+            ? CircleAvatar(
+                radius: radius, backgroundImage: NetworkImage(photoUrl!))
+            : Icon(
+                Icons.person_outline,
+                size: radius,
+                color: Colors.white,
+              ));
   }
 }

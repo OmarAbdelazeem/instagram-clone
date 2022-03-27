@@ -15,6 +15,7 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   TimeLineBloc(this._dataRepository, this._authRepository)
       : super(TimeLineInitial()) {
     on<TimeLineLoadStarted>(_onLoadStarted);
+    on<FetchPostDetailsStarted>(_onFetchPostStarted);
   }
 
   List<PostModel> _posts = [];
@@ -28,6 +29,19 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
               .docs;
       _posts = data.map((e) => PostModel.fromJson(e.data())).toList();
       emit(TimeLineLoaded(_posts));
+    } on Exception catch (e) {
+      emit(TimeLineError(e.toString()));
+    }
+  }
+
+  void _onFetchPostStarted(
+      FetchPostDetailsStarted event, Emitter<TimeLineState> emit) async {
+    try {
+      emit(TimeLineLoading());
+      final postJson =
+          (await _dataRepository.getPostDetails(event.postId, event.userId));
+      final PostModel post = PostModel.fromJson(postJson.data()!);
+      emit(PostLoaded(post));
     } on Exception catch (e) {
       emit(TimeLineError(e.toString()));
     }

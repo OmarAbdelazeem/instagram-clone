@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
-import 'package:instagramapp/src/ui/common/app_text_field.dart';
-import '../../../../../router.dart';
+import 'package:instagramapp/src/ui/screens/auth_screen/views/email_view.dart';
+import 'package:instagramapp/src/ui/screens/auth_screen/views/phone_view.dart';
 import '../../../../res/app_images.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/app_tabs.dart';
 import '../widgets/or_divider.dart';
 
-enum SignUpType { email, phone }
+enum SignUpType { phone, email }
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -23,7 +22,7 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   int currentTabIndex = 0;
   bool isSignUpWithEmailOrPhone = false;
-  SignUpType currentSignUpType = SignUpType.email;
+  SignUpType currentSignUpType = SignUpType.phone;
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
@@ -119,7 +118,7 @@ class _SignUpViewState extends State<SignUpView> {
           SizedBox(
             height: 10,
           ),
-          _buildCurrentSignUpTypeView()
+          currentSignUpType == SignUpType.email ? EmailView() : PhoneView()
         ],
       ),
     );
@@ -151,38 +150,10 @@ class _SignUpViewState extends State<SignUpView> {
           setState(() {
             currentTabIndex = val;
             currentSignUpType =
-                currentTabIndex == 0 ? SignUpType.email : SignUpType.phone;
+                currentTabIndex == 0 ? SignUpType.phone : SignUpType.email;
           });
         },
         selectedIndex: currentTabIndex);
   }
 
-  Widget _buildCurrentSignUpTypeView() {
-    bool isEmail = currentSignUpType == SignUpType.email;
-    return Column(
-      children: [
-        AppTextField(
-          controller: isEmail ? emailController : phoneController,
-          icon: isEmail ? null : Text('EG +20 '),
-          hintText: isEmail ? AppStrings.email : AppStrings.phone,
-          keyBoardType:
-              isEmail ? TextInputType.emailAddress : TextInputType.phone,
-          suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: clearController,
-          ),
-        ),
-        AppButton(
-          width: double.infinity,
-          title: AppStrings.next,
-          onTap: () {
-            NavigationUtils.pushNamed(
-                route: AppRoutes.nameAndPasswordScreen,
-                context: context,
-                arguments: emailController.text);
-          },
-        )
-      ],
-    );
-  }
 }

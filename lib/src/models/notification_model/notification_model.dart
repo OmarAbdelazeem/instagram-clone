@@ -3,9 +3,8 @@ import 'package:json_annotation/json_annotation.dart';
 part 'notification_model.g.dart';
 
 @JsonSerializable()
-
 class NotificationModel {
-  final String ownerId;
+  final String senderId;
   final String postUrl;
   final int notificationTypeNum;
   final String timestamp;
@@ -16,10 +15,10 @@ class NotificationModel {
 
   NotificationModel(
       {required this.postUrl,
-      required this.ownerId,
+      required this.senderId,
       required this.timestamp,
       required this.comment,
-        required this.notificationTypeNum,
+      required this.notificationTypeNum,
       required this.postId,
       required this.ownerName,
       required this.userPhotoUrl});

@@ -18,52 +18,42 @@ class CommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-Widget commentWidget(
-    {required String postName,
-    required String postCaption,
-    required String postPhotoUrl,
-    required Timestamp timestamp}) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Container(
-              child: ProfilePhoto(postPhotoUrl),
-              height: 50,
-              width: 50,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 10,
-              ),
-              child: Text(
-                postName,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 10,
-              ),
-              child: Text(
-                postCaption,
-              ),
-            ),
-          ],
+        _buildUpperPartView(),
+        SizedBox(height: 5,),
+        _buildTimestampView(),
+      ],
+    );
+  }
+
+  Text _buildTimestampView() {
+    return Text(
+      timeago.format(timestamp.toDate()),
+      style: TextStyle(fontSize: 11, color: Colors.grey),
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Row _buildUpperPartView() {
+    return Row(
+      children: <Widget>[
+        ProfilePhoto(photoUrl: postPhotoUrl, radius: 20),
+        SizedBox(
+          width: 10,
         ),
         Text(
-          timeago.format(timestamp.toDate()),
-          style: TextStyle(fontSize: 11, color: Colors.grey),
-          overflow: TextOverflow.ellipsis,
+          postName,
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        SizedBox(
+          width: 10,
+        ),
+        Text(
+          postCaption,
+        )
       ],
-    ),
-  );
+    );
+  }
 }

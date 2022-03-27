@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/data/data.dart';
 import 'package:instagramapp/pages/profile_components/user_own_photos.dart';
-import 'package:instagramapp/pages/profile_components/user_mentioned_photos.dart';
+import 'package:instagramapp/pages/profile_components/user_mentioned_posts_view.dart';
 import 'package:instagramapp/pages/profile_components/profile_details.dart';
 import 'package:instagramapp/services/profile_service.dart';
 

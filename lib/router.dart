@@ -3,6 +3,8 @@ import 'package:instagramapp/src/ui/screens/activity_screen/activity_screen.dart
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import 'package:instagramapp/src/ui/screens/edit_profile_screen/edit_profile_screen.dart';
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
+import 'package:instagramapp/src/ui/screens/post_details_screen/post_details_screen.dart';
+import 'package:instagramapp/src/ui/screens/searched_user_profile/searched_user_profile.dart';
 import 'src/ui/screens/add_profile_photo_screen/add_profile_photo_screen.dart';
 import 'src/ui/screens/profile_photo_added_screen/profile_photo_added_screen.dart';
 import 'package:instagramapp/src/ui/screens/main_home_screen/main_home_screen.dart';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const String activityScreen = "/activityScreen";
   static const String editProfileScreen = "/editProfileScreen";
   static const String commentsScreen = "/commentsScreen";
+  static const String postDetailsScreen = "/postDetailsScreen";
+  static const String profileScreen = "/profileScreen";
 }
 
 class AppRouter {
@@ -49,6 +53,8 @@ class AppRouter {
         return _customMaterialPageRoute(EditProfileScreen(), settings);
         case AppRoutes.commentsScreen:
         return _customMaterialPageRoute(CommentsScreen(), settings);
+        case AppRoutes.postDetailsScreen:
+        return _customMaterialPageRoute(PostDetailsScreen(), settings);
       default:
         return _customMaterialPageRoute(UnKnownRouteScreen(), settings);
     }

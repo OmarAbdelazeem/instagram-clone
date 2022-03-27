@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
-
+import 'package:instagramapp/src/res/app_colors.dart';
+import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/ui/common/app_button.dart';
 import '../../../../router.dart';
 
 class AddProfilePhotoScreen extends StatefulWidget {
@@ -12,6 +14,7 @@ class AddProfilePhotoScreen extends StatefulWidget {
 }
 
 class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
+
   pickAndSaveProfileImage(ImageSource source) async {
     Navigator.pop(context);
     context.read<AuthBloc>().add(PickProfilePhotoTapped(source));
@@ -33,8 +36,7 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
           print("state is $state");
         },
         child: Container(
-          padding: EdgeInsets.only(top: 10),
-          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           height: MediaQuery.of(context).size.height * 0.6,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -44,34 +46,27 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
                 size: 80,
               ),
               Text(
-                'Add Profile Photo',
+                AppStrings.addProfilePhoto,
                 style: TextStyle(fontSize: 30),
               ),
               Text(
-                'Add a profile photo so your friends know it\'s you',
+                AppStrings.addProfilePhotoSoYourFriends,
               ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: 42,
-                child: RaisedButton(
-                  onPressed: () {
-                    _showPickImageDialogue(context);
-                  },
-                  child: Text(
-                    'Add a photo',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  color: Colors.blue,
-                ),
+              AppButton(
+                title: AppStrings.addAPhoto,
+                width: double.infinity,
+                onTap: () => _showPickImageDialogue(context),
               ),
-              FlatButton(
-                child: Text('Skip',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17)),
-                onPressed: onSkipTapped,
-              )
+              AppButton(
+                title: AppStrings.skip,
+                width: double.infinity,
+                color: AppColors.scaffoldBackgroundColor,
+                titleStyle: TextStyle(
+                    color: AppColors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17),
+                onTap: onSkipTapped,
+              ),
             ],
           ),
         ),
@@ -86,7 +81,7 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
           return SimpleDialog(
             title: Column(
               children: <Widget>[
-                Text("Change Profile Photo"),
+                Text(AppStrings.changeProfilePhoto),
                 SizedBox(
                   height: 10,
                 ),
@@ -97,7 +92,7 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
               SimpleDialogOption(
                 onPressed: () => pickAndSaveProfileImage(ImageSource.camera),
                 child: Text(
-                  'Take Photo',
+                  AppStrings.takePhoto,
                   style: TextStyle(fontSize: 17),
                 ),
               ),
@@ -107,7 +102,7 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
               SimpleDialogOption(
                   onPressed: () => pickAndSaveProfileImage(ImageSource.gallery),
                   child: Text(
-                    'Choose from Library',
+                    AppStrings.chooseFromLibrary,
                     style: TextStyle(fontSize: 17),
                   )),
             ],
