@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../../router.dart';
 import '../../../../core/utils/navigation_utils.dart';
+import '../../../../core/utils/validator_utils.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/app_button.dart';
 import '../../../common/app_text_field.dart';
 
-class PhoneView extends StatefulWidget {
-  PhoneView({Key? key}) : super(key: key);
+class SignupWithPhoneView extends StatefulWidget {
+  final FocusNode focusNode;
+
+  SignupWithPhoneView({Key? key, required this.focusNode}) : super(key: key);
 
   @override
-  State<PhoneView> createState() => _PhoneViewState();
+  State<SignupWithPhoneView> createState() => _SignupWithPhoneViewState();
 }
 
-class _PhoneViewState extends State<PhoneView> {
+class _SignupWithPhoneViewState extends State<SignupWithPhoneView> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController phoneController = TextEditingController();
@@ -26,8 +29,9 @@ class _PhoneViewState extends State<PhoneView> {
         children: [
           AppTextField(
             controller: phoneController,
+            focusNode: widget.focusNode,
             icon: Text('EG +20 '),
-            // validator: ValidatorUtils.validateEmail,
+            validator: ValidatorUtils.validateEmail,
             hintText: AppStrings.phone,
             keyBoardType: TextInputType.phone,
             suffixIcon: IconButton(
@@ -38,13 +42,7 @@ class _PhoneViewState extends State<PhoneView> {
           AppButton(
             width: double.infinity,
             title: AppStrings.next,
-            onTap: () {
-              if (_formKey.currentState!.validate())
-                NavigationUtils.pushNamed(
-                    route: AppRoutes.nameAndPasswordScreen,
-                    context: context,
-                    arguments: phoneController.text);
-            },
+            onTap: onNextTapped,
           )
         ],
       ),
@@ -53,5 +51,13 @@ class _PhoneViewState extends State<PhoneView> {
 
   void clearController() {
     phoneController.clear();
+  }
+
+  void onNextTapped() {
+    if (_formKey.currentState!.validate())
+      NavigationUtils.pushNamed(
+          route: AppRoutes.nameAndPasswordScreen,
+          context: context,
+          arguments: phoneController.text);
   }
 }

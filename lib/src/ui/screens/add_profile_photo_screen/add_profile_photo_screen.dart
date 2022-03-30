@@ -7,6 +7,8 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import '../../../../router.dart';
+import '../../common/loading_dialogue.dart';
+
 
 class AddProfilePhotoScreen extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class AddProfilePhotoScreen extends StatefulWidget {
 }
 
 class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
   pickAndSaveProfileImage(ImageSource source) async {
     Navigator.pop(context);
@@ -30,10 +33,15 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (BuildContext context, AuthState state) {
-          if (state is ProfileImagePicked)
+          if (state is Loading) showLoadingDialog(context, _keyLoader);
+          if (state is ProfilePhotoAdded) {
+            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
             NavigationUtils.pushNamed(
-                route: AppRoutes.profilePhotoAddedScreen, context: context);
-          print("state is $state");
+                route: AppRoutes.profilePhotoAddedScreen,
+                context: context,
+                arguments: state.imageUrl);
+          } else if (state is Error)
+            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),

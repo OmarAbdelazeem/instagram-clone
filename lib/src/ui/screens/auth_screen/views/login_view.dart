@@ -95,14 +95,14 @@ class _LoginViewState extends State<LoginView> {
   Widget _buildLoginButton() {
     return BlocListener<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
-        if (state is AuthLoading)
+        if (state is Loading)
           showLoadingDialog(context, _keyLoader);
         else if (state is AuthSuccess) {
           print("state is AuthSuccess");
           Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
           NavigationUtils.pushNamed(
               route: AppRoutes.mainHomeScreen, context: context);
-        } else if (state is AuthError)
+        } else if (state is Error)
           Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       },
       child: AppButton(

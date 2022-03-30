@@ -4,46 +4,46 @@ import 'package:instagramapp/src/repository/auth_repository.dart';
 import 'package:meta/meta.dart';
 import '../../repository/data_repository.dart';
 
-part 'time_line_event.dart';
+part 'posts_event.dart';
 
-part 'time_line_state.dart';
+part 'posts_state.dart';
 
-class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
+class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
   final DataRepository _dataRepository;
   final AuthRepository _authRepository;
 
-  TimeLineBloc(this._dataRepository, this._authRepository)
-      : super(TimeLineInitial()) {
-    on<TimeLineLoadStarted>(_onLoadStarted);
-    on<FetchPostDetailsStarted>(_onFetchPostStarted);
+  PostsBloc(this._dataRepository, this._authRepository)
+      : super(PostsInitial()) {
+    on<FetchAllTimelinePostsStarted>(_onFetchAllPostsStarted);
+    on<PostDetailsLoadStarted>(_onFetchPostStarted);
   }
 
   List<PostModel> _posts = [];
 
-  void _onLoadStarted(
-      TimeLineLoadStarted event, Emitter<TimeLineState> emit) async {
+  void _onFetchAllPostsStarted(
+      FetchAllTimelinePostsStarted event, Emitter<PostsState> emit) async {
     try {
-      emit(TimeLineLoading());
+      emit(Loading());
       final data =
-          (await _dataRepository.getPosts(_authRepository.loggedInUser!.uid))
+          (await _dataRepository.getTimelinePosts(_authRepository.loggedInUser!.uid))
               .docs;
       _posts = data.map((e) => PostModel.fromJson(e.data())).toList();
-      emit(TimeLineLoaded(_posts));
+      emit(PostsLoaded(_posts));
     } on Exception catch (e) {
-      emit(TimeLineError(e.toString()));
+      emit(Error(e.toString()));
     }
   }
 
   void _onFetchPostStarted(
-      FetchPostDetailsStarted event, Emitter<TimeLineState> emit) async {
+      PostDetailsLoadStarted event, Emitter<PostsState> emit) async {
     try {
-      emit(TimeLineLoading());
+      emit(Loading());
       final postJson =
           (await _dataRepository.getPostDetails(event.postId, event.userId));
       final PostModel post = PostModel.fromJson(postJson.data()!);
       emit(PostLoaded(post));
     } on Exception catch (e) {
-      emit(TimeLineError(e.toString()));
+      emit(Error(e.toString()));
     }
   }
 }

@@ -10,12 +10,12 @@ class LoginButtonTapped extends AuthEvent {
   LoginButtonTapped({required this.password, required this.email});
 }
 
-class SignUpButtonTapped extends AuthEvent {
+class SignUpWithEmailTapped extends AuthEvent {
   final String name;
   final String email;
   final String password;
 
-  SignUpButtonTapped(
+  SignUpWithEmailTapped(
       {required this.password, required this.email, required this.name});
 }
 

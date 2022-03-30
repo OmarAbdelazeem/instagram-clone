@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
@@ -48,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       postsCount: 1,
       followersCount: 3,
       followingCount: 5,
-      timestamp: "546843");
+      timestamp: (Timestamp.now()).toDate());
   List<Widget> _views = [UserOwnPostsView(), UserMentionedPostsView()];
 
   void onItemChanged(int index) {

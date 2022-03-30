@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 
@@ -14,7 +15,7 @@ class ActivityScreen extends StatelessWidget {
         postId: "2",
         postUrl:
             "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-        timestamp: "af",
+        timestamp: (Timestamp.now()).toDate(),
         userPhotoUrl:
             "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg")),
     NotificationItem(NotificationModel(
@@ -25,7 +26,7 @@ class ActivityScreen extends StatelessWidget {
         postId: "1",
         postUrl:
             "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-        timestamp: "af",
+        timestamp: (Timestamp.now()).toDate(),
         userPhotoUrl:
             "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"))
   ];

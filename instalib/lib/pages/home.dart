@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
                         page: Upload(),
                         isHorizontalNavigation: false);
                   },
-                  child: SvgPicture.asset('assets/images/add.svg',width: 24,height: 24,),
+                  child: SvgPicture.asset('assets/images/addButton.svg',width: 24,height: 24,),
                 ),
                 label: '',
               ),

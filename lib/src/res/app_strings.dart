@@ -48,4 +48,10 @@ class AppStrings {
   static const photosAndVideosOfYou = 'Photos and Videos of You';
   static const whenPeopleTagYouIn = 'When people tag you in photos and videos,they\'ll appear here';
   static const pleaseEnterAValidEmail = "Please enter a valid email";
+  static const profilePhotoAdded = "Profile Photo Added";
+  static const changePhoto = "Change photo";
+  static const alsoShareThisPhotoAsAPost = "Also share this photo as a post";
+  static const makeThisPhotoYourFirstPostSo = "Make this photo your first post so people can like and comment on it";
+  static const somethingWrongHappened = "SomeThing wrong happened";
+  static const likes = "Likes";
 }

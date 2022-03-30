@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
@@ -91,7 +92,7 @@ class NotificationItem extends StatelessWidget {
               ),
               Text(
                 // timeago.format(notification.timestamp.toDate()),
-                notification.timestamp,
+                (Timestamp.now()).toDate().toString(),
                 style: TextStyle(fontSize: 12),
               )
             ],
@@ -107,7 +108,9 @@ class NotificationItem extends StatelessWidget {
       child: Container(
           height: 55,
           width: 55,
-          child: ProfilePhoto(photoUrl: notification.userPhotoUrl,)),
+          child: ProfilePhoto(
+            photoUrl: notification.userPhotoUrl,
+          )),
     );
   }
 

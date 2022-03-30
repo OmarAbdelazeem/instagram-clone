@@ -41,7 +41,7 @@ class _AppDropDownButtonState extends State<AppDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButton(
       icon: SvgPicture.asset(
-        AppImages.addSvg,
+        AppImages.addButtonSvg,
         width: 20,
         height: 20,
       ),

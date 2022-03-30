@@ -7,14 +7,16 @@ import '../../../../res/app_strings.dart';
 import '../../../common/app_button.dart';
 import '../../../common/app_text_field.dart';
 
-class EmailView extends StatefulWidget {
-  EmailView({Key? key}) : super(key: key);
+class SignupWithEmailView extends StatefulWidget {
+  final FocusNode focusNode;
+
+  SignupWithEmailView({Key? key, required this.focusNode}) : super(key: key);
 
   @override
-  State<EmailView> createState() => _EmailViewState();
+  State<SignupWithEmailView> createState() => _SignupWithEmailViewState();
 }
 
-class _EmailViewState extends State<EmailView> {
+class _SignupWithEmailViewState extends State<SignupWithEmailView> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController emailController = TextEditingController();
@@ -27,6 +29,7 @@ class _EmailViewState extends State<EmailView> {
         children: [
           AppTextField(
             controller: emailController,
+            focusNode: widget.focusNode,
             validator: ValidatorUtils.validateEmail,
             hintText: AppStrings.email,
             keyBoardType: TextInputType.emailAddress,
@@ -38,13 +41,7 @@ class _EmailViewState extends State<EmailView> {
           AppButton(
             width: double.infinity,
             title: AppStrings.next,
-            onTap: () {
-              if (_formKey.currentState!.validate())
-                NavigationUtils.pushNamed(
-                    route: AppRoutes.nameAndPasswordScreen,
-                    context: context,
-                    arguments: emailController.text);
-            },
+            onTap: onNextButtonTapped,
           )
         ],
       ),
@@ -53,5 +50,14 @@ class _EmailViewState extends State<EmailView> {
 
   void clearController() {
     emailController.clear();
+  }
+
+  void onNextButtonTapped() {
+    // Todo first check if this is already found in the database
+    if (_formKey.currentState!.validate())
+      NavigationUtils.pushNamed(
+          route: AppRoutes.nameAndPasswordScreen,
+          context: context,
+          arguments: emailController.text);
   }
 }

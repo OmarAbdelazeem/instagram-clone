@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:provider/provider.dart';
+
+import '../../../bloc/posts_bloc/posts_bloc.dart';
 
 class SearchedPostScreen extends StatefulWidget {
   final String postId;
@@ -17,8 +18,8 @@ class SearchedPostScreen extends StatefulWidget {
 class _SearchedPostScreenState extends State<SearchedPostScreen> {
   @override
   void initState() {
-    context.read<TimeLineBloc>().add(
-        FetchPostDetailsStarted(postId: widget.postId, userId: widget.userId));
+    context.read<PostsBloc>().add(
+        PostDetailsLoadStarted(postId: widget.postId, userId: widget.userId));
     // TODO: implement initState
     super.initState();
   }

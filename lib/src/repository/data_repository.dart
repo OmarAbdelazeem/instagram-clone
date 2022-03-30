@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
+import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 class DataRepository {
@@ -22,6 +23,11 @@ class DataRepository {
     return await usersRef.doc(userId).get();
   }
 
+  Future createUserDetails(UserModel user) async {
+    print("user is ${user.toJson()}");
+     await usersRef.doc(user.id).set(user.toJson());
+  }
+
   searchForUser(String term) {
     usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
   }
@@ -34,7 +40,7 @@ class DataRepository {
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getTimeline(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePosts(String userId) async {
     return await timelineRef
         .doc(userId)
         .collection('timeline')
@@ -83,7 +89,7 @@ class DataRepository {
 
   Future addProfilePhoto(String userId, String photoUrl) async {
     await usersRef.doc(userId).update({
-      'profilePhotoUrl': photoUrl,
+      'photoUrl': photoUrl,
     });
   }
 

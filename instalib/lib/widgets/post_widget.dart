@@ -46,7 +46,7 @@ class _PostWidgetState extends State<PostWidget> {
       isLiking ? postLikesCount-= 1: postLikesCount+= 1;
       isLiking = !isLiking;
     });
-    postServices.handleLiking(isLiking: !isLiking);
+    postServices.handleLiking(isLiked: !isLiking);
   }
 
   void commentButton() {
@@ -111,7 +111,7 @@ class _PostWidgetState extends State<PostWidget> {
                         : Icon(Icons.favorite),
                     onPressed: likeButton),
                 IconButton(
-                    icon: SvgPicture.asset('assets/images/comment.svg',width: 20,height: 20,), onPressed: commentButton),
+                    icon: SvgPicture.asset('assets/images/commentButton.svg',width: 20,height: 20,), onPressed: commentButton),
                 IconButton(
                   icon: SvgPicture.asset('assets/images/send.svg',width: 20,height: 20,),
                   onPressed: () {

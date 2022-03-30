@@ -3,14 +3,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
-import 'package:instagramapp/src/ui/screens/auth_screen/views/email_view.dart';
-import 'package:instagramapp/src/ui/screens/auth_screen/views/phone_view.dart';
+import 'package:instagramapp/src/ui/screens/auth_screen/views/signup_with_email_view.dart';
+import 'package:instagramapp/src/ui/screens/auth_screen/views/signup_with_phone_view.dart';
 import '../../../../res/app_images.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/app_tabs.dart';
 import '../widgets/or_divider.dart';
 
-enum SignUpType { phone, email }
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -22,14 +21,29 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   int currentTabIndex = 0;
   bool isSignUpWithEmailOrPhone = false;
-  SignUpType currentSignUpType = SignUpType.phone;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  late List<Widget> views;
+  late FocusNode phoneFocusNode;
+  late FocusNode emailFocusNode;
 
-  void clearController() {
-    currentSignUpType == SignUpType.email
-        ? emailController.clear()
-        : phoneController.clear();
+  @override
+  void initState() {
+    super.initState();
+    phoneFocusNode = FocusNode();
+    emailFocusNode = FocusNode();
+    views = [
+      SignupWithPhoneView(focusNode: phoneFocusNode),
+      SignupWithEmailView(
+        focusNode: emailFocusNode,
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    phoneFocusNode.dispose();
+    emailFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -118,7 +132,10 @@ class _SignUpViewState extends State<SignUpView> {
           SizedBox(
             height: 10,
           ),
-          currentSignUpType == SignUpType.email ? EmailView() : PhoneView()
+          IndexedStack(
+            children: views,
+            index: currentTabIndex,
+          ),
         ],
       ),
     );
@@ -149,11 +166,11 @@ class _SignUpViewState extends State<SignUpView> {
         onItemChanged: (int val) {
           setState(() {
             currentTabIndex = val;
-            currentSignUpType =
-                currentTabIndex == 0 ? SignUpType.phone : SignUpType.email;
           });
+          currentTabIndex == 0
+              ? emailFocusNode.unfocus()
+              : phoneFocusNode.unfocus();
         },
         selectedIndex: currentTabIndex);
   }
-
 }

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import '../../../models/user_model/user_model.dart';
-
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLoading = false;
   UserModel? user = UserModel(
       photoUrl:
-      "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
       userName: "Omar Abdelazeem",
       bio: "this is a bio",
       id: "123",
@@ -23,7 +23,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       postsCount: 1,
       followersCount: 3,
       followingCount: 5,
-      timestamp: "546843");
+      timestamp: (Timestamp.now()).toDate());
   bool _displayNameValid = true;
   bool _bioValid = true;
 
@@ -135,13 +135,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
         actions: <Widget>[
-           IconButton(
-              onPressed: updateProfileData,
-              icon: Icon(
-                Icons.done,
-                size: 30.0,
-                color: Colors.blue,
-              ),
+          IconButton(
+            onPressed: updateProfileData,
+            icon: Icon(
+              Icons.done,
+              size: 30.0,
+              color: Colors.blue,
+            ),
           ),
         ],
       ),

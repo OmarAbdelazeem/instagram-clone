@@ -11,6 +11,10 @@ class ValidatorUtils {
     return isValid ? null : AppStrings.pleaseEnterAValidEmail;
   }
 
+  static String? validatePhone(String? value) {
+    return null;
+  }
+
   String? validatePassword(String value) {
     return null;
   }

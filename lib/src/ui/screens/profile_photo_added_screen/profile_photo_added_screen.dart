@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/ui/common/app_button.dart';
+import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
 
 import '../../../../router.dart';
 
+//Todo refactor this screen
 class ProfilePhotoAddedScreen extends StatefulWidget {
   @override
   _ProfilePhotoAddedScreenState createState() =>
@@ -17,45 +21,42 @@ class _ProfilePhotoAddedScreenState extends State<ProfilePhotoAddedScreen> {
     final imageUrl = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       body: SafeArea(
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey,
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  height: 15,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(
-                  'Profile Photo Added',
+                ProfilePhoto(photoUrl: imageUrl, radius: 50),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  AppStrings.profilePhotoAdded,
                   style: TextStyle(fontSize: 28),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  'change photo',
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  AppStrings.changePhoto,
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
                 ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.85,
-                child: Row(
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Also share this photo as a post',
+                      AppStrings.alsoShareThisPhotoAsAPost,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.clip,
                     ),
@@ -65,33 +66,24 @@ class _ProfilePhotoAddedScreenState extends State<ProfilePhotoAddedScreen> {
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Container(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  child: Text(
-                    'Make this photo your first post so people can like and comment on it',
-                    textAlign: TextAlign.start,
-                  )),
-              SizedBox(
-                height: 15,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.85,
-                child: RaisedButton(
-                  color: Colors.blue,
-                  onPressed: () => NavigationUtils.pushNamed(
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  AppStrings.makeThisPhotoYourFirstPostSo,
+                  textAlign: TextAlign.start,
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                AppButton(
+                  title: AppStrings.next,
+                  onTap: () => NavigationUtils.pushNamed(
                       route: AppRoutes.peopleSuggestionsScreen,
                       context: context),
-                  child: Text(
-                    'Next',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

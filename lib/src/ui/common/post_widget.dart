@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/res/app_images.dart';
+import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import '../../../router.dart';
 import '../../models/post_model/post_model.dart';
+import '../../res/app_strings.dart';
 
+// Todo refactor this file
 class PostWidget extends StatefulWidget {
   final PostModel post;
 
@@ -14,8 +18,8 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  bool isLiking = false;
-  int? postLikesCount;
+  bool isLiked = false;
+  int? postLikesCount = 0;
 
   @override
   void initState() {
@@ -24,27 +28,19 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   void getLikesCount() {
-    postLikesCount = widget.post.likesCount;
+    // postLikesCount = widget.post.likesCount;
   }
 
   void likeButton() {
-    // Data.changeCurrentPost(widget.post);
-    // setState(() {
-    //   isLiking ? postLikesCount-= 1: postLikesCount+= 1;
-    //   isLiking = !isLiking;
-    // });
-    // postServices.handleLiking(isLiking: !isLiking);
+    //Todo implement like function
+    setState(() {
+      isLiked = !isLiked;
+    });
   }
 
   void commentButton() {
     NavigationUtils.pushNamed(
         route: AppRoutes.commentsScreen, context: context);
-    // Data.changeCurrentPost(widget.post);
-    // print('comment button pressed');
-    // NavigationFunctions.pushPage(
-    //     context: context,
-    //     isHorizontalNavigation: false,
-    //     page: CommentsScreen());
   }
 
   @override
@@ -52,132 +48,114 @@ class _PostWidgetState extends State<PostWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        child: userProfilePhoto(
-                            photoUrl: widget.post.publisherProfilePhotoUrl),
-                        width: 50,
-                        height: 50,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.post.publisherName),
-                      )
-                    ],
-                  ),
-                ),
-                Icon(Icons.more_vert)
-              ],
-            ),
-          ),
-        ),
-        Image.network(
-          widget.post.photoUrl,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.4,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                IconButton(
-                    icon: !isLiking
-                        ? Icon(
-                            Icons.favorite_border,
-                          )
-                        : Icon(Icons.favorite),
-                    onPressed: likeButton),
-                IconButton(
-                    icon: SvgPicture.asset(
-                      'assets/images/comment.svg',
-                      width: 20,
-                      height: 20,
-                    ),
-                    onPressed: commentButton),
-                IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/images/send.svg',
-                    width: 20,
-                    height: 20,
-                  ),
-                  onPressed: () {
-                    print('send button pressed');
-                  },
-                ),
-              ],
-            ),
-            IconButton(
-              icon: Icon(Icons.bookmark_border),
-              onPressed: () {
-                print('bookmark button pressed');
-              },
-            ),
-          ],
-        ),
         Padding(
-          child: Text(
-            '$postLikesCount likes',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          padding: EdgeInsets.only(left: 15, bottom: 5),
-        ),
+            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: _buildPostHeader()),
+        _buildPostImage(),
+        _buildPostActions(),
         Padding(
-          child: Row(
-            children: <Widget>[
-              Text(
-                widget.post.publisherName,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                widget.post.caption,
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [buildLikesCount(), buildPublisherNameAndCaption()],
           ),
-          padding: EdgeInsets.only(left: 15),
         )
       ],
     );
   }
 
-  Widget userProfilePhoto({String? photoUrl}) {
-    return photoUrl != null
-        ? Container(
-            height: 85,
-            width: 85,
-            child: CircleAvatar(
-              radius: 30,
-              backgroundColor: Color(0xffFDCF09),
-              child: CircleAvatar(
-                  radius: 50, backgroundImage: NetworkImage(photoUrl)),
-            ),
-          )
-        : Container(
-            height: 85,
-            width: 85,
-            child: CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.grey,
-              child: Icon(
-                Icons.person_outline,
-                size: 40,
-                color: Colors.white,
+  Widget buildPublisherNameAndCaption() {
+    return Row(
+      children: <Widget>[
+        Text(
+          widget.post.publisherName,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Text(
+          widget.post.caption,
+          style: TextStyle(fontSize: 16),
+        ),
+      ],
+    );
+  }
+
+  Widget buildLikesCount() {
+    return Text(
+      '$postLikesCount ${AppStrings.likes}',
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
+
+  Row _buildPostActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            IconButton(
+                icon: !isLiked
+                    ? Icon(
+                        Icons.favorite_border,
+                      )
+                    : Icon(Icons.favorite),
+                onPressed: likeButton),
+            IconButton(
+                icon: SvgPicture.asset(
+                  AppImages.commentButtonSvg,
+                  width: 20,
+                  height: 20,
+                ),
+                onPressed: commentButton),
+            IconButton(
+              icon: SvgPicture.asset(
+                AppImages.sendButtonSvg,
+                width: 20,
+                height: 20,
               ),
+              onPressed: () {
+                print('send button pressed');
+              },
             ),
-          );
+          ],
+        ),
+        IconButton(
+          icon: Icon(Icons.bookmark_border),
+          onPressed: () {
+            print('bookmark button pressed');
+          },
+        ),
+      ],
+    );
+  }
+
+  Image _buildPostImage() {
+    return Image.network(
+      widget.post.photoUrl,
+      width: double.infinity,
+    );
+  }
+
+  Widget _buildPostHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
+            SizedBox(
+              width: 8,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(widget.post.publisherName),
+            )
+          ],
+        ),
+        IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+      ],
+    );
   }
 }

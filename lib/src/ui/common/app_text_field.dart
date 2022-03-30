@@ -6,12 +6,14 @@ class AppTextField extends StatefulWidget {
   final TextInputType? keyBoardType;
   final Widget? suffixIcon;
   final Widget? icon;
+  final FocusNode? focusNode;
   final String? Function(String?)? validator;
   final bool obscureText;
 
   AppTextField(
       {required this.controller,
       this.hintText,
+      this.focusNode,
       this.validator,
       this.obscureText = false,
       this.keyBoardType,
@@ -26,6 +28,7 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: widget.focusNode,
       keyboardType: widget.keyBoardType,
       controller: widget.controller,
       validator: widget.validator,

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
+import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
+
+import '../../common/loading_dialogue.dart';
 
 class NameAndPasswordScreen extends StatefulWidget {
   @override
@@ -13,17 +17,23 @@ class NameAndPasswordScreen extends StatefulWidget {
 class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
   String? email;
 
-  void onContinueTapped(){
+  void onContinueTapped() {
     //Todo implement create user with email and password
-    NavigationUtils.pushNamed(
-        route: AppRoutes.addProfilePhotoScreen, context: context);
+    context.read<AuthBloc>().add(SignUpWithEmailTapped(
+        password: passwordController.text,
+        email: email!,
+        name: nameController.text));
   }
 
   @override
   Widget build(BuildContext context) {
-    email = ModalRoute.of(context)!.settings.arguments as String;
+    email = ModalRoute
+        .of(context)!
+        .settings
+        .arguments as String;
     print("args is $email");
 
     return Scaffold(
@@ -42,9 +52,24 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
           SizedBox(
             height: 10,
           ),
-          AppButton(
-            title: AppStrings.continuE,
-            onTap: onContinueTapped,
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is Loading)
+                showLoadingDialog(context, _keyLoader);
+              else if (state is UserCreated) {
+                print("state is UserCreated");
+                Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
+                    .pop();
+                NavigationUtils.pushNamed(
+                    route: AppRoutes.addProfilePhotoScreen, context: context);
+              } else if (state is Error)
+                Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
+                    .pop();
+            },
+            child: AppButton(
+              title: AppStrings.continuE,
+              onTap: onContinueTapped,
+            ),
           )
         ]),
       ),

@@ -5,18 +5,20 @@ abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
 
-class AuthLoading extends AuthState {}
+class Loading extends AuthState {}
 
 class AuthSuccess extends AuthState {}
 
-class AuthError extends AuthState {
+class UserCreated extends AuthState {}
+
+class Error extends AuthState {
   final String error;
 
-  AuthError(this.error);
+  Error(this.error);
 }
 
-class ProfileImagePicked extends AuthState {
+class ProfilePhotoAdded extends AuthState {
   final String imageUrl;
 
-  ProfileImagePicked(this.imageUrl);
+  ProfilePhotoAdded(this.imageUrl);
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
-import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
+import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
                   context.read<DataRepository>(),
                   context.read<StorageRepository>()),
             ),
-            BlocProvider<TimeLineBloc>(
-              create: (context) => TimeLineBloc(context.read<DataRepository>(),
+            BlocProvider<PostsBloc>(
+              create: (context) => PostsBloc(context.read<DataRepository>(),
                   context.read<AuthRepository>()),
             ),
             BlocProvider<UsersBloc>(
