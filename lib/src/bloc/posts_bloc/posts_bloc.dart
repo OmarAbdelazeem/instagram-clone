@@ -46,4 +46,12 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
       emit(Error(e.toString()));
     }
   }
+
+  void _onUploadPostStarted(PostUploadStarted event , Emitter<PostsState> emit)async{
+    try{
+      emit(Loading());
+    }catch(e){
+
+    }
+  }
 }

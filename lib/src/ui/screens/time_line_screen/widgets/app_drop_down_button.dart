@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/core/utils/image_utils.dart';
+import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import '../../../../../router.dart';
 import '../../../../res/app_images.dart';
 
 class AppDropDownButton extends StatefulWidget {
@@ -26,6 +28,12 @@ class _AppDropDownButtonState extends State<AppDropDownButton> {
       setState(() {
         _imageFile = value;
       });
+      if (_imageFile != null) {
+        NavigationUtils.pushNamed(
+            route: AppRoutes.newPostScreen,
+            context: context,
+            arguments: _imageFile);
+      }
     });
   }
 

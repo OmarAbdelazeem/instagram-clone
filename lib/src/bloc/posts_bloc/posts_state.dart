@@ -19,6 +19,8 @@ class PostsLoaded extends PostsState {
   PostsLoaded(this.posts);
 }
 
+class PostUploaded extends PostsState{}
+
 class Error extends PostsState {
   final String error;
 

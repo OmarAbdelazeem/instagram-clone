@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/res/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -6,7 +7,10 @@ class AppTextField extends StatefulWidget {
   final TextInputType? keyBoardType;
   final Widget? suffixIcon;
   final Widget? icon;
+  final Color? fillColor;
+  final int maxLines;
   final FocusNode? focusNode;
+  final EdgeInsetsGeometry? contentPadding;
   final String? Function(String?)? validator;
   final bool obscureText;
 
@@ -14,6 +18,9 @@ class AppTextField extends StatefulWidget {
       {required this.controller,
       this.hintText,
       this.focusNode,
+        this.fillColor,
+      this.maxLines = 1,
+      this.contentPadding,
       this.validator,
       this.obscureText = false,
       this.keyBoardType,
@@ -32,10 +39,12 @@ class _AppTextFieldState extends State<AppTextField> {
       keyboardType: widget.keyBoardType,
       controller: widget.controller,
       validator: widget.validator,
+      maxLines: widget.maxLines,
       obscureText: widget.obscureText,
       decoration: InputDecoration(
           border: InputBorder.none,
-          fillColor: Color(0xfffafafa),
+          contentPadding: widget.contentPadding,
+          fillColor: widget.fillColor ?? AppColors.white,
           hintText: widget.hintText,
           filled: true,
           suffixIcon: widget.suffixIcon,

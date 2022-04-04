@@ -11,3 +11,8 @@ class PostDetailsLoadStarted extends TimeLineEvent {
 
   PostDetailsLoadStarted({required this.userId, required this.postId});
 }
+
+class PostUploadStarted extends TimeLineEvent{
+  final PostModel post;
+  PostUploadStarted(this.post);
+}

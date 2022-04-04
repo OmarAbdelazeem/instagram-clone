@@ -54,4 +54,7 @@ class AppStrings {
   static const makeThisPhotoYourFirstPostSo = "Make this photo your first post so people can like and comment on it";
   static const somethingWrongHappened = "SomeThing wrong happened";
   static const likes = "Likes";
+  static const writeACaption = "write a caption...";
+  static const newPost = "New post";
+  static const share = "Share";
 }

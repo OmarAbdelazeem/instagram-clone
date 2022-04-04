@@ -16,10 +16,9 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
-  final DataRepository _dataRepository;
-  final StorageRepository _storageRepository;
 
-  AuthBloc(this._authRepository, this._dataRepository, this._storageRepository)
+
+  AuthBloc(this._authRepository)
       : super(AuthInitial()) {
     on<LoginButtonTapped>(_onLoginTapped);
     on<SignUpWithEmailTapped>(_onSignUpWithEmailTapped);
@@ -68,23 +67,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onPickingProfilePhotoTapped(
-      PickProfilePhotoTapped pickProfilePhotoTapped,
-      Emitter<AuthState> emit) async {
-    //Todo try to transfer this function to another bloc
-    try {
-      emit(Loading());
-      final imageFile =
-          await ImageUtils.pickImage(pickProfilePhotoTapped.imageSource);
-      if (imageFile != null) {
-        final photoUrl = await _storageRepository.uploadProfilePhoto(
-            selectedFile: imageFile, userId: user!.uid);
-        await _dataRepository.addProfilePhoto(user!.uid, photoUrl);
-        emit(ProfilePhotoAdded(photoUrl));
-      }
-    } catch (e) {
-      print(e.toString());
-      emit(Error(e.toString()));
-    }
-  }
+
 }
