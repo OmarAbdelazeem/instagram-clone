@@ -19,13 +19,13 @@ class DataRepository {
       FirebaseFirestore.instance.collection("usersComments");
   final usersLikes = FirebaseFirestore.instance.collection("usersLikes");
 
-  Future getUserDetails(String userId) async {
+  Future<DocumentSnapshot> getUserDetails(String userId) async {
     return await usersRef.doc(userId).get();
   }
 
   Future createUserDetails(UserModel user) async {
     print("user is ${user.toJson()}");
-     await usersRef.doc(user.id).set(user.toJson());
+    await usersRef.doc(user.id).set(user.toJson());
   }
 
   searchForUser(String term) {
@@ -40,7 +40,8 @@ class DataRepository {
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePosts(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePosts(
+      String userId) async {
     return await timelineRef
         .doc(userId)
         .collection('timeline')
@@ -93,9 +94,11 @@ class DataRepository {
     });
   }
 
-  void addPost(PostModel post, String userId) async {
+  Future addPost(
+    PostModel post,
+  ) async {
     await postsRef
-        .doc(userId)
+        .doc(post.publisherId)
         .collection("posts")
         .doc(post.postId)
         .set(post.toJson());

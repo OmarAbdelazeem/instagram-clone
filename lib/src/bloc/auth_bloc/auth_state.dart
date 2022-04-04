@@ -17,8 +17,8 @@ class Error extends AuthState {
   Error(this.error);
 }
 
-class ProfilePhotoAdded extends AuthState {
+class ProfilePhotoUploaded extends AuthState {
   final String imageUrl;
 
-  ProfilePhotoAdded(this.imageUrl);
+  ProfilePhotoUploaded(this.imageUrl);
 }

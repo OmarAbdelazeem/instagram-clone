@@ -7,6 +7,8 @@ class PostsInitial extends PostsState {}
 
 class Loading extends PostsState {}
 
+class UpLoadingPost extends PostsState {}
+
 class PostLoaded extends PostsState {
   final PostModel post;
 
@@ -19,7 +21,7 @@ class PostsLoaded extends PostsState {
   PostsLoaded(this.posts);
 }
 
-class PostUploaded extends PostsState{}
+class PostUploaded extends PostsState {}
 
 class Error extends PostsState {
   final String error;

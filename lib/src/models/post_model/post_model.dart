@@ -5,8 +5,6 @@ import '../../core/utils/time_stamp_converter.dart';
 
 part 'post_model.g.dart';
 
-
-
 @JsonSerializable()
 class PostModel {
   String caption;
@@ -14,6 +12,7 @@ class PostModel {
   String photoUrl;
   String postId;
   int likesCount;
+  int commentsCount;
   String publisherId;
   String publisherProfilePhotoUrl;
   @TimestampConverter()
@@ -24,6 +23,7 @@ class PostModel {
       required this.caption,
       required this.photoUrl,
       required this.postId,
+      required this.commentsCount,
       required this.publisherId,
       required this.timestamp,
       required this.likesCount,

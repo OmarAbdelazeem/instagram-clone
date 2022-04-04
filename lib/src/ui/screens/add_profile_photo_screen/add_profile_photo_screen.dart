@@ -7,6 +7,7 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import '../../../../router.dart';
+import '../../../core/utils/image_utils.dart';
 import '../../common/loading_dialogue.dart';
 
 
@@ -20,7 +21,9 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
 
   pickAndSaveProfileImage(ImageSource source) async {
     Navigator.pop(context);
-    context.read<AuthBloc>().add(PickProfilePhotoTapped(source));
+    final imageFile = await ImageUtils.pickImage(source);
+    if(imageFile!=null)
+    context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
   }
 
   onSkipTapped() {
@@ -34,7 +37,7 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (BuildContext context, AuthState state) {
           if (state is Loading) showLoadingDialog(context, _keyLoader);
-          if (state is ProfilePhotoAdded) {
+          if (state is ProfilePhotoUploaded) {
             Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
             NavigationUtils.pushNamed(
                 route: AppRoutes.profilePhotoAddedScreen,

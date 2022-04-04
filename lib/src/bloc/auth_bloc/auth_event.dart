@@ -19,8 +19,10 @@ class SignUpWithEmailTapped extends AuthEvent {
       {required this.password, required this.email, required this.name});
 }
 
-class PickProfilePhotoTapped extends AuthEvent {
-  final ImageSource imageSource;
+class ProfilePhotoPicked extends AuthEvent {
+  final XFile imageFile;
 
-  PickProfilePhotoTapped(this.imageSource);
+  ProfilePhotoPicked(this.imageFile);
 }
+
+

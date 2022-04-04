@@ -16,22 +16,28 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
+  final DataRepository _dataRepository;
+  final StorageRepository _storageRepository;
 
-
-  AuthBloc(this._authRepository)
+  AuthBloc(this._authRepository, this._dataRepository, this._storageRepository)
       : super(AuthInitial()) {
     on<LoginButtonTapped>(_onLoginTapped);
     on<SignUpWithEmailTapped>(_onSignUpWithEmailTapped);
-    on<PickProfilePhotoTapped>(_onPickingProfilePhotoTapped);
+    on<ProfilePhotoPicked>(_onProfilePhotoPicked);
   }
 
-  User? user;
+  UserModel? user;
 
   void _onLoginTapped(LoginButtonTapped event, Emitter<AuthState> emit) async {
+    User? loggedInUser;
     try {
       emit(Loading());
-      user = await _authRepository.signInWithEmail(event.email, event.password);
-      if (user != null) {
+      loggedInUser =
+          await _authRepository.signInWithEmail(event.email, event.password);
+      if (loggedInUser != null) {
+        final userJson =
+            (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
+        user = UserModel.fromJson(userJson as Map<String, dynamic>);
         emit(AuthSuccess());
       } else {
         emit(Error(AppStrings.somethingWrongHappened));
@@ -43,21 +49,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onSignUpWithEmailTapped(
       SignUpWithEmailTapped event, Emitter<AuthState> emit) async {
+    User? loggedInUser;
     try {
       emit(Loading());
-      user = await _authRepository.createUserWithEmail(
+      loggedInUser = await _authRepository.createUserWithEmail(
           event.email, event.password);
-      if (user != null) {
-        await _dataRepository.createUserDetails(UserModel(
+      if (loggedInUser != null) {
+        final tempUser = UserModel(
             photoUrl: "",
             userName: event.name,
             bio: "",
-            id: user!.uid,
+            id: loggedInUser.uid,
             email: event.email,
             postsCount: 0,
             followersCount: 0,
             followingCount: 0,
-            timestamp: (Timestamp.now()).toDate()));
+            timestamp: (Timestamp.now()).toDate());
+        await _dataRepository.createUserDetails(tempUser);
+        user = tempUser;
         emit(UserCreated());
       } else {
         emit(Error(AppStrings.somethingWrongHappened));
@@ -67,5 +76,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-
+  void _onProfilePhotoPicked(
+      ProfilePhotoPicked event, Emitter<AuthState> emit) async {
+    emit(Loading());
+    try {
+      final photoUrl = await _storageRepository.uploadProfilePhoto(
+          selectedFile: event.imageFile, userId: user!.id);
+      await _dataRepository.addProfilePhoto(user!.id, photoUrl);
+      emit(ProfilePhotoUploaded(photoUrl));
+    } catch (e) {
+      print(e.toString());
+      emit(Error(e.toString()));
+    }
+  }
 }

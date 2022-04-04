@@ -27,22 +27,23 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     PostWidget(
       post: PostModel(
           timestamp: DateTime.now(),
+          commentsCount: 5,
           postId: "1",
           caption: "test",
           likesCount: 12,
           photoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
           publisherId: "12",
           publisherName: "Omar",
           publisherProfilePhotoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
+              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
     )
   ];
 
   List<UserModel> users = [
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -53,7 +54,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         timestamp: (Timestamp.now()).toDate()),
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -64,7 +65,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         timestamp: (Timestamp.now()).toDate()),
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -120,19 +121,20 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     );
   }
 
-  Future getTimeLinePosts() async{
-    context.read<PostsBloc>().add(FetchAllTimelinePostsStarted());
+  Future getTimeLinePosts() async {
+    context.read<PostsBloc>().add(FetchAllTimelinePostsStarted(
+        context.read<auth_bloc.AuthBloc>().user!.id));
   }
 
   _buildTimelinePosts() {
     return BlocConsumer<PostsBloc, PostsState>(
         listener: (BuildContext context, state) {
-          if (state is PostsLoaded && state.posts.isEmpty) {
-            setState(() {
-              isEmptyPosts = true;
-            });
-          }
-        }, builder: (BuildContext context, state) {
+      if (state is PostsLoaded && state.posts.isEmpty) {
+        setState(() {
+          isEmptyPosts = true;
+        });
+      }
+    }, builder: (BuildContext context, state) {
       if (state is PostsLoaded) {
         return ListView.builder(
           shrinkWrap: true,
