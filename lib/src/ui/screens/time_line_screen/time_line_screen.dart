@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
+import 'package:instagramapp/src/repository/data_repository.dart';
+import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/app_drop_down_button.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
@@ -23,6 +25,7 @@ class TimeLineScreen extends StatefulWidget {
 class _TimeLineScreenState extends State<TimeLineScreen> {
   bool isEmptyPosts = false;
 
+
   List<PostWidget> posts = [
     PostWidget(
       post: PostModel(
@@ -32,18 +35,18 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
           caption: "test",
           likesCount: 12,
           photoUrl:
-              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
           publisherId: "12",
           publisherName: "Omar",
           publisherProfilePhotoUrl:
-              "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
+          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
     )
   ];
 
   List<UserModel> users = [
     UserModel(
         photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -54,7 +57,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         timestamp: (Timestamp.now()).toDate()),
     UserModel(
         photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -65,7 +68,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         timestamp: (Timestamp.now()).toDate()),
     UserModel(
         photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -123,18 +126,21 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
   Future getTimeLinePosts() async {
     context.read<PostsBloc>().add(FetchAllTimelinePostsStarted(
-        context.read<auth_bloc.AuthBloc>().user!.id));
+        context
+            .read<auth_bloc.AuthBloc>()
+            .user!
+            .id));
   }
 
   _buildTimelinePosts() {
     return BlocConsumer<PostsBloc, PostsState>(
         listener: (BuildContext context, state) {
-      if (state is PostsLoaded && state.posts.isEmpty) {
-        setState(() {
-          isEmptyPosts = true;
-        });
-      }
-    }, builder: (BuildContext context, state) {
+          if (state is PostsLoaded && state.posts.isEmpty) {
+            setState(() {
+              isEmptyPosts = true;
+            });
+          }
+        }, builder: (BuildContext context, state) {
       if (state is PostsLoaded) {
         return ListView.builder(
           shrinkWrap: true,

@@ -28,36 +28,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   _onShareTapped() async {
     context.read<PostsBloc>().add(PostUploadStarted(imageFile!,
         captionController.text, context.read<auth_bloc.AuthBloc>().user!));
-    // if (widget.selectedPhoto != null) {
-    //   setState(() {
-    //     loading = true;
-    //   });
-    //   final photoUrl =
-    //       await storageService._uploadFile(selectedFile: widget.selectedPhoto);
-    //   await storageService.setPhotoData(
-    //       isProfilePhoto: false,
-    //       fileURL: photoUrl,
-    //       caption: captionController.text);
-    //   setState(() {
-    //     loading = false;
-    //   });
-    //   Navigator.of(context).popUntil((route) => route.isFirst);
-    // }
   }
 
-  //Todo fix getUserLocation()
-  // getUserLocation() async {
-  //   Position position = await Geolocator()
-  //       .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //   List<Placemark> placemarks = await Geolocator()
-  //       .placemarkFromCoordinates(position.latitude, position.longitude);
-  //   Placemark placemark = placemarks[0];
-  //   String completeAddress =
-  //       '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
-  //   print(completeAddress);
-  //   String formattedAddress = "${placemark.locality}, ${placemark.country}";
-  //   locationController.text = formattedAddress;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -89,24 +61,18 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  Container _buildAddLocationButton() {
-    return Container(
-      height: 35,
-      child: FlatButton(
-        // onPressed: getUserLocation,
-        onPressed: () {},
-        child: Text('Add Location'),
-      ),
+  Widget _buildAddLocationButton() {
+    return TextButton(
+      // onPressed: getUserLocation,
+      onPressed: () {},
+      child: Text(AppStrings.addLocation),
     );
   }
 
-  Container _buildTagPeopleButton() {
-    return Container(
-      height: 35,
-      child: TextButton(
-        onPressed: () {},
-        child: Text('Tag People', style: TextStyle(color: AppColors.black)),
-      ),
+  Widget _buildTagPeopleButton() {
+    return TextButton(
+      onPressed: () {},
+      child: Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
     );
   }
 
@@ -137,9 +103,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
             if (state is PostUploaded) {
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                   .pop();
-              NavigationUtils.pushNamed(
-                route: AppRoutes.mainHomeScreen,
-                context: context,
+              NavigationUtils.pushNamedAndPopUntil(
+                AppRoutes.mainHomeScreen,
+                context,
               );
             } else if (state is Error)
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)

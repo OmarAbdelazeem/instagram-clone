@@ -28,11 +28,11 @@ class DataRepository {
     await usersRef.doc(user.id).set(user.toJson());
   }
 
-  searchForUser(String term) {
-    usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
+  Stream<QuerySnapshot>  searchForUser(String term) {
+   return usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getPosts(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(String userId) async {
     return await postsRef
         .doc(userId)
         .collection('posts')

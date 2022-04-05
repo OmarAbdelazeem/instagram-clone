@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: <Widget>[
           _buildUpperDetails(),
-          Expanded(child: _views[selectedIndex])
+          Expanded(child: IndexedStack(children: _views, index: selectedIndex)),
         ],
       ),
     );

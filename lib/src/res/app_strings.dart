@@ -57,4 +57,8 @@ class AppStrings {
   static const writeACaption = "write a caption...";
   static const newPost = "New post";
   static const share = "Share";
+  static const addLocation = "Add location";
+  static const tagPeople = "Tag people";
+  static const search = "Search";
+  static const error = "Error";
 }

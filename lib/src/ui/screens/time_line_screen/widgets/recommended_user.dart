@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/profile_screen.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/my_profile_screen.dart';
 
 
 import '../../../../models/user_model/user_model.dart';

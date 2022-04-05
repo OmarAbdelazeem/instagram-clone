@@ -156,7 +156,7 @@ class _TimeLinePhotosState extends State<TimeLinePhotos> {
   }
 
   Future getTimeLinePosts() async {
-    posts = await postServices.getPosts(isTimeLine: true);
+    posts = await postServices.getUserPosts(isTimeLine: true);
     setState(() {
       postLoaded = true;
     });

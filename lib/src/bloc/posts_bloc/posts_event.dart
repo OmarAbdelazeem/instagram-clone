@@ -9,6 +9,12 @@ class FetchAllTimelinePostsStarted extends TimeLineEvent {
   FetchAllTimelinePostsStarted(this.userId);
 }
 
+class FetchUserOwnPostsStarted extends TimeLineEvent {
+  final String userId;
+
+  FetchUserOwnPostsStarted(this.userId);
+}
+
 class PostDetailsLoadStarted extends TimeLineEvent {
   final String userId;
   final String postId;

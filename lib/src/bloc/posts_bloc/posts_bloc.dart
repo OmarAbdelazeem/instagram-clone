@@ -22,9 +22,11 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
     on<FetchAllTimelinePostsStarted>(_onFetchAllPostsStarted);
     on<PostDetailsLoadStarted>(_onFetchPostStarted);
     on<PostUploadStarted>(_onPostUploadStarted);
+    on<FetchUserOwnPostsStarted>(_onFetchUserOwnPosts);
   }
 
   List<PostModel> _posts = [];
+  List<PostModel> _userPosts = [];
 
   void _onFetchAllPostsStarted(
       FetchAllTimelinePostsStarted event, Emitter<PostsState> emit) async {
@@ -72,6 +74,18 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
       emit(PostUploaded());
     } catch (e) {
       print(e.toString());
+      emit(Error(e.toString()));
+    }
+  }
+
+  void _onFetchUserOwnPosts(
+      FetchUserOwnPostsStarted event, Emitter<PostsState> emit) async {
+    try {
+      emit(Loading());
+      final data = (await _dataRepository.getUserPosts(event.userId)).docs;
+      _userPosts = data.map((e) => PostModel.fromJson(e.data())).toList();
+      emit(PostsLoaded(_userPosts));
+    } on Exception catch (e) {
       emit(Error(e.toString()));
     }
   }

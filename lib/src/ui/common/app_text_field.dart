@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String? hintText;
   final TextInputType? keyBoardType;
   final Widget? suffixIcon;
@@ -15,10 +15,10 @@ class AppTextField extends StatefulWidget {
   final bool obscureText;
 
   AppTextField(
-      {required this.controller,
+      {this.controller,
       this.hintText,
       this.focusNode,
-        this.fillColor,
+      this.fillColor,
       this.maxLines = 1,
       this.contentPadding,
       this.validator,
@@ -34,21 +34,32 @@ class AppTextField extends StatefulWidget {
 class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      focusNode: widget.focusNode,
-      keyboardType: widget.keyBoardType,
-      controller: widget.controller,
-      validator: widget.validator,
-      maxLines: widget.maxLines,
-      obscureText: widget.obscureText,
-      decoration: InputDecoration(
-          border: InputBorder.none,
-          contentPadding: widget.contentPadding,
-          fillColor: widget.fillColor ?? AppColors.white,
-          hintText: widget.hintText,
-          filled: true,
-          suffixIcon: widget.suffixIcon,
-          icon: widget.icon),
+    return Container(
+
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: widget.fillColor ?? AppColors.grey.shade200,
+      ),
+      child: TextFormField(
+        focusNode: widget.focusNode,
+        keyboardType: widget.keyBoardType,
+        controller: widget.controller,
+        validator: widget.validator,
+        maxLines: widget.maxLines,
+        obscureText: widget.obscureText,
+        decoration: InputDecoration(
+            border: InputBorder.none,
+            contentPadding: widget.contentPadding,
+            hintText: widget.hintText,
+            suffixIcon: widget.suffixIcon,
+            icon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: 10,),
+                widget.icon!
+              ],
+            )),
+      ),
     );
   }
 }

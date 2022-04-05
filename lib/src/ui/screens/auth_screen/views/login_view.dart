@@ -98,10 +98,9 @@ class _LoginViewState extends State<LoginView> {
         if (state is Loading)
           showLoadingDialog(context, _keyLoader);
         else if (state is AuthSuccess) {
-          print("state is AuthSuccess");
           Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-          NavigationUtils.pushNamed(
-              route: AppRoutes.mainHomeScreen, context: context);
+          NavigationUtils.pushNamedAndPopUntil(
+              AppRoutes.mainHomeScreen, context);
         } else if (state is Error)
           Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       },

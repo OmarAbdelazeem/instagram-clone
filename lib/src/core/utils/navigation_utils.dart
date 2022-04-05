@@ -10,10 +10,16 @@ class NavigationUtils {
     Navigator.pushNamed(context, route, arguments: arguments);
   }
 
+  static void pushNamedAndPopUntil(
+      String route, BuildContext context, [dynamic arguments]) {
+    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false,
+        arguments: arguments);
+  }
 
-  static void pushScreen(
-      {required Widget screen,
-        required BuildContext context,}) {
-    Navigator.push(context, MaterialPageRoute(builder: (_)=> screen));
+  static void pushScreen({
+    required Widget screen,
+    required BuildContext context,
+  }) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 }

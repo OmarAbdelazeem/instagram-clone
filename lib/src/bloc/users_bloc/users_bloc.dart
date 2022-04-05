@@ -23,28 +23,36 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
 
   UserModel? loggedInUserDetails;
   UserModel? searchedUserDetails;
+  List<UserModel> fetchedUsers = [];
 
   _loginButtonPressed(LoginButtonPressed event, emit) {
     try {
       var jsonUserDetails =
-          _dataRepository.getUserDetails(_authRepository.loggedInUser!.uid);
+      _dataRepository.getUserDetails(_authRepository.loggedInUser!.uid);
       // loggedInUserDetails = UserModel.fromJson(jsonUserDetails);
     } catch (e) {}
   }
 
-  _searchByTermTriggered(SearchByTermEventTriggered event, emit) {
+  _searchByTermTriggered(SearchByTermEventTriggered event, emit) async {
     try {
       emit(UsersLoading());
-      _dataRepository.searchForUser(event.term);
-      // loggedInUserDetails = UserModel.fromJson(jsonUserDetails);
-    } catch (e) {}
+      _dataRepository.searchForUser(event.term).listen((event) {
+        final users = event.docs.map((e) =>
+            UserModel.fromJson(e.data() as Map<String, dynamic>)).toList();
+        fetchedUsers = users;
+      });
+      emit(UsersLoaded(fetchedUsers));
+    } catch (e) {
+      print(e.toString());
+      emit(UsersError(e.toString()));
+    }
   }
 
   _searchByIdTriggered(SearchByIdEventTriggered event, emit) {
     try {
       emit(UsersLoading());
       var jsonUserDetails =
-          _dataRepository.getUserDetails(_authRepository.loggedInUser!.uid);
+      _dataRepository.getUserDetails(_authRepository.loggedInUser!.uid);
       // loggedInUserDetails = UserModel.fromJson(jsonUserDetails);
     } catch (e) {}
   }

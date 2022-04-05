@@ -1,30 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
+import '../../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../../models/post_model/post_model.dart';
+import '../../../../repository/data_repository.dart';
+import '../../../../repository/storage_repository.dart';
+import '../widgets/small_post_view.dart';
 
-import '../../../common/post_widget.dart';
+class UserOwnPostsView extends StatefulWidget {
+  UserOwnPostsView({Key? key}) : super(key: key);
 
-class UserOwnPostsView extends StatelessWidget {
+  @override
+  State<UserOwnPostsView> createState() => _UserOwnPostsViewState();
+}
 
-  const UserOwnPostsView({Key? key}) : super(key: key);
+class _UserOwnPostsViewState extends State<UserOwnPostsView> {
+  final postsBloc = PostsBloc(DataRepository(), StorageRepository());
+
+  @override
+  void initState() {
+    postsBloc.add(
+        FetchUserOwnPostsStarted(context.read<auth_bloc.AuthBloc>().user!.id));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<PostModel> posts =[];
-    return posts.length == 0
-        ? _buildEmptyOwnPosts()
-        : GridView.builder(
-            shrinkWrap: true,
-            itemCount: posts.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 6,
-                childAspectRatio: 1,
-                mainAxisSpacing: 3),
-            itemBuilder: (context, index) {
-              return PostWidget(post: posts[index]);
-            },
-          );
+    var size = MediaQuery.of(context).size;
+
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 4;
+    final double itemWidth = size.width / 2;
+
+    return BlocBuilder(
+        bloc: postsBloc,
+        builder: (context, state) {
+          if (state is Error)
+            return Text(state.error);
+          else if (state is PostsLoaded) {
+            return state.posts.isNotEmpty
+                ? _buildOwnPosts(posts: state.posts,
+                    itemHeight: itemHeight, itemWidth: itemWidth)
+                : _buildEmptyOwnPosts();
+          } else
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+        });
   }
 
   Widget _buildEmptyOwnPosts() {
@@ -51,14 +73,31 @@ class UserOwnPostsView extends StatelessWidget {
           child: Text(
             AppStrings.shareYourFirstPhotoOrVideo,
             style: TextStyle(
-                fontSize: 16,
-                color: Colors.blue,
-                fontWeight: FontWeight.bold),
+                fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
             overflow: TextOverflow.clip,
             textAlign: TextAlign.center,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildOwnPosts(
+      {required List<PostModel> posts,
+      required double itemHeight,
+      required double itemWidth}) {
+    return GridView.builder(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: posts.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 5,
+        childAspectRatio: 0.6/0.8,
+      ),
+      itemBuilder: (context, index) {
+        return SmallPostView(post: posts[index]);
+      },
     );
   }
 }

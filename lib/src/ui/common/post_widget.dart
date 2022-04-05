@@ -135,6 +135,7 @@ class _PostWidgetState extends State<PostWidget> {
     return Image.network(
       widget.post.photoUrl,
       width: double.infinity,
+      height: 250,
     );
   }
 
