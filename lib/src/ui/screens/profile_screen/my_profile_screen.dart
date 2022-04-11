@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/post_widget.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
+import 'package:provider/provider.dart';
 import '../../../../router.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
@@ -50,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       followersCount: 3,
       followingCount: 5,
       timestamp: (Timestamp.now()).toDate());
-  List<Widget> _views = [UserOwnPostsView(), UserMentionedPostsView()];
+  List<Widget>? _views;
 
   void onItemChanged(int index) {
     setState(() {
@@ -60,7 +62,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    _views = [
+      UserOwnPostsView(userId: context.read<AuthBloc>().user!.id),
+      UserMentionedPostsView(userId: context.read<AuthBloc>().user!.id)
+    ];
     super.initState();
   }
 
@@ -77,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: <Widget>[
           _buildUpperDetails(),
-          Expanded(child: IndexedStack(children: _views, index: selectedIndex)),
+          Expanded(child: IndexedStack(children: _views!, index: selectedIndex)),
         ],
       ),
     );

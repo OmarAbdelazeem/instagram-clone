@@ -5,12 +5,34 @@ abstract class UsersEvent {}
 
 class LoginButtonPressed extends UsersEvent {}
 
-class SearchByTermEventTriggered extends UsersEvent{
+class SearchByTermEventStarted extends UsersEvent{
   final String term;
-  SearchByTermEventTriggered({required this.term});
+  SearchByTermEventStarted({required this.term});
 }
 
-class SearchByIdEventTriggered extends UsersEvent{
-  final String id;
-  SearchByIdEventTriggered({required this.id});
+class SearchByIdEventStarted extends UsersEvent{
+  final String searchedUserId;
+  final String loggedInUserId;
+  SearchByIdEventStarted({required this.searchedUserId , required this.loggedInUserId});
+}
+
+class FetchRecommendedUsersStarted extends UsersEvent{
+  final String userId;
+  FetchRecommendedUsersStarted(this.userId);
+}
+
+class FollowEventStarted extends UsersEvent {
+  final String senderId;
+  final String receiverId;
+
+  FollowEventStarted({required this.receiverId, required this.senderId
+  });
+}
+
+class UnFollowEventStarted extends UsersEvent {
+  final String senderId;
+  final String receiverId;
+
+  UnFollowEventStarted({required this.receiverId, required this.senderId
+  });
 }

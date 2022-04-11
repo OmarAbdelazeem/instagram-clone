@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
+import 'package:instagramapp/src/repository/auth_repository.dart';
+import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
@@ -18,14 +20,13 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
+  final usersBloc = UsersBloc(DataRepository(), AuthRepository());
 
   @override
   void initState() {
     searchController.addListener(() {
-      if(searchController.text.isNotEmpty)
-      context
-          .read<UsersBloc>()
-          .add(SearchByTermEventTriggered(term: searchController.text));
+        usersBloc
+          .add(SearchByTermEventStarted(term: searchController.text));
     });
 
     super.initState();
@@ -53,6 +54,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildUsersContent() {
     return BlocBuilder<UsersBloc, UsersState>(
+      bloc: usersBloc,
         builder: (BuildContext context, state) {
       if (state is UsersLoaded)
         return ListView.builder(
@@ -65,10 +67,12 @@ class _SearchScreenState extends State<SearchScreen> {
         return Center(
           child: CircularProgressIndicator(),
         );
-      else
+      else if(state is Error)
         return Center(
           child: Text(AppStrings.error),
         );
+      else
+        return Container();
     });
   }
 }

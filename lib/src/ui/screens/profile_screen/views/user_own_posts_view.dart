@@ -9,7 +9,9 @@ import '../../../../repository/storage_repository.dart';
 import '../widgets/small_post_view.dart';
 
 class UserOwnPostsView extends StatefulWidget {
-  UserOwnPostsView({Key? key}) : super(key: key);
+  final String userId;
+
+  UserOwnPostsView({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<UserOwnPostsView> createState() => _UserOwnPostsViewState();
@@ -20,8 +22,7 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
 
   @override
   void initState() {
-    postsBloc.add(
-        FetchUserOwnPostsStarted(context.read<auth_bloc.AuthBloc>().user!.id));
+    postsBloc.add(FetchUserOwnPostsStarted(widget.userId));
     super.initState();
   }
 
@@ -39,8 +40,10 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
             return Text(state.error);
           else if (state is PostsLoaded) {
             return state.posts.isNotEmpty
-                ? _buildOwnPosts(posts: state.posts,
-                    itemHeight: itemHeight, itemWidth: itemWidth)
+                ? _buildOwnPosts(
+                    posts: state.posts,
+                    itemHeight: itemHeight,
+                    itemWidth: itemWidth)
                 : _buildEmptyOwnPosts();
           } else
             return Center(
@@ -93,7 +96,7 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         mainAxisSpacing: 5,
-        childAspectRatio: 0.6/0.8,
+        childAspectRatio: 0.6 / 0.8,
       ),
       itemBuilder: (context, index) {
         return SmallPostView(post: posts[index]);

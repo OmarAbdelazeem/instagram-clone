@@ -4,24 +4,23 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/post_widget.dart';
 
 class UserMentionedPostsView extends StatelessWidget {
+  final String userId;
 
-
-  const UserMentionedPostsView({Key? key})
+  const UserMentionedPostsView({Key? key, required this.userId})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-     List<PostModel> posts =[];
+    List<PostModel> posts = [];
     return posts.length == 0
         ? _buildEmptyMentionedPhotos()
         : ListView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        return PostWidget(post: posts[index]);
-      },
-    );
+            itemBuilder: (BuildContext context, int index) {
+              return PostWidget(post: posts[index]);
+            },
+          );
   }
 }
-
 
 Widget _buildEmptyMentionedPhotos() {
   return Column(

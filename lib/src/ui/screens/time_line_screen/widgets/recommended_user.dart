@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/my_profile_screen.dart';
-
+import 'package:instagramapp/src/ui/screens/profile_screen/searched_user_profile_screen.dart';
 
 import '../../../../models/user_model/user_model.dart';
+import '../../../../res/app_colors.dart';
+import '../../../../res/app_strings.dart';
+import '../../../common/app_button.dart';
 
 class RecommendedUser extends StatefulWidget {
   final UserModel user;
@@ -14,87 +18,70 @@ class RecommendedUser extends StatefulWidget {
 }
 
 class _RecommendedUserState extends State<RecommendedUser> {
- bool isFollowing = false;
+  bool isFollowing = false;
 
- void followButton() {
-   // Data.changeCurrentUser(widget.user);
-   setState(() {
-     isFollowing = true;
-   });
-   // profileService.followingOperation();
- }
-
- void unFollowButton() async{
-
-   // Data.changeCurrentUser(widget.user);
-   setState(() {
-     isFollowing = false;
-   });
-   // await profileService.unFollowOperation();
- }
+  void onFollowButtonTapped() {
+    setState(() {
+      isFollowing = !isFollowing;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ProfileScreen(),
+            builder: (context) => SearchedUserProfileScreen(
+                userId: widget.user.id, userName: widget.user.userName),
           ),
         );
-        // Data.changeCurrentUser(widget.user);
       },
-      child: Container(
-        height: 150,
-        width: 200,
-        child: Card(
-          elevation: 4,
-          child: Padding(
-            padding: EdgeInsets.all(15),
-            child: Column(
-              children: <Widget>[
-            widget.user.photoUrl == ''
-                ? CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.grey,
-                    child: Icon(
-                      Icons.person_outline,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  )
-                :
-                CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Color(0xffFDCF09),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundImage: NetworkImage(
-                              widget.user.photoUrl),
-                        ),
-                      ),
-                SizedBox(height: 10,),
-                Text(widget.user.userName,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
-                SizedBox(height: 5,),
-                Text(widget.user.bio ,style: TextStyle(color: Colors.grey),),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  child: RaisedButton(
-                    color: !isFollowing ? Colors.blue : Colors.white,
-                    onPressed: !isFollowing ? unFollowButton : followButton,
-                    child: !isFollowing
-                        ? Text(
-                      'Follow',
-                      style: TextStyle(color: Colors.white),
-                    )
-                        : Text('Following'),
-                  ),
-                ),
-              ],
-            ),
+      child: Card(
+        elevation: 2,
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+             ProfilePhoto(photoUrl: widget.user.photoUrl,radius: 24,),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                widget.user.userName,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                widget.user.bio,
+                style: TextStyle(color: Colors.grey),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              _buildFollowButton()
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFollowButton() {
+    return AppButton(
+      height: 40,
+      width: 120,
+      color: isFollowing ? AppColors.white : AppColors.blue,
+      titleStyle: TextStyle(color: isFollowing ? AppColors.black : AppColors.white,),
+      title: isFollowing ? AppStrings.following : AppStrings.follow,
+      onTap: () {
+        setState(() {
+          isFollowing = !isFollowing;
+        });
+      },
     );
   }
 }

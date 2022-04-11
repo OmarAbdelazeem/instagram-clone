@@ -30,9 +30,9 @@ class _NameAndPasswordState extends State<NameAndPassword> {
      await _auth
           .createUserWithEmail(widget.email, password ,name).then((value){
 //            print('41264*9/5-*5');
-       print('AuthService.defaultUser.id is ${Data.defaultUser.id}');
+       print('AuthService.defaultUser.id is ${Data.defaultUser.searchedUserId}');
      });
-     print('AuthService.defaultUser.id is ${Data.defaultUser.id}');
+     print('AuthService.defaultUser.id is ${Data.defaultUser.searchedUserId}');
 
          await profileService.setDataForNewUser();
 

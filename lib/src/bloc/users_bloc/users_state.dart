@@ -15,8 +15,8 @@ class UsersLoaded extends UsersState {
 
 class UserLoaded extends UsersState {
   final UserModel user;
-
-  UserLoaded(this.user);
+  final bool isFollowing;
+  UserLoaded(this.user,this.isFollowing);
 }
 
 class UsersError extends UsersState {

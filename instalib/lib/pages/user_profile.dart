@@ -30,11 +30,11 @@ class _UserProfileState extends State<UserProfile> {
       isFollowing = value;
     });
     profileService
-        .getProfileMainInfo(id: Data.currentUser.id)
+        .getProfileMainInfo(searchedUserId: Data.currentUser.searchedUserId)
         .then((user)async{
       var userFollowing = await profileService.getFollowingUsers(isMyProfile: true);
       var userFollowers = await profileService.getFollowersUsers(isMyProfile: true);
-      var userPosts = await profileService.getFuturePosts(Data.currentUser.id);
+      var userPosts = await profileService.getFuturePosts(Data.currentUser.searchedUserId);
 
       followingCount = userFollowing.docs.length;
       followersCount = userFollowers.docs.length;
@@ -151,7 +151,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
                 ),
                 isOwnPosts
-                    ? userOwnPhotos(Data.currentUser.id)
+                    ? userOwnPhotos(Data.currentUser.searchedUserId)
                     : noMentionedPhotos()
               ],
             ),

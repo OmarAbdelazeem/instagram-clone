@@ -26,7 +26,7 @@ class ActivityFeed extends StatelessWidget {
                 ),
                 body: StreamBuilder<QuerySnapshot>(
                   stream: notificationRef
-                      .doc(Data.defaultUser.id)
+                      .doc(Data.defaultUser.searchedUserId)
                       .collection('userNotification')
                       .orderBy('timestamp', descending: true)
                       .snapshots(),

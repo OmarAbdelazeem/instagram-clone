@@ -30,7 +30,7 @@ class AuthService {
             name: email,
             userName: name,
             photoUrl: '',
-            id: _loggedInUser.uid);
+            searchedUserId: _loggedInUser.uid);
 
         _prefs.setString('email', email);
         _prefs.setString('password', password);
@@ -51,7 +51,7 @@ class AuthService {
         _loggedInUser = _firebaseInstance.currentUser;
 
         Data.defaultUser =
-            await _profileService.getProfileMainInfo(id: _loggedInUser.uid);
+            await _profileService.getProfileMainInfo(searchedUserId: _loggedInUser.uid);
 
         prefs.setString('email', email);
         prefs.setString('password', password);

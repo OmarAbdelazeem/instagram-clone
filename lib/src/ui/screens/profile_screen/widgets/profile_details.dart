@@ -6,8 +6,9 @@ import '../../../../res/app_strings.dart';
 class ProfileDetails extends StatelessWidget {
   final UserModel user;
   final bool isMyProfile;
+  final int count;
 
-  const ProfileDetails({Key? key, required this.user, this.isMyProfile = false})
+  const ProfileDetails({Key? key, required this.user, this.isMyProfile = false, this.count=2})
       : super(key: key);
 
   @override
@@ -57,7 +58,7 @@ class ProfileDetails extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _buildNumericInfo(user.postsCount, AppStrings.posts),
-              _buildNumericInfo(user.followingCount, AppStrings.followers),
+              _buildNumericInfo(user.followersCount, AppStrings.followers),
               _buildNumericInfo(user.followingCount, AppStrings.following),
             ],
           ),
@@ -86,6 +87,7 @@ Widget _buildNumericInfo(int count, String name) {
 }
 
 Widget _buildSearchedUserProfilePhoto(String photoUrl) {
+  //Todo fix this function
   return photoUrl.isNotEmpty
       ? Container(
           height: 85,
@@ -113,6 +115,7 @@ Widget _buildSearchedUserProfilePhoto(String photoUrl) {
 }
 
 Widget _buildLoggedInUserProfilePhoto(String photoUrl) {
+  //Todo fix this function
   return Container(
     height: 85,
     width: 85,

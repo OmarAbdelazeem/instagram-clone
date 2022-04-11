@@ -61,4 +61,6 @@ class AppStrings {
   static const tagPeople = "Tag people";
   static const search = "Search";
   static const error = "Error";
+  static const follow = "Follow";
+  static const message = "Message";
 }

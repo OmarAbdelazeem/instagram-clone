@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/notification_model/notification_model.dart';
 import 'package:instagramapp/src/ui/screens/searched_post_screen/searched_post_screen.dart';
-import 'package:instagramapp/src/ui/screens/searched_user_profile/searched_user_profile.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../../router.dart';
 import '../../../../enums/notification_type.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/profile_photo.dart';
+import '../../profile_screen/searched_user_profile_screen.dart';
 
 class NotificationItem extends StatelessWidget {
   final NotificationModel notification;
@@ -21,7 +21,8 @@ class NotificationItem extends StatelessWidget {
 
   void onUserProfilePhotoTapped(BuildContext context) {
     NavigationUtils.pushScreen(
-        screen: SearchedUserProfileScreen(notification.senderId),
+        screen: SearchedUserProfileScreen(
+            userId: notification.senderId, userName: notification.ownerName),
         context: context);
   }
 
@@ -105,12 +106,9 @@ class NotificationItem extends StatelessWidget {
   Widget _buildProfilePhotoView(BuildContext context) {
     return GestureDetector(
       onTap: () => onUserProfilePhotoTapped(context),
-      child: Container(
-          height: 55,
-          width: 55,
-          child: ProfilePhoto(
-            photoUrl: notification.userPhotoUrl,
-          )),
+      child: ProfilePhoto(
+        photoUrl: notification.userPhotoUrl,
+      ),
     );
   }
 

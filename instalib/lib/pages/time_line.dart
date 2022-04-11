@@ -100,8 +100,8 @@ class _TimeLinePhotosState extends State<TimeLinePhotos> {
             List<RecommendedUser> userRecommends = [];
             snapshot.data.documents.forEach((doc) {
               UserModel user = UserModel.fromDocument(doc);
-              final bool isAuthUser = Data.defaultUser.id == user.id;
-              final bool isFollowingUser = followingList.contains(user.id);
+              final bool isAuthUser = Data.defaultUser.searchedUserId == user.searchedUserId;
+              final bool isFollowingUser = followingList.contains(user.searchedUserId);
               // remove auth user from recommended list
               if (isAuthUser) {
                 return;
@@ -164,7 +164,7 @@ class _TimeLinePhotosState extends State<TimeLinePhotos> {
 
   getFollowing() async {
     QuerySnapshot snapshot = await followingRef
-        .doc(Data.defaultUser.id)
+        .doc(Data.defaultUser.searchedUserId)
         .collection('userFollowing')
         .get();
     setState(() {

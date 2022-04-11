@@ -17,7 +17,11 @@ class DataRepository {
   final usersRef = FirebaseFirestore.instance.collection("users");
   final usersCommentsRef =
       FirebaseFirestore.instance.collection("usersComments");
-  final usersLikes = FirebaseFirestore.instance.collection("usersLikes");
+  final usersLikesRef = FirebaseFirestore.instance.collection("usersLikes");
+  final usersFollowersRef =
+      FirebaseFirestore.instance.collection("usersFollowers");
+  final usersFollowingRef =
+      FirebaseFirestore.instance.collection("usersFollowing");
 
   Future<DocumentSnapshot> getUserDetails(String userId) async {
     return await usersRef.doc(userId).get();
@@ -28,11 +32,12 @@ class DataRepository {
     await usersRef.doc(user.id).set(user.toJson());
   }
 
-  Stream<QuerySnapshot>  searchForUser(String term) {
-   return usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
+  Stream<QuerySnapshot> searchForUser(String term) {
+    return usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(
+      String userId) async {
     return await postsRef
         .doc(userId)
         .collection('posts')
@@ -55,7 +60,7 @@ class DataRepository {
   }
 
   Future<bool> checkIfUserLikesPost(String userId, String postId) async {
-    return (await usersLikes
+    return (await usersLikesRef
             .doc(userId)
             .collection("usersLikes")
             .doc(postId)
@@ -64,6 +69,9 @@ class DataRepository {
   }
 
   addLikeToPost(String postId, String userId) async {
+    //Todo
+
+
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
@@ -103,4 +111,71 @@ class DataRepository {
         .doc(post.postId)
         .set(post.toJson());
   }
+
+  // addFollower({required String receiverId, required String senderId}) async {
+  //   await usersFollowersRef
+  //       .doc(receiverId)
+  //       .collection("usersFollowing")
+  //       .doc(senderId)
+  //       .set({});
+  // }
+
+  addFollower({required String receiverId, required String senderId}) async {
+    //Todo
+    // 1 - add senderId in receiver users followers
+    // 2 - add receiver posts ids to sender timeline
+    // 3 - update sender following count
+    // 4 - update receiver followers count
+    await usersFollowingRef
+        .doc(senderId)
+        .collection("usersFollowing")
+        .doc(receiverId)
+        .set({});
+  }
+
+  removeFollower({required String receiverId, required String senderId}) async {
+    await usersFollowingRef
+        .doc(senderId)
+        .collection("usersFollowing")
+        .doc(receiverId)
+        .delete();
+  }
+
+  // removeFollower({required String receiverId, required String senderId}) async {
+  //   await usersFollowersRef
+  //       .doc(senderId)
+  //       .collection("usersFollowers")
+  //       .doc(senderId)
+  //       .delete();
+  // }
+
+  Future<bool> checkIfUserFollowingSomeOne(
+      {required String senderId,required String receiverId}) async {
+    return (await usersFollowingRef
+            .doc(senderId)
+            .collection("usersFollowing")
+            .doc(receiverId)
+            .get())
+        .exists;
+  }
+
+//Todo implement this function to fetch all recommended users
+// getRecommendedUsers(String loggedInUserId) async {
+//   // usersRef.snapshots().
+//
+//   var query =
+//       usersRef.snapshots().map((snapshot) => snapshot.docs.where((doc) {
+//             String userId = doc['userId'];
+//             usersFollowingRef.doc(userId).get();
+//           }));
+//   // List<> recommendedUsers =[];
+//
+//   // var query =
+//   // usersRef.snapshots().map((snapshot) => snapshot.docs.forEach((doc) async{
+//   //  final isDocExist = (await usersRef.doc(doc.id).get()).exists;
+//   //  // if(isDocExist)
+//   //  //   recommendedUsers.add(doc);
+//   // }));
+//
+// }
 }

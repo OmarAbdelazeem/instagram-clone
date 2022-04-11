@@ -28,8 +28,8 @@ class ProfileService {
 //  }
 
   Future setDataForNewUser({String timeStamp, String androidToken}) async {
-    return await usersRef.doc(Data.defaultUser.id).set({
-      'id': Data.defaultUser.id,
+    return await usersRef.doc(Data.defaultUser.searchedUserId).set({
+      'id': Data.defaultUser.searchedUserId,
       'userName': Data.defaultUser.userName,
       'email': Data.defaultUser.name,
       'photoUrl': '',
@@ -47,7 +47,7 @@ class ProfileService {
 
   Future<QuerySnapshot> getFollowingUsers({@required bool isMyProfile}) async {
     String id;
-    isMyProfile ? id = Data.defaultUser.id : id = Data.currentUser.id;
+    isMyProfile ? id = Data.defaultUser.searchedUserId : id = Data.currentUser.searchedUserId;
     QuerySnapshot snapshot = await followingRef
         .doc(id)
         .collection('userFollowing')
@@ -57,7 +57,7 @@ class ProfileService {
 
   Future<QuerySnapshot> getFollowersUsers({@required bool isMyProfile}) async {
     String id;
-    isMyProfile ? id = Data.defaultUser.id : id = Data.currentUser.id;
+    isMyProfile ? id = Data.defaultUser.searchedUserId : id = Data.currentUser.searchedUserId;
     QuerySnapshot snapshot = await followersRef
         .doc(id)
         .collection('userFollowers')
@@ -77,18 +77,18 @@ class ProfileService {
     DocumentSnapshot doc;
     if (!forNeededUser) {
       doc = await followingRef
-          .doc(Data.defaultUser.id)
+          .doc(Data.defaultUser.searchedUserId)
           .collection('userFollowing')
-          .doc(Data.currentUser.id)
+          .doc(Data.currentUser.searchedUserId)
           .get();
       if(doc.exists)
         isFollowing = doc['isFollowing'];
       else isFollowing = doc.exists;
     } else {
       doc = await followingRef
-          .doc(Data.currentUser.id)
+          .doc(Data.currentUser.searchedUserId)
           .collection('userFollowing')
-          .doc(Data.defaultUser.id)
+          .doc(Data.defaultUser.searchedUserId)
           .get();
       if(doc.exists)
         isFollowing = doc['isFollowing'];
@@ -108,9 +108,9 @@ class ProfileService {
 
   Future unFollowOperation() async {
     await followingRef
-        .doc(Data.defaultUser.id)
+        .doc(Data.defaultUser.searchedUserId)
         .collection('userFollowing')
-        .doc(Data.currentUser.id)
+        .doc(Data.currentUser.searchedUserId)
         .get()
         .then((doc) {
       if (doc.exists) {
@@ -119,9 +119,9 @@ class ProfileService {
     });
 
       await followersRef
-          .doc(Data.currentUser.id)
+          .doc(Data.currentUser.searchedUserId)
           .collection('userFollowers')
-          .doc(Data.defaultUser.id)
+          .doc(Data.defaultUser.searchedUserId)
           .get()
           .then((doc) {
         if (doc.exists) {
@@ -130,9 +130,9 @@ class ProfileService {
       });
 
       await notificationRef
-          .doc(Data.currentUser.id)
+          .doc(Data.currentUser.searchedUserId)
           .collection('userNotification')
-          .doc(Data.defaultUser.id)
+          .doc(Data.defaultUser.searchedUserId)
           .get()
           .then((doc) {
         if (doc.exists) doc.reference.delete();
@@ -142,11 +142,11 @@ class ProfileService {
 
   void followingOperation() async {
     await followingRef
-        .doc(Data.defaultUser.id)
+        .doc(Data.defaultUser.searchedUserId)
         .collection('userFollowing')
-        .doc(Data.currentUser.id)
+        .doc(Data.currentUser.searchedUserId)
         .set({
-      'id': Data.currentUser.id,
+      'id': Data.currentUser.searchedUserId,
       'photoUrl': Data.currentUser.photoUrl,
       'userName': Data.currentUser.userName,
       'isFollowing': true
@@ -155,11 +155,11 @@ class ProfileService {
     bool followerExist = await checkIfFollowing(forNeededUser: true);
 
     await followersRef
-        .doc(Data.currentUser.id)
+        .doc(Data.currentUser.searchedUserId)
         .collection('userFollowers')
-        .doc(Data.defaultUser.id)
+        .doc(Data.defaultUser.searchedUserId)
         .set({
-      'id': Data.defaultUser.id,
+      'id': Data.defaultUser.searchedUserId,
       'photoUrl': Data.defaultUser.photoUrl,
       'userName': Data.defaultUser.userName,
       'isFollowing': followerExist
@@ -167,9 +167,9 @@ class ProfileService {
 
     if (followerExist) {
       await followersRef
-          .doc(Data.defaultUser.id)
+          .doc(Data.defaultUser.searchedUserId)
           .collection('userFollowers')
-          .doc(Data.currentUser.id)
+          .doc(Data.currentUser.searchedUserId)
           .update({'isFollowing': followerExist});
     }
 
@@ -181,11 +181,11 @@ class ProfileService {
 //        .updateData({'followersCount': Data.currentUser.followersCount + 1});
 
     await notificationRef
-        .doc(Data.currentUser.id)
+        .doc(Data.currentUser.searchedUserId)
         .collection('userNotification')
-        .doc(Data.defaultUser.id)
+        .doc(Data.defaultUser.searchedUserId)
         .set({
-      'ownerId': Data.defaultUser.id,
+      'ownerId': Data.defaultUser.searchedUserId,
       'type': 'follow',
       'timestamp': timestamp,
       'ownerName': Data.defaultUser.userName,

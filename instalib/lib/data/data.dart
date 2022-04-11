@@ -11,7 +11,7 @@ class Data {
 
   static Future updateDefaultUser() async{
     ProfileService _profileService = ProfileService();
-    Data.defaultUser = await _profileService.getProfileMainInfo(id: Data.defaultUser.id);
+    Data.defaultUser = await _profileService.getProfileMainInfo(searchedUserId: Data.defaultUser.searchedUserId);
   }
 
   static void changeCurrentUser(UserModel user){

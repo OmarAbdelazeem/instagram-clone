@@ -48,7 +48,7 @@ class _MyProfileState extends State<MyProfile> with AutomaticKeepAliveClientMixi
           await profileService.getFollowingUsers(isMyProfile: true);
       var userFollowers =
           await profileService.getFollowersUsers(isMyProfile: true);
-      var userPosts = await profileService.getFuturePosts(Data.defaultUser.id);
+      var userPosts = await profileService.getFuturePosts(Data.defaultUser.searchedUserId);
 
     setState(() {
       followingCount = userFollowing.docs.length;
@@ -120,7 +120,7 @@ class _MyProfileState extends State<MyProfile> with AutomaticKeepAliveClientMixi
                         ),
                       ),
                       isOwnPosts
-                          ? userOwnPhotos(Data.defaultUser.id)
+                          ? userOwnPhotos(Data.defaultUser.searchedUserId)
                           : noMentionedPhotos()
                     ],
                   ),

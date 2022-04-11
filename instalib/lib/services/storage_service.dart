@@ -13,19 +13,19 @@ class StorageService {
   final DateTime timestamp = DateTime.now();
   final _postsRef = FirebaseFirestore.instance
       .collection('posts')
-      .doc(Data.defaultUser.id)
+      .doc(Data.defaultUser.searchedUserId)
       .collection('userPosts')
       .doc();
 
   final _timeLineRef = FirebaseFirestore.instance
       .collection('timeline')
-      .doc(Data.defaultUser.id)
+      .doc(Data.defaultUser.searchedUserId)
       .collection('timelinePosts')
       .doc();
 
   final _usersRef = FirebaseFirestore.instance
       .collection('users')
-      .doc(Data.defaultUser.id);
+      .doc(Data.defaultUser.searchedUserId);
   SharedPreferences prefs;
 
   Future uploadFile({required File selectedFile, bool isProfilePhoto = false}) async {
@@ -95,7 +95,7 @@ class StorageService {
         'photoUrl': fileURL,
         'timestamp': timestamp,
         'postId': postId.id,
-        'publisherId': Data.defaultUser.id,
+        'publisherId': Data.defaultUser.searchedUserId,
         "likes": [],
         'publisherProfilePhoto': Data.defaultUser.photoUrl
       });
@@ -107,7 +107,7 @@ class StorageService {
         'timestamp': timestamp,
         'postId': postId.id,
         "likes": [],
-        'publisherId': Data.defaultUser.id,
+        'publisherId': Data.defaultUser.searchedUserId,
         'publisherProfilePhoto': Data.defaultUser.photoUrl
       });
 

@@ -56,7 +56,7 @@ class _AppTextFieldState extends State<AppTextField> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(width: 10,),
-                widget.icon!
+                widget.icon ?? Container()
               ],
             )),
       ),

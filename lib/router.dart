@@ -7,7 +7,6 @@ import 'package:instagramapp/src/ui/screens/new_post_screen/new_post_screen.dart
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
 import 'package:instagramapp/src/ui/screens/post_details_screen/post_details_screen.dart';
 import 'package:instagramapp/src/ui/screens/search_screen/search_screen.dart';
-import 'package:instagramapp/src/ui/screens/searched_user_profile/searched_user_profile.dart';
 import 'src/ui/screens/add_profile_photo_screen/add_profile_photo_screen.dart';
 import 'src/ui/screens/profile_photo_added_screen/profile_photo_added_screen.dart';
 import 'package:instagramapp/src/ui/screens/main_home_screen/main_home_screen.dart';

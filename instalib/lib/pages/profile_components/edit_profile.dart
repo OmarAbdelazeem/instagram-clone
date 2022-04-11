@@ -31,7 +31,7 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       isLoading = true;
     });
-    DocumentSnapshot doc = await usersRef.doc(Data.defaultUser.id).get();
+    DocumentSnapshot doc = await usersRef.doc(Data.defaultUser.searchedUserId).get();
     user = UserModel.fromDocument(doc);
     displayNameController.text = user.userName;
     bioController.text = user.bio;
@@ -95,7 +95,7 @@ class _EditProfileState extends State<EditProfile> {
     });
 
     if (_displayNameValid && _bioValid) {
-      usersRef.doc(Data.defaultUser.id).update({
+      usersRef.doc(Data.defaultUser.searchedUserId).update({
         "displayName": displayNameController.text,
         "bio": bioController.text,
       });

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -157,41 +158,39 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   }
 
   _buildRecommendedUsers() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            AppStrings.welcomeToInstagram,
-            style: TextStyle(
-              fontSize: 30,
-            ),
+    return Column(
+    mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          AppStrings.welcomeToInstagram,
+          style: TextStyle(
+            fontSize: 30,
           ),
-          SizedBox(
-            height: 20,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          AppStrings.followPeopleToStartSeeingPhotos,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 17,
           ),
-          Text(
-            AppStrings.followPeopleToStartSeeingPhotos,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 17,
-            ),
+        ),
+        Container(
+          height: 250,
+          child: ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              // return Container();
+              return RecommendedUser(users[index]);
+            },
+            itemCount: users.length,
           ),
-          Container(
-            height: 300,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return RecommendedUser(users[index]);
-              },
-              itemCount: users.length,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
