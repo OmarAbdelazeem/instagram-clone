@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
@@ -13,6 +14,7 @@ import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended
 import '../../../../router.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../bloc/profile_bloc/profile_bloc.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../../res/app_strings.dart';
 import '../../common/app_logo.dart';
@@ -128,8 +130,8 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   Future getTimeLinePosts() async {
     context.read<PostsBloc>().add(FetchAllTimelinePostsStarted(
         context
-            .read<auth_bloc.AuthBloc>()
-            .user!
+            .read<UsersBloc>()
+            .loggedInUserDetails!
             .id));
   }
 

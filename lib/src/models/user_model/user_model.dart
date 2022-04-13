@@ -7,6 +7,7 @@ import '../../core/utils/time_stamp_converter.dart';
 part 'user_model.g.dart';
 
 @JsonSerializable()
+//Todo implement equatable to compare user in listening stream
 class UserModel{
   String bio;
   String id;

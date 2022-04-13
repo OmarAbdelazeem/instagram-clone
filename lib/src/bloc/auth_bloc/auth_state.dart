@@ -7,9 +7,12 @@ class AuthInitial extends AuthState {}
 
 class Loading extends AuthState {}
 
-class AuthSuccess extends AuthState {}
+class AuthSuccess extends AuthState {
+  final UserModel user;
 
-class UserCreated extends AuthState {}
+  AuthSuccess(this.user);
+}
+
 
 class Error extends AuthState {
   final String error;

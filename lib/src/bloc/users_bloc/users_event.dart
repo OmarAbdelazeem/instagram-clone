@@ -3,36 +3,32 @@ part of 'users_bloc.dart';
 @immutable
 abstract class UsersEvent {}
 
-class LoginButtonPressed extends UsersEvent {}
-
-class SearchByTermEventStarted extends UsersEvent{
+class SearchByTermEventStarted extends UsersEvent {
   final String term;
+
   SearchByTermEventStarted({required this.term});
 }
 
-class SearchByIdEventStarted extends UsersEvent{
+class SearchByIdEventStarted extends UsersEvent {
   final String searchedUserId;
-  final String loggedInUserId;
-  SearchByIdEventStarted({required this.searchedUserId , required this.loggedInUserId});
+
+  SearchByIdEventStarted({required this.searchedUserId});
 }
 
-class FetchRecommendedUsersStarted extends UsersEvent{
+class FetchRecommendedUsersStarted extends UsersEvent {
   final String userId;
+
   FetchRecommendedUsersStarted(this.userId);
 }
 
-class FollowEventStarted extends UsersEvent {
-  final String senderId;
-  final String receiverId;
+class LoggedInUserDataSetted extends UsersEvent {
+  final UserModel user;
 
-  FollowEventStarted({required this.receiverId, required this.senderId
-  });
+  LoggedInUserDataSetted(this.user);
 }
 
-class UnFollowEventStarted extends UsersEvent {
-  final String senderId;
-  final String receiverId;
+class ListenToUserDetailsStarted extends UsersEvent {
+  final String userId;
 
-  UnFollowEventStarted({required this.receiverId, required this.senderId
-  });
+  ListenToUserDetailsStarted(this.userId);
 }

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
+import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
@@ -41,6 +43,17 @@ class _LoginViewState extends State<LoginView> {
     //         emailController.text.isNotEmpty;
     //   });
     // });
+  }
+
+  void _usersBlocListener(BuildContext context, AuthState state) {
+    if (state is Loading)
+      showLoadingDialog(context, _keyLoader);
+    else if (state is AuthSuccess) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      NavigationUtils.pushNamedAndPopUntil(AppRoutes.mainHomeScreen, context);
+      context.read<UsersBloc>().add(LoggedInUserDataSetted(state.user));
+    } else if (state is Error)
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
   }
 
   @override
@@ -94,16 +107,7 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _buildLoginButton() {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (BuildContext context, AuthState state) {
-        if (state is Loading)
-          showLoadingDialog(context, _keyLoader);
-        else if (state is AuthSuccess) {
-          Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-          NavigationUtils.pushNamedAndPopUntil(
-              AppRoutes.mainHomeScreen, context);
-        } else if (state is Error)
-          Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      },
+      listener: _usersBlocListener,
       child: AppButton(
         title: AppStrings.login,
         titleStyle: TextStyle(
@@ -112,7 +116,7 @@ class _LoginViewState extends State<LoginView> {
         width: double.infinity,
         onTap: emailController.text.isNotEmpty &&
                 passwordController.text.isNotEmpty
-            ? onLoginTapped
+            ? _onLoginTapped
             : null,
       ),
     );
@@ -152,8 +156,8 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void onLoginTapped() {
-    context.read<AuthBloc>().add(LoginButtonTapped(
+  void _onLoginTapped() {
+    context.read<AuthBloc>().add(LoginStarted(
         email: emailController.text, password: passwordController.text));
   }
 }

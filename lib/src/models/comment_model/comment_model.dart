@@ -7,24 +7,25 @@ part 'comment_model.g.dart';
 
 @JsonSerializable()
 class CommentModel {
-  final String ownerId;
+  final String publisherId;
   final String postUrl;
   final String comment;
-  final String ownerName;
-
+  final String publisherName;
   final String postId;
-  final String userPhotoUrl;
+  final String commentId;
+  final String publisherPhotoUrl;
   @TimestampConverter()
   final DateTime timestamp;
 
   CommentModel(
       {required this.comment,
-      required this.ownerId,
-      required this.ownerName,
+      required this.publisherId,
+      required this.publisherName,
       required this.postId,
+      required this.commentId,
       required this.postUrl,
       required this.timestamp,
-      required this.userPhotoUrl});
+      required this.publisherPhotoUrl});
 
   factory CommentModel.fromJson(Map<String, dynamic> json) =>
       _$CommentModelFromJson(json);

@@ -59,7 +59,7 @@ class NotificationItemWidget extends StatelessWidget {
               child: Container(
                   height: 55,
                   width: 55,
-                  child: userProfilePhoto(photoUrl: notification.userPhotoUrl)),
+                  child: userProfilePhoto(photoUrl: notification.publisherPhotoUrl)),
             ),
             GestureDetector(
               onTap: (){
@@ -75,7 +75,7 @@ class NotificationItemWidget extends StatelessWidget {
                       children: <Widget>[
 //                      SizedBox(width: 5,),
                         Text(
-                          '${notification.ownerName} ',
+                          '${notification.publisherName} ',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

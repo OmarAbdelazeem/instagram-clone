@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
+import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -46,8 +47,10 @@ class MyApp extends StatelessWidget {
               ),
             ),
             BlocProvider<UsersBloc>(
-              create: (context) => UsersBloc(context.read<DataRepository>(),
-                  context.read<AuthRepository>()),
+              create: (context) => UsersBloc(context.read<DataRepository>(),),
+            ),
+            BlocProvider<ProfileBloc>(
+              create: (context) => ProfileBloc(),
             ),
           ],
           child: MaterialApp(

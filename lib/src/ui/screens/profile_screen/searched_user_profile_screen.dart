@@ -8,6 +8,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
+import '../../../bloc/profile_bloc/profile_bloc.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
 
@@ -54,35 +55,36 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
     });
   }
 
-  void onFollowButtonTapped(){
+  void onFollowButtonTapped() {
     setState(() {
       isFollowing = !isFollowing;
       if (isFollowing) {
         user!.followersCount++;
-        context.read<UsersBloc>().add(FollowEventStarted(
-            senderId: context.read<AuthBloc>().user!.id,
-            receiverId: widget.userId));
+        // context.read<UsersBloc>().add(FollowEventStarted(
+        //     senderId: context.read<ProfileBloc>().user!.id,
+        //     receiverId: widget.userId));
+        // final loggedInUser = context.read<UsersBloc>().loggedInUserDetails!;
+        // loggedInUser.followingCount++;
+        // context.read<ProfileBloc>().user = loggedInUser;
       } else {
-        user!.followersCount--;
-        context.read<UsersBloc>().add(UnFollowEventStarted(
-            senderId: context.read<AuthBloc>().user!.id,
-            receiverId: widget.userId));
+        // user!.followersCount--;
+        // context.read<UsersBloc>().add(UnFollowEventStarted(
+        //     senderId: context.read<ProfileBloc>().user!.id,
+        //     receiverId: widget.userId));
+        // context.read<UsersBloc>().loggedInUserDetails!.followingCount--;
       }
     });
   }
 
-
   @override
   void initState() {
+    final usersBloc = context.read<UsersBloc>();
+    usersBloc.add(ListenToUserDetailsStarted(widget.userId));
+
     _views = [
       UserOwnPostsView(userId: widget.userId),
       UserMentionedPostsView(userId: widget.userId)
     ];
-    context.read<UsersBloc>().add(SearchByIdEventStarted(
-        searchedUserId: widget.userId,
-        loggedInUserId: context.read<AuthBloc>().user!.id));
-    // context.read<FollowBloc>().add(CheckUserFollowingStateStarted(
-    //     receiverId: widget.userId, senderId: context.read<AuthBloc>().user!.id));
     super.initState();
   }
 
@@ -93,20 +95,19 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
   Widget _buildContent(BuildContext context) {
     return BlocConsumer<UsersBloc, UsersState>(
-      listener: (BuildContext context, state){
-        if(state is UserLoaded){
+      listener: (BuildContext context, state) {
+        if (state is SearchedUserLoaded) {
           setState(() {
             isFollowing = state.isFollowing;
           });
         }
-
       },
       builder: (BuildContext context, state) {
         if (state is UsersLoading) {
           return Center(
             child: CircularProgressIndicator(),
           );
-        } else if (state is UserLoaded) {
+        } else if (state is SearchedUserLoaded) {
           user = state.user;
           return RefreshIndicator(
             onRefresh: () async {
@@ -130,7 +131,14 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   Widget _buildUpperDetails() {
     return Column(
       children: [
-        ProfileDetails(user: user!),
+        BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
+          print("UsersBloc state is $state");
+          if (state is UserDetailsLoaded)
+            return ProfileDetails(user: state.user);
+          else
+            return ProfileDetails(
+                user: context.read<UsersBloc>().searchedUserDetails!);
+        }),
         SizedBox(
           height: 12,
         ),

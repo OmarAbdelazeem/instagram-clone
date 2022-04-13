@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
@@ -22,7 +23,7 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
 
   void onContinueTapped() {
     //Todo implement create user with email and password
-    context.read<AuthBloc>().add(SignUpWithEmailTapped(
+    context.read<AuthBloc>().add(SignUpWithEmailStarted(
         password: passwordController.text,
         email: email!,
         name: nameController.text));
@@ -30,10 +31,7 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    email = ModalRoute
-        .of(context)!
-        .settings
-        .arguments as String;
+    email = ModalRoute.of(context)!.settings.arguments as String;
     print("args is $email");
 
     return Scaffold(
@@ -56,12 +54,13 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
             listener: (context, state) {
               if (state is Loading)
                 showLoadingDialog(context, _keyLoader);
-              else if (state is UserCreated) {
-                print("state is UserCreated");
+              else if (state is AuthSuccess) {
+                print("state is AuthSuccess");
                 Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                     .pop();
                 NavigationUtils.pushNamed(
                     route: AppRoutes.addProfilePhotoScreen, context: context);
+                // context.read<ProfileBloc>().add(ProfileDataUpdated(state.user));
               } else if (state is Error)
                 Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                     .pop();

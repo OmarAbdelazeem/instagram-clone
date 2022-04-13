@@ -21,14 +21,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this._authRepository, this._dataRepository, this._storageRepository)
       : super(AuthInitial()) {
-    on<LoginButtonTapped>(_onLoginTapped);
-    on<SignUpWithEmailTapped>(_onSignUpWithEmailTapped);
+    on<LoginStarted>(_onLoginStarted);
+    on<SignUpWithEmailStarted>(_onSignUpWithEmailTapped);
     on<ProfilePhotoPicked>(_onProfilePhotoPicked);
   }
 
-  UserModel? user;
+  UserModel? _user;
 
-  void _onLoginTapped(LoginButtonTapped event, Emitter<AuthState> emit) async {
+  void _onLoginStarted(LoginStarted event, Emitter<AuthState> emit) async {
     User? loggedInUser;
     try {
       emit(Loading());
@@ -37,8 +37,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (loggedInUser != null) {
         final userJson =
             (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
-        user = UserModel.fromJson(userJson as Map<String, dynamic>);
-        emit(AuthSuccess());
+        _user = UserModel.fromJson(userJson as Map<String, dynamic>);
+        emit(AuthSuccess(_user!));
       } else {
         emit(Error(AppStrings.somethingWrongHappened));
       }
@@ -48,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onSignUpWithEmailTapped(
-      SignUpWithEmailTapped event, Emitter<AuthState> emit) async {
+      SignUpWithEmailStarted event, Emitter<AuthState> emit) async {
     User? loggedInUser;
     try {
       emit(Loading());
@@ -66,8 +66,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             followingCount: 0,
             timestamp: (Timestamp.now()).toDate());
         await _dataRepository.createUserDetails(tempUser);
-        user = tempUser;
-        emit(UserCreated());
+        _user = tempUser;
+        emit(AuthSuccess(_user!));
       } else {
         emit(Error(AppStrings.somethingWrongHappened));
       }
@@ -81,8 +81,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Loading());
     try {
       final photoUrl = await _storageRepository.uploadProfilePhoto(
-          selectedFile: event.imageFile, userId: user!.id);
-      await _dataRepository.addProfilePhoto(user!.id, photoUrl);
+          selectedFile: event.imageFile, userId: _user!.id);
+      await _dataRepository.addProfilePhoto(_user!.id, photoUrl);
       emit(ProfilePhotoUploaded(photoUrl));
     } catch (e) {
       print(e.toString());

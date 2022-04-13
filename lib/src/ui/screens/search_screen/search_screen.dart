@@ -20,7 +20,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
-  final usersBloc = UsersBloc(DataRepository(), AuthRepository());
+  final usersBloc = UsersBloc(DataRepository());
 
   @override
   void initState() {

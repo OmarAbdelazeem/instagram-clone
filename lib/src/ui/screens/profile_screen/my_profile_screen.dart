@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
@@ -11,6 +12,8 @@ import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
 import 'package:provider/provider.dart';
 import '../../../../router.dart';
+import '../../../bloc/profile_bloc/profile_bloc.dart';
+import '../../../bloc/users_bloc/users_bloc.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
 
@@ -41,18 +44,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           color: AppColors.grey,
         ))
   ];
-  UserModel user = UserModel(
-      photoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-      userName: "Omar Abdelazeem",
-      bio: "this is a bio",
-      id: "123",
-      email: "omar@email.com",
-      postsCount: 1,
-      followersCount: 3,
-      followingCount: 5,
-      timestamp: (Timestamp.now()).toDate());
+
   List<Widget>? _views;
+
 
   void onItemChanged(int index) {
     setState(() {
@@ -62,9 +56,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    final usersBloc = context.read<UsersBloc>();
+    final user = usersBloc.loggedInUserDetails;
+    usersBloc.add(ListenToUserDetailsStarted(user!.id));
     _views = [
-      UserOwnPostsView(userId: context.read<AuthBloc>().user!.id),
-      UserMentionedPostsView(userId: context.read<AuthBloc>().user!.id)
+      UserOwnPostsView(
+          userId: user.id),
+      UserMentionedPostsView(
+          userId: user.id)
     ];
     super.initState();
   }
@@ -82,7 +81,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: <Widget>[
           _buildUpperDetails(),
-          Expanded(child: IndexedStack(children: _views!, index: selectedIndex)),
+          Expanded(
+              child: IndexedStack(children: _views!, index: selectedIndex)),
         ],
       ),
     );
@@ -91,7 +91,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUpperDetails() {
     return Column(
       children: [
-        ProfileDetails(user: user),
+        BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
+          print("UsersBloc state is $state");
+          if (state is UserDetailsLoaded)
+            return ProfileDetails(user: state.user);
+          else
+            return ProfileDetails(
+                user: context.read<UsersBloc>().loggedInUserDetails!);
+        }),
         SizedBox(
           height: 12,
         ),
@@ -129,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        user.userName,
+        context.watch<UsersBloc>().loggedInUserDetails!.userName,
         style: TextStyle(color: Colors.black),
       ),
       actions: <Widget>[

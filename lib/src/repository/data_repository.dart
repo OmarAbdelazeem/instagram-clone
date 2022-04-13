@@ -27,8 +27,11 @@ class DataRepository {
     return await usersRef.doc(userId).get();
   }
 
+  Stream<DocumentSnapshot> listenToUserDetails(String id) {
+    return usersRef.doc(id).snapshots();
+  }
+
   Future createUserDetails(UserModel user) async {
-    print("user is ${user.toJson()}");
     await usersRef.doc(user.id).set(user.toJson());
   }
 
@@ -69,31 +72,75 @@ class DataRepository {
   }
 
   addLikeToPost(String postId, String userId) async {
-    //Todo
-
+    /// 1) add user id to postsLikes collection of post
 
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
         .doc(userId)
         .set({});
+
+    /// 2) increment likesCount of post
+
+    postsRef
+        .doc(userId)
+        .collection("posts")
+        .doc(postId)
+        .update({"likesCount": FieldValue.increment(1)});
   }
 
   removeLikeFromPost(String postId, String userId) async {
+    /// 1) remove user id from postsLikes collection of post
+
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
         .doc(userId)
         .delete();
+
+    /// 2) decrement likesCount of post
+
+    postsRef
+        .doc(userId)
+        .collection("posts")
+        .doc(postId)
+        .update({"likesCount": FieldValue.increment(-1)});
   }
 
-  void addComment(CommentModel commentModel) async {
-    String commentId = Uuid().v4();
+  Future addComment(CommentModel comment) async {
+    /// 1) add comment to postsComments collection of post
+
     await postsCommentsRef
-        .doc(commentModel.ownerId)
-        .collection('postComments')
-        .doc(commentId)
-        .set(commentModel.toJson());
+        .doc(comment.publisherId)
+        .collection('postsComments')
+        .doc(comment.commentId)
+        .set(comment.toJson());
+
+    /// 2) increment commentsCount of post
+
+    postsRef
+        .doc(comment.publisherId)
+        .collection("posts")
+        .doc(comment.postId)
+        .update({"commentsCount": FieldValue.increment(1)});
+  }
+
+  Future removeComment(CommentModel comment) async {
+    /// 1) remove comment from postsComments collection of post
+
+    await postsCommentsRef
+        .doc(comment.publisherId)
+        .collection('postsComments')
+        .doc(comment.commentId)
+        .delete();
+
+    /// 2) decrement commentsCount of post
+
+    postsRef
+        .doc(comment.publisherId)
+        .collection("posts")
+        .doc(comment.postId)
+        .update({"commentsCount": FieldValue.increment(-1)});
   }
 
   Future addProfilePhoto(String userId, String photoUrl) async {
@@ -105,52 +152,119 @@ class DataRepository {
   Future addPost(
     PostModel post,
   ) async {
+    /// 1) add post in publisher postsRef
     await postsRef
         .doc(post.publisherId)
         .collection("posts")
         .doc(post.postId)
         .set(post.toJson());
+
+    /// 2) add post id to user followers timeline
+
+    // 1 - get user followers ids
+    var userFollowersQuerySnapshot = await usersFollowersRef
+        .doc(post.publisherId)
+        .collection("usersFollowers")
+        .get();
+
+    // 2 - update timeline to every follower
+    userFollowersQuerySnapshot.docs.forEach((doc) {
+      timelineRef
+          .doc(doc.id)
+          .collection("timeline")
+          .doc(post.postId)
+          .set({"publisherId": post.publisherId});
+    });
   }
 
-  // addFollower({required String receiverId, required String senderId}) async {
-  //   await usersFollowersRef
-  //       .doc(receiverId)
-  //       .collection("usersFollowing")
-  //       .doc(senderId)
-  //       .set({});
-  // }
-
   addFollower({required String receiverId, required String senderId}) async {
-    //Todo
-    // 1 - add senderId in receiver users followers
-    // 2 - add receiver posts ids to sender timeline
-    // 3 - update sender following count
-    // 4 - update receiver followers count
+    //Todo try to implement this behaviour by cloud functions
+
+    ///1) add receiver id to sender usersFollowing collection
     await usersFollowingRef
         .doc(senderId)
         .collection("usersFollowing")
         .doc(receiverId)
         .set({});
+
+    /// 2) increment following count to sender
+
+    await usersRef
+        .doc(senderId)
+        .update({"followingCount": FieldValue.increment(1)});
+
+    ///3) add sender id to receiver usersFollowers receiver
+
+    await usersFollowersRef
+        .doc(receiverId)
+        .collection("usersFollowers")
+        .doc(senderId)
+        .set({});
+
+    ///4) increment followers count to receiver
+
+    await usersRef
+        .doc(receiverId)
+        .update({"followersCount": FieldValue.increment(1)});
+
+    ///5) add receiver posts to sender timeline
+    var postsQuerySnapshot = await postsRef
+        .doc(receiverId)
+        .collection("posts")
+        .orderBy("timestamp", descending: true)
+        .limit(5)
+        .get();
+    postsQuerySnapshot.docs.forEach((doc) async {
+      await timelineRef
+          .doc(senderId)
+          .collection("timeline")
+          .doc(doc.id)
+          .set({"publisherId": receiverId});
+    });
   }
 
   removeFollower({required String receiverId, required String senderId}) async {
+    ///1) remove receiver id to sender usersFollowing collection
     await usersFollowingRef
         .doc(senderId)
         .collection("usersFollowing")
         .doc(receiverId)
         .delete();
+
+    /// 2) decrement following count to sender
+
+    await usersRef
+        .doc(senderId)
+        .update({"followingCount": FieldValue.increment(-1)});
+
+    ///3) delete sender from receiver usersFollowers receiver
+
+    await usersFollowingRef
+        .doc(receiverId)
+        .collection("usersFollowers")
+        .doc(senderId)
+        .delete();
+
+    ///4) decrement followers count to receiver
+
+    await usersRef
+        .doc(receiverId)
+        .update({"followersCount": FieldValue.increment(-1)});
+
+    ///5) delete receiver posts from sender timeline
+
+    var senderTimelineRef = timelineRef.doc(senderId).collection("timeline");
+    var timelineQueries = await senderTimelineRef
+        .where("publisherId", isEqualTo: receiverId)
+        .get();
+
+    timelineQueries.docs.forEach((doc) async {
+      await senderTimelineRef.doc(doc.id).delete();
+    });
   }
 
-  // removeFollower({required String receiverId, required String senderId}) async {
-  //   await usersFollowersRef
-  //       .doc(senderId)
-  //       .collection("usersFollowers")
-  //       .doc(senderId)
-  //       .delete();
-  // }
-
   Future<bool> checkIfUserFollowingSomeOne(
-      {required String senderId,required String receiverId}) async {
+      {required String senderId, required String receiverId}) async {
     return (await usersFollowingRef
             .doc(senderId)
             .collection("usersFollowing")
