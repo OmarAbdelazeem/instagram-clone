@@ -6,6 +6,7 @@ import 'package:instagramapp/src/ui/screens/explore_photos_screen/explore_photos
 import 'package:instagramapp/src/ui/screens/new_post_screen/new_post_screen.dart';
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
 import 'package:instagramapp/src/ui/screens/post_details_screen/post_details_screen.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/searched_user_profile_screen.dart';
 import 'package:instagramapp/src/ui/screens/search_screen/search_screen.dart';
 import 'src/ui/screens/add_profile_photo_screen/add_profile_photo_screen.dart';
 import 'src/ui/screens/profile_photo_added_screen/profile_photo_added_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String profileScreen = "/profileScreen";
   static const String newPostScreen = "/newPostScreen";
   static const String searchScreen = "/searchScreen";
+  static const String searchedUserProfileScreen = "/searchedUserProfileScreen";
 }
 
 class AppRouter {
@@ -62,6 +64,8 @@ class AppRouter {
         return _customMaterialPageRoute(PostDetailsScreen(), settings);
         case AppRoutes.newPostScreen:
         return _customMaterialPageRoute(NewPostScreen(), settings);
+        case AppRoutes.searchedUserProfileScreen:
+        return _customMaterialPageRoute(SearchedUserProfileScreen(), settings);
       default:
         return _customMaterialPageRoute(UnKnownRouteScreen(), settings);
     }

@@ -131,7 +131,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     context.read<PostsBloc>().add(FetchAllTimelinePostsStarted(
         context
             .read<UsersBloc>()
-            .loggedInUserDetails!
+            .loggedInUser!
             .id));
   }
 

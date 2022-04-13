@@ -21,14 +21,18 @@ class FetchRecommendedUsersStarted extends UsersEvent {
   FetchRecommendedUsersStarted(this.userId);
 }
 
-class LoggedInUserDataSetted extends UsersEvent {
+class SetLoggedInUserStarted extends UsersEvent {
   final UserModel user;
 
-  LoggedInUserDataSetted(this.user);
+  SetLoggedInUserStarted(this.user);
 }
 
-class ListenToUserDetailsStarted extends UsersEvent {
-  final String userId;
+class SetSearchedUserStarted extends UsersEvent {
+  final UserModel user;
 
-  ListenToUserDetailsStarted(this.userId);
+  SetSearchedUserStarted(this.user);
 }
+
+class ListenToLoggedInUserStarted extends UsersEvent {}
+
+class ListenToSearchedUserStarted extends UsersEvent {}

@@ -5,18 +5,14 @@ abstract class FollowState {}
 
 class FollowInitial extends FollowState {}
 
-class UserFollowed extends FollowState {
-  final UserModel? user;
-  UserFollowed([this.user]);
-}
+class FollowLoading extends FollowState {}
 
-class UserUnFollowed extends FollowState {
-  final UserModel? user;
-  UserUnFollowed([this.user]);
-}
+class UserFollowed extends FollowState {}
 
+class UserUnFollowed extends FollowState {}
 
-class Error extends FollowState{
+class FollowError extends FollowState {
   final String error;
-  Error(this.error);
+
+  FollowError(this.error);
 }

@@ -30,12 +30,12 @@ class _RecommendedUserState extends State<RecommendedUser> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => SearchedUserProfileScreen(
-                userId: widget.user.id, userName: widget.user.userName),
-          ),
-        );
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) => SearchedUserProfileScreen(
+        //         userId: widget.user.id, userName: widget.user.userName),
+        //   ),
+        // );
       },
       child: Card(
         elevation: 2,
@@ -44,7 +44,10 @@ class _RecommendedUserState extends State<RecommendedUser> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-             ProfilePhoto(photoUrl: widget.user.photoUrl,radius: 24,),
+              ProfilePhoto(
+                photoUrl: widget.user.photoUrl,
+                radius: 24,
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -75,7 +78,9 @@ class _RecommendedUserState extends State<RecommendedUser> {
       height: 40,
       width: 120,
       color: isFollowing ? AppColors.white : AppColors.blue,
-      titleStyle: TextStyle(color: isFollowing ? AppColors.black : AppColors.white,),
+      titleStyle: TextStyle(
+        color: isFollowing ? AppColors.black : AppColors.white,
+      ),
       title: isFollowing ? AppStrings.following : AppStrings.follow,
       onTap: () {
         setState(() {

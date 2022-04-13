@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 
 import '../../../../core/utils/navigation_utils.dart';
@@ -12,14 +14,11 @@ class SearchResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ProfileService profileService = ProfileService();
-
     return InkWell(
       onTap: () {
+        context.read<UsersBloc>().add(SetSearchedUserStarted(user));
         NavigationUtils.pushScreen(
-            screen: SearchedUserProfileScreen(
-                userId: user.id, userName: user.userName),
-            context: context);
+            screen: SearchedUserProfileScreen(), context: context);
       },
       child: Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),

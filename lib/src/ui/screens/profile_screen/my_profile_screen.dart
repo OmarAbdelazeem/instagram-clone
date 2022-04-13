@@ -7,12 +7,9 @@ import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
-import 'package:instagramapp/src/ui/common/post_widget.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
-import 'package:provider/provider.dart';
 import '../../../../router.dart';
-import '../../../bloc/profile_bloc/profile_bloc.dart';
 import '../../../bloc/users_bloc/users_bloc.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
@@ -24,6 +21,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedIndex = 0;
+  UsersBloc? usersBloc;
+  UserModel? user;
   List<AppTabItemModel> tabsItems = [
     AppTabItemModel(
         selectedItem: Icon(
@@ -47,7 +46,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget>? _views;
 
-
   void onItemChanged(int index) {
     setState(() {
       selectedIndex = index;
@@ -56,14 +54,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    final usersBloc = context.read<UsersBloc>();
-    final user = usersBloc.loggedInUserDetails;
-    usersBloc.add(ListenToUserDetailsStarted(user!.id));
+    usersBloc = context.read<UsersBloc>();
+    user = usersBloc!.loggedInUser;
+    usersBloc!.add(ListenToLoggedInUserStarted());
     _views = [
-      UserOwnPostsView(
-          userId: user.id),
-      UserMentionedPostsView(
-          userId: user.id)
+      UserOwnPostsView(userId: user!.id),
+      UserMentionedPostsView(userId: user!.id)
     ];
     super.initState();
   }
@@ -92,12 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
-          print("UsersBloc state is $state");
-          if (state is UserDetailsLoaded)
-            return ProfileDetails(user: state.user);
-          else
-            return ProfileDetails(
-                user: context.read<UsersBloc>().loggedInUserDetails!);
+          return ProfileDetails(user: context.read<UsersBloc>().loggedInUser!);
         }),
         SizedBox(
           height: 12,
@@ -136,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        context.watch<UsersBloc>().loggedInUserDetails!.userName,
+        context.watch<UsersBloc>().loggedInUser!.userName,
         style: TextStyle(color: Colors.black),
       ),
       actions: <Widget>[

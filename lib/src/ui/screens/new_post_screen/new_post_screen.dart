@@ -28,7 +28,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   _onShareTapped() async {
     context.read<PostsBloc>().add(PostUploadStarted(imageFile!,
-        captionController.text, context.read<UsersBloc>().loggedInUserDetails!));
+        captionController.text, context.read<UsersBloc>().loggedInUser!));
   }
 
 

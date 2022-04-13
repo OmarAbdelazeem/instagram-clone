@@ -263,7 +263,7 @@ class DataRepository {
     });
   }
 
-  Future<bool> checkIfUserFollowingSomeOne(
+  Future<bool> checkIfUserFollowingSearched(
       {required String senderId, required String receiverId}) async {
     return (await usersFollowingRef
             .doc(senderId)

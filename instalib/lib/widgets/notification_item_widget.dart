@@ -26,7 +26,7 @@ class NotificationItemWidget extends StatelessWidget {
 
   void onUserClicked(BuildContext context){
     ProfileService profileService = ProfileService();
-    profileService.getProfileMainInfo(searchedUserId: notification.senderId).then((user){
+    profileService.getProfileMainInfo(searchedUserId: notification._loggedInUser).then((user){
       Data.changeCurrentUser(user);
       NavigationFunctions.navigateToPage(context, UserProfile());
     });

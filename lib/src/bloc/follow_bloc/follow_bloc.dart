@@ -15,46 +15,53 @@ class FollowBloc extends Bloc<FollowEvent, FollowState> {
   FollowBloc(this._dataRepository) : super(FollowInitial()) {
     on<FollowEventStarted>(_onFollowStarted);
     on<UnFollowEventStarted>(_onUnFollowStarted);
-    on<CheckUserFollowingStateStarted>(_onCheckUserFollowingStateStarted);
+    on<CheckUserFollowingStarted>(_onCheckUserFollowingStateStarted);
   }
+
+  UserModel? _loggedInUser;
+  UserModel? _searchedUser;
 
   void _onFollowStarted(
       FollowEventStarted event, Emitter<FollowState> state) async {
     try {
+      emit(FollowLoading());
       await _dataRepository.addFollower(
-          receiverId: event.receiverUser.id, senderId: event.senderId);
-      final user = event.receiverUser;
-      user.followersCount++;
-      emit(UserFollowed(user));
+          receiverId: _searchedUser!.id, senderId: _loggedInUser!.id);
+
+      emit(UserFollowed());
     } catch (e) {
       print(e.toString());
-      emit(Error(e.toString()));
+      emit(FollowError(e.toString()));
     }
   }
 
   void _onUnFollowStarted(
       UnFollowEventStarted event, Emitter<FollowState> state) async {
     try {
+      emit(FollowLoading());
       await _dataRepository.removeFollower(
-          receiverId: event.receiverUser.id, senderId: event.senderId);
-      final user = event.receiverUser;
-      user.followersCount--;
-      emit(UserUnFollowed(user));
+          receiverId: _searchedUser!.id, senderId: _loggedInUser!.id);
+      emit(UserUnFollowed());
     } catch (e) {
       print(e.toString());
-      emit(Error(e.toString()));
+      emit(FollowError(e.toString()));
     }
   }
 
   void _onCheckUserFollowingStateStarted(
-      CheckUserFollowingStateStarted event, Emitter<FollowState> state) async{
+      CheckUserFollowingStarted event, Emitter<FollowState> state) async {
     try {
-      final isFollowing = await _dataRepository.checkIfUserFollowingSomeOne(
-          senderId: event.senderId, receiverId: event.receiverId);
-      if(isFollowing){
+      emit(FollowLoading());
+      _loggedInUser = event.loggedInUser;
+      _searchedUser = event.searchedUser;
+      final isFollowing = await _dataRepository.checkIfUserFollowingSearched(
+          receiverId: _searchedUser!.id, senderId: _loggedInUser!.id);
+      if (isFollowing) {
         emit(UserFollowed());
-      }else
+      } else
         emit(UserUnFollowed());
-    } catch (e) {}
+    } catch (e) {
+      emit(UserUnFollowed());
+    }
   }
 }

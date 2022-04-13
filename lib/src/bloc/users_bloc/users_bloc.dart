@@ -15,16 +15,17 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   UsersBloc(this._dataRepository) : super(UsersInitial()) {
     on<SearchByTermEventStarted>(_onSearchByTermStarted);
     on<SearchByIdEventStarted>(_onSearchByIdStarted);
-    on<LoggedInUserDataSetted>(_onLoggedInUserDataSetted);
-    on<ListenToUserDetailsStarted>(_onListenToUserDetailsStarted);
-    // on<FetchRecommendedUsersStarted>(_onFetchRecommendedUsersStarted);
+    on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
+    on<SetSearchedUserStarted>(_onSetSearchedUserStarted);
+    on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
+    on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     // on<FollowEventStarted>(_onFollowStarted);
     // on<UnFollowEventStarted>(_onUnFollowStarted);
+    // on<FetchRecommendedUsersStarted>(_onFetchRecommendedUsersStarted);
   }
 
-  // UserModel? currentSearchedUserDetails;
-  UserModel? loggedInUserDetails;
-  UserModel? searchedUserDetails;
+  UserModel? loggedInUser;
+  UserModel? searchedUser;
   List<UserModel> fetchedUsers = [];
 
   _onSearchByTermStarted(SearchByTermEventStarted event, emit) async {
@@ -47,8 +48,12 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     }
   }
 
-  _onLoggedInUserDataSetted(LoggedInUserDataSetted event, emit) {
-    loggedInUserDetails = event.user;
+  _onSetLoggedInUserStarted(SetLoggedInUserStarted event, emit) {
+    loggedInUser = event.user;
+  }
+
+  _onSetSearchedUserStarted(SetSearchedUserStarted event, emit) {
+    searchedUser = event.user;
   }
 
   // _onFetchRecommendedUsersStarted(FetchRecommendedUsersStarted event,
@@ -65,28 +70,26 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       emit(UsersLoading());
       final jsonUserDetails =
           await _dataRepository.getUserDetails(event.searchedUserId);
-      searchedUserDetails =
+      searchedUser =
           UserModel.fromJson(jsonUserDetails.data() as Map<String, dynamic>);
-      bool isFollowing = await _dataRepository.checkIfUserFollowingSomeOne(
-          senderId: loggedInUserDetails!.id, receiverId: event.searchedUserId);
-      emit(SearchedUserLoaded(searchedUserDetails!, isFollowing));
+      bool isFollowing = await _dataRepository.checkIfUserFollowingSearched(
+          senderId: loggedInUser!.id, receiverId: event.searchedUserId);
+      emit(SearchedUserLoaded(searchedUser!, isFollowing));
     } catch (e) {
       print(e.toString());
       emit(UsersError(e.toString()));
     }
   }
 
-  _onListenToUserDetailsStarted(ListenToUserDetailsStarted event, state) {
+  _onListenToLoggedInUserStarted(ListenToLoggedInUserStarted event, state) {
     try {
-      _dataRepository.listenToUserDetails(event.userId).listen((streamEvent) {
+      _dataRepository
+          .listenToUserDetails(loggedInUser!.id)
+          .listen((streamEvent) {
         if (streamEvent.data() != null) {
-          UserModel user =
+          loggedInUser =
               UserModel.fromJson(streamEvent.data() as Map<String, dynamic>);
-          if (event.userId != loggedInUserDetails!.id)
-            loggedInUserDetails = user;
-          else
-            searchedUserDetails = user;
-          emit(UserDetailsLoaded(user));
+          emit(UserDetailsLoaded(loggedInUser!));
         }
       });
     } catch (e) {
@@ -94,26 +97,41 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     }
   }
 
-// void _onFollowStarted(FollowEventStarted event,
-//     Emitter<UsersState> state) async {
-//   try {
-//     await _dataRepository.addFollower(
-//         receiverId: event.receiverId, senderId: event.senderId);
-//   } catch (e) {
-//     print(e.toString());
-//     emit(UsersError(e.toString()));
-//   }
-// }
-//
-// void _onUnFollowStarted(UnFollowEventStarted event,
-//     Emitter<UsersState> state) async {
-//   try {
-//     await _dataRepository.removeFollower(
-//         receiverId: event.receiverId, senderId: event.senderId);
-//   } catch (e) {
-//     print(e.toString());
-//     emit(UsersError(e.toString()));
-//   }
-// }
+  _onListenToSearchedUserStarted(ListenToSearchedUserStarted event, state) {
+    try {
+      _dataRepository
+          .listenToUserDetails(searchedUser!.id)
+          .listen((streamEvent) {
+        if (streamEvent.data() != null) {
+          searchedUser =
+              UserModel.fromJson(streamEvent.data() as Map<String, dynamic>);
+          emit(UserDetailsLoaded(searchedUser!));
+        }
+      });
+    } catch (e) {
+      emit(UsersError(e.toString()));
+    }
+  }
 
+  // void _onFollowStarted(
+  //     FollowEventStarted event, Emitter<UsersState> state) async {
+  //   try {
+  //     await _dataRepository.addFollower(
+  //         receiverId: searchedUser!.id, senderId: loggedInUser!.id);
+  //   } catch (e) {
+  //     print(e.toString());
+  //     emit(UsersError(e.toString()));
+  //   }
+  // }
+
+  // void _onUnFollowStarted(
+  //     UnFollowEventStarted event, Emitter<UsersState> state) async {
+  //   try {
+  //     await _dataRepository.removeFollower(
+  //         receiverId: searchedUser!.id, senderId: loggedInUser!.id);
+  //   } catch (e) {
+  //     print(e.toString());
+  //     emit(UsersError(e.toString()));
+  //   }
+  // }
 }

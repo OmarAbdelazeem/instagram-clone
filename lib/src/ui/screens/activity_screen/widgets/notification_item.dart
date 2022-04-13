@@ -20,10 +20,10 @@ class NotificationItem extends StatelessWidget {
   bool? isNotNewFollower;
 
   void onUserProfilePhotoTapped(BuildContext context) {
-    NavigationUtils.pushScreen(
-        screen: SearchedUserProfileScreen(
-            userId: notification.senderId, userName: notification.ownerName),
-        context: context);
+    // NavigationUtils.pushScreen(
+    //     screen: SearchedUserProfileScreen(
+    //         userId: notification.senderId, userName: notification.ownerName),
+    //     context: context);
   }
 
   void onPostItemClicked(BuildContext context) {
