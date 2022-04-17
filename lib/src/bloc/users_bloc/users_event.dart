@@ -9,6 +9,10 @@ class SearchByTermEventStarted extends UsersEvent {
   SearchByTermEventStarted({required this.term});
 }
 
+class PreviousSearchRemoved extends UsersEvent{
+
+}
+
 class SearchByIdEventStarted extends UsersEvent {
   final String searchedUserId;
 

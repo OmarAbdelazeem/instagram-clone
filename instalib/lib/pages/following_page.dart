@@ -47,7 +47,7 @@ class _FollowingPageState extends State<FollowingPage> with AutomaticKeepAliveCl
             },
             child: FollowerOrFollowingWidget(
               isFollowing: doc['isFollowing'],
-              user: UserModel.fromDocument(doc),
+              data: UserModel.fromDocument(doc),
             )
           );
         }).toList();

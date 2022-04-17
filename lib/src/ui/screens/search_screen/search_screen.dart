@@ -20,13 +20,12 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
-  final usersBloc = UsersBloc(DataRepository());
+  UsersBloc? usersBloc = UsersBloc(DataRepository());
 
   @override
   void initState() {
     searchController.addListener(() {
-        usersBloc
-          .add(SearchByTermEventStarted(term: searchController.text));
+      usersBloc!.add(SearchByTermEventStarted(term: searchController.text));
     });
 
     super.initState();
@@ -54,25 +53,25 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildUsersContent() {
     return BlocBuilder<UsersBloc, UsersState>(
-      bloc: usersBloc,
+        bloc: usersBloc,
         builder: (BuildContext context, state) {
-      if (state is UsersLoaded)
-        return ListView.builder(
-          itemBuilder: (context, index) {
-            return SearchResult(state.users[index]);
-          },
-          itemCount: state.users.length,
-        );
-      else if (state is UsersLoading)
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      else if(state is Error)
-        return Center(
-          child: Text(AppStrings.error),
-        );
-      else
-        return Container();
-    });
+          if (state is UsersLoaded)
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return SearchResult(state.users[index]);
+              },
+              itemCount: state.users.length,
+            );
+          else if (state is UsersLoading)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          else if (state is Error)
+            return Center(
+              child: Text(AppStrings.error),
+            );
+          else
+            return Container();
+        });
   }
 }

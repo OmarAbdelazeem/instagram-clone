@@ -19,7 +19,7 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
 
   PostsBloc(this._dataRepository, this._storageRepository)
       : super(PostsInitial()) {
-    on<FetchAllTimelinePostsStarted>(_onFetchAllPostsStarted);
+    on<FetchAllTimelinePostsStarted>(_onFetchTimelinePostsStarted);
     on<PostDetailsLoadStarted>(_onFetchPostStarted);
     on<PostUploadStarted>(_onPostUploadStarted);
     on<FetchUserOwnPostsStarted>(_onFetchUserOwnPosts);
@@ -28,12 +28,24 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
   List<PostModel> _posts = [];
   List<PostModel> _userPosts = [];
 
-  void _onFetchAllPostsStarted(
+  void _onFetchTimelinePostsStarted(
       FetchAllTimelinePostsStarted event, Emitter<PostsState> emit) async {
     try {
       emit(Loading());
-      final data = (await _dataRepository.getTimelinePosts(event.userId)).docs;
-      _posts = data.map((e) => PostModel.fromJson(e.data())).toList();
+      final postsIdsDocs =
+          await _dataRepository.getTimelinePostsIds(event.userId);
+
+      postsIdsDocs.docs.forEach((postIdDoc) async {
+        String userId = postIdDoc.data()["publisherId"];
+        final postData = await _dataRepository.getPostDetails(
+            postId: postIdDoc.id, userId: userId);
+        print("postData is ${postData}");
+        PostModel post =
+            PostModel.fromJson(postData.data() as Map<String, dynamic>);
+
+        _posts.add(post);
+      });
+
       emit(PostsLoaded(_posts));
     } on Exception catch (e) {
       emit(Error(e.toString()));
@@ -44,8 +56,8 @@ class PostsBloc extends Bloc<TimeLineEvent, PostsState> {
       PostDetailsLoadStarted event, Emitter<PostsState> emit) async {
     try {
       emit(Loading());
-      final postJson =
-          (await _dataRepository.getPostDetails(event.postId, event.userId));
+      final postJson = (await _dataRepository.getPostDetails(
+          postId: event.postId, userId: event.userId));
       final PostModel post = PostModel.fromJson(postJson.data()!);
       emit(PostLoaded(post));
     } on Exception catch (e) {

@@ -34,8 +34,8 @@ class DataRepository {
     await usersRef.doc(user.id).set(user.toJson());
   }
 
-  Stream<QuerySnapshot> searchForUser(String term) {
-    return usersRef.where("userName", isGreaterThanOrEqualTo: term).snapshots();
+  Future<QuerySnapshot> searchForUser(String term) {
+    return usersRef.where("userName", isGreaterThanOrEqualTo: term).get();
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(
@@ -47,17 +47,18 @@ class DataRepository {
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePosts(
+  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePostsIds(
       String userId) async {
     return await timelineRef
         .doc(userId)
         .collection('timeline')
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
         .get();
+
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getPostDetails(
-      String postId, String userId) async {
+      {required String postId,required String userId}) async {
     return await postsRef.doc(userId).collection("posts").doc(postId).get();
   }
 

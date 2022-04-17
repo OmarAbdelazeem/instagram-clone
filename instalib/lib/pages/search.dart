@@ -29,7 +29,7 @@ class _SearchState extends State<Search> {
         List<SearchResultWidget> searchResults = [];
         snapshot.data.documents.forEach((doc) {
           final UserModel user = UserModel.fromDocument(doc);
-          SearchResultWidget searchResult = SearchResultWidget(user: user);
+          SearchResultWidget searchResult = SearchResultWidget(data: user);
           searchResults.add(searchResult);
         });
 

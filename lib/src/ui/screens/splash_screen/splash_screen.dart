@@ -22,13 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         print("state is $state");
-        if (state is AuthSuccess){
+        if (state is AuthSuccess) {
           NavigationUtils.pushNamedAndPopUntil(
               AppRoutes.mainHomeScreen, context);
+          print("state.user id is ${state.user.id}");
           context.read<UsersBloc>().add(SetLoggedInUserStarted(state.user));
-        }
-
-        else
+        } else
           NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);
       },
       child: Container(),

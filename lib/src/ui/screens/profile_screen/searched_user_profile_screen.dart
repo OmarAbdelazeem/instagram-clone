@@ -55,10 +55,10 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
     usersBloc!.add(ListenToSearchedUserStarted());
     context.read<FollowBloc>().add(CheckUserFollowingStarted(
         loggedInUser: usersBloc!.loggedInUser!,
-        searchedUser: usersBloc!.searchedUser!));
+        searchedUser: usersBloc!.searchedUser!.data));
     _views = [
-      UserOwnPostsView(userId: usersBloc!.searchedUser!.id),
-      UserMentionedPostsView(userId: usersBloc!.searchedUser!.id)
+      UserOwnPostsView(userId: usersBloc!.searchedUser!.data.id),
+      UserMentionedPostsView(userId: usersBloc!.searchedUser!.data.id)
     ];
     super.initState();
   }
@@ -94,7 +94,8 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
     return Column(
       children: [
         BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
-          return ProfileDetails(user: context.read<UsersBloc>().searchedUser!);
+          return ProfileDetails(
+              user: context.read<UsersBloc>().searchedUser!.data);
         }),
         SizedBox(
           height: 12,
@@ -159,7 +160,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        usersBloc!.searchedUser!.userName,
+        usersBloc!.searchedUser!.data.userName,
         style: TextStyle(color: Colors.black),
       ),
       actions: <Widget>[

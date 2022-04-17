@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpWithEmailStarted>(_onSignUpWithEmailTapped);
     on<ProfilePhotoPicked>(_onProfilePhotoPicked);
     on<AutoLoginStarted>(_onAutoLoginStarted);
+    on<LogoutStarted>(_onLogoutStarted);
   }
 
   UserModel? _user;
@@ -46,6 +47,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(Error(e.toString()));
     }
+  }
+
+  void _onLogoutStarted(LogoutStarted event, Emitter<AuthState> emit) async{
+    _authRepository.logout();
   }
 
   void _onAutoLoginStarted(AutoLoginStarted autoLoginStarted , Emitter<AuthState>emit) async{

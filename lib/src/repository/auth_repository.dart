@@ -31,7 +31,8 @@ class AuthRepository {
   }
 
   User? getCurrentUser() {
-    return _firebaseInstance.currentUser;
+    loggedInUser = _firebaseInstance.currentUser;
+    return loggedInUser;
   }
 
   Future<Null> logout() async {

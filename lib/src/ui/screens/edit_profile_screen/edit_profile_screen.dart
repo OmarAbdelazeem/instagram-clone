@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import '../../../models/user_model/user_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -112,6 +114,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   logout() async {
+    context.read<AuthBloc>().add(LogoutStarted());
     // AuthService authService = AuthService();
     // await authService.logout();
     // Navigator.of(context, rootNavigator: true).pushReplacement(

@@ -13,17 +13,16 @@ class UsersLoaded extends UsersState {
   UsersLoaded(this.users);
 }
 
-class UserDetailsLoaded extends UsersState {
+class LoggedInUserLoaded extends UsersState {
   final UserModel user;
 
-  UserDetailsLoaded(this.user);
+  LoggedInUserLoaded(this.user);
 }
 
 class SearchedUserLoaded extends UsersState {
-  final UserModel user;
-  final bool isFollowing;
+  final SearchedUser searchedUser;
 
-  SearchedUserLoaded(this.user, this.isFollowing);
+  SearchedUserLoaded(this.searchedUser);
 }
 
 class UsersError extends UsersState {
