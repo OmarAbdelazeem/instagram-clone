@@ -24,6 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginStarted>(_onLoginStarted);
     on<SignUpWithEmailStarted>(_onSignUpWithEmailTapped);
     on<ProfilePhotoPicked>(_onProfilePhotoPicked);
+    on<AutoLoginStarted>(_onAutoLoginStarted);
   }
 
   UserModel? _user;
@@ -41,6 +42,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthSuccess(_user!));
       } else {
         emit(Error(AppStrings.somethingWrongHappened));
+      }
+    } catch (e) {
+      emit(Error(e.toString()));
+    }
+  }
+
+  void _onAutoLoginStarted(AutoLoginStarted autoLoginStarted , Emitter<AuthState>emit) async{
+    User? loggedInUser;
+    try {
+      loggedInUser =
+       _authRepository.getCurrentUser();
+      if (loggedInUser != null) {
+        final userJson =
+        (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
+        _user = UserModel.fromJson(userJson as Map<String, dynamic>);
+        emit(AuthSuccess(_user!));
+      } else {
+        emit(UserLoggedOut());
       }
     } catch (e) {
       emit(Error(e.toString()));

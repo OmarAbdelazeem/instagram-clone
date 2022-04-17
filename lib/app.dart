@@ -8,7 +8,7 @@ import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
-
+import 'package:instagramapp/src/res/app_thems.dart';
 import 'src/repository/auth_repository.dart';
 
 class MyApp extends StatelessWidget {
@@ -63,7 +63,8 @@ class MyApp extends StatelessWidget {
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            initialRoute: AppRoutes.authScreen,
+            initialRoute: AppRoutes.splashScreen,
+            theme: AppThemes.lightTheme,
             onGenerateRoute: AppRouter().onGenerateRoute,
           ),
         ));

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,8 +8,8 @@ import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_images.dart';
-import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/app_drop_down_button.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
+import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/time_line_actions_drob_down.dart';
 import '../../../../router.dart';
 import '../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../bloc/posts_bloc/posts_bloc.dart';
@@ -101,10 +100,9 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      automaticallyImplyLeading: false,
-      title: AppLogo(),
+      title: AppLogo(fontSize: 30),
       actions: <Widget>[
-        AppDropDownButton(),
+        TimelineActionsDropDown(),
         SizedBox(
           width: 12,
         ),

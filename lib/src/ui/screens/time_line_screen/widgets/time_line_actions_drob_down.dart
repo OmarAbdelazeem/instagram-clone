@@ -7,12 +7,13 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../../router.dart';
 import '../../../../res/app_images.dart';
 
-class AppDropDownButton extends StatefulWidget {
+class TimelineActionsDropDown extends StatefulWidget {
   @override
-  _AppDropDownButtonState createState() => _AppDropDownButtonState();
+  _TimelineActionsDropDownState createState() =>
+      _TimelineActionsDropDownState();
 }
 
-class _AppDropDownButtonState extends State<AppDropDownButton> {
+class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
   String? _dropDownValue;
   XFile? _imageFile;
 
@@ -48,11 +49,9 @@ class _AppDropDownButtonState extends State<AppDropDownButton> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
-      icon: SvgPicture.asset(
-        AppImages.addButtonSvg,
-        width: 20,
-        height: 20,
-      ),
+      icon: Padding(
+          padding: EdgeInsets.only(top: 4),
+          child: Icon(Icons.add_box_outlined)),
       underline: Container(),
       items: items.map(
         (val) {
@@ -68,6 +67,7 @@ class _AppDropDownButtonState extends State<AppDropDownButton> {
 
   Widget _buildDropDownItem(String title, IconData icon) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [Text(title), Icon(icon)],
     );
   }

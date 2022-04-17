@@ -12,7 +12,7 @@ class AuthRepository {
 
       loggedInUser = _firebaseInstance.currentUser;
 
-      return  loggedInUser;
+      return loggedInUser;
     } catch (e) {
       print(e);
     }
@@ -28,6 +28,10 @@ class AuthRepository {
       print(e);
     }
     return loggedInUser;
+  }
+
+  User? getCurrentUser() {
+    return _firebaseInstance.currentUser;
   }
 
   Future<Null> logout() async {

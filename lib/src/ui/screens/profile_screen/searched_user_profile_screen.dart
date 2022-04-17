@@ -51,6 +51,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   @override
   void initState() {
     usersBloc = context.read<UsersBloc>();
+    followBloc = context.read<FollowBloc>();
     usersBloc!.add(ListenToSearchedUserStarted());
     context.read<FollowBloc>().add(CheckUserFollowingStarted(
         loggedInUser: usersBloc!.loggedInUser!,
@@ -72,17 +73,24 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
       onRefresh: () async {
         //Todo implement this function
       },
-      child: Column(
-        children: <Widget>[
-          _buildUpperDetails(),
-          Expanded(
-              child: IndexedStack(children: _views!, index: selectedIndex)),
-        ],
-      ),
+      child: BlocBuilder<FollowBloc, FollowState>(
+          builder: (BuildContext _, state) {
+        if (state is FollowLoading)
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        return Column(
+          children: <Widget>[
+            _buildUpperDetails(state),
+            Expanded(
+                child: IndexedStack(children: _views!, index: selectedIndex)),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildUpperDetails() {
+  Widget _buildUpperDetails(FollowState state) {
     return Column(
       children: [
         BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
@@ -97,7 +105,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Expanded(
-                child: _buildFollowButton(),
+                child: _buildFollowButton(state),
               ),
               SizedBox(
                 width: 10,
@@ -121,26 +129,21 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   }
 
   Widget _buildFollowButton(FollowState state) {
-    return BlocBuilder<FollowBloc, FollowState>(
-        builder: (BuildContext _, state) {
-      if (state is UserFollowed || state is UserUnFollowed)
-        return AppButton(
-          height: 40,
-          color: state is UserFollowed ? AppColors.white : AppColors.blue,
-          titleStyle: TextStyle(
-            color: state is UserFollowed ? AppColors.black : AppColors.white,
-          ),
-          title:
-              state is UserFollowed ? AppStrings.following : AppStrings.follow,
-          onTap: () {
-            if (state is UserUnFollowed) {
-              context.read<FollowBloc>().add(FollowEventStarted());
-            } else {
-              context.read<FollowBloc>().add(UnFollowEventStarted());
-            }
-          },
-        );
-    });
+    return AppButton(
+      height: 40,
+      color: state is UserFollowed ? AppColors.white : AppColors.blue,
+      titleStyle: TextStyle(
+        color: state is UserFollowed ? AppColors.black : AppColors.white,
+      ),
+      title: state is UserFollowed ? AppStrings.following : AppStrings.follow,
+      onTap: () {
+        if (state is UserUnFollowed) {
+          followBloc!.add(FollowEventStarted());
+        } else {
+          followBloc!.add(UnFollowEventStarted());
+        }
+      },
+    );
   }
 
   Widget _buildMessageButton() {

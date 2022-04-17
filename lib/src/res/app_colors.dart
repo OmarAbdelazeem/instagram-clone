@@ -7,6 +7,6 @@ class AppColors {
   static final darkBlue = Color(0xff184064);
   static final white = Colors.white;
   static final grey = Colors.grey;
-  static final scaffoldBackgroundColor = Colors.white10;
+  static final scaffoldBackgroundColor = Colors.white;
   static final black = Colors.black;
 }

@@ -8,7 +8,7 @@ class UsersInitial extends UsersState {}
 class UsersLoading extends UsersState {}
 
 class UsersLoaded extends UsersState {
-  final List<UserModel> users;
+  final List<SearchedUser> users;
 
   UsersLoaded(this.users);
 }

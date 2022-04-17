@@ -24,11 +24,9 @@ class FollowBloc extends Bloc<FollowEvent, FollowState> {
   void _onFollowStarted(
       FollowEventStarted event, Emitter<FollowState> state) async {
     try {
-      emit(FollowLoading());
+      emit(UserFollowed());
       await _dataRepository.addFollower(
           receiverId: _searchedUser!.id, senderId: _loggedInUser!.id);
-
-      emit(UserFollowed());
     } catch (e) {
       print(e.toString());
       emit(FollowError(e.toString()));
@@ -38,10 +36,9 @@ class FollowBloc extends Bloc<FollowEvent, FollowState> {
   void _onUnFollowStarted(
       UnFollowEventStarted event, Emitter<FollowState> state) async {
     try {
-      emit(FollowLoading());
+      emit(UserUnFollowed());
       await _dataRepository.removeFollower(
           receiverId: _searchedUser!.id, senderId: _loggedInUser!.id);
-      emit(UserUnFollowed());
     } catch (e) {
       print(e.toString());
       emit(FollowError(e.toString()));

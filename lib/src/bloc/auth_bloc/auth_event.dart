@@ -10,6 +10,10 @@ class LoginStarted extends AuthEvent {
   LoginStarted({required this.password, required this.email});
 }
 
+class AutoLoginStarted extends AuthEvent{}
+
+class LogoutStarted extends AuthEvent{}
+
 class SignUpWithEmailStarted extends AuthEvent {
   final String name;
   final String email;

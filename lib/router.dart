@@ -8,6 +8,7 @@ import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_sug
 import 'package:instagramapp/src/ui/screens/post_details_screen/post_details_screen.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/searched_user_profile_screen.dart';
 import 'package:instagramapp/src/ui/screens/search_screen/search_screen.dart';
+import 'package:instagramapp/src/ui/screens/splash_screen/splash_screen.dart';
 import 'src/ui/screens/add_profile_photo_screen/add_profile_photo_screen.dart';
 import 'src/ui/screens/profile_photo_added_screen/profile_photo_added_screen.dart';
 import 'package:instagramapp/src/ui/screens/main_home_screen/main_home_screen.dart';
@@ -39,7 +40,7 @@ class AppRouter {
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.splashScreen:
-        return _customMaterialPageRoute(ExplorePhotosScreen(), settings);
+        return _customMaterialPageRoute(SplashScreen(), settings);
       case AppRoutes.mainHomeScreen:
         return _customMaterialPageRoute(MainHomeScreen(), settings);
       case AppRoutes.authScreen:
