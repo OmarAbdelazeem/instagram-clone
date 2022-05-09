@@ -28,12 +28,10 @@ class AppRoutes {
   static const String peopleSuggestionsScreen = "/peopleSuggestionsScreen";
   static const String activityScreen = "/activityScreen";
   static const String editProfileScreen = "/editProfileScreen";
-  static const String commentsScreen = "/commentsScreen";
   static const String postDetailsScreen = "/postDetailsScreen";
   static const String profileScreen = "/profileScreen";
   static const String newPostScreen = "/newPostScreen";
   static const String searchScreen = "/searchScreen";
-  static const String searchedUserProfileScreen = "/searchedUserProfileScreen";
 }
 
 class AppRouter {
@@ -49,24 +47,20 @@ class AppRouter {
         return _customMaterialPageRoute(NameAndPasswordScreen(), settings);
       case AppRoutes.profilePhotoAddedScreen:
         return _customMaterialPageRoute(ProfilePhotoAddedScreen(), settings);
-        case AppRoutes.addProfilePhotoScreen:
+      case AppRoutes.addProfilePhotoScreen:
         return _customMaterialPageRoute(AddProfilePhotoScreen(), settings);
-        case AppRoutes.peopleSuggestionsScreen:
+      case AppRoutes.peopleSuggestionsScreen:
         return _customMaterialPageRoute(PeopleSuggestionsScreen(), settings);
-        case AppRoutes.activityScreen:
+      case AppRoutes.activityScreen:
         return _customMaterialPageRoute(ActivityScreen(), settings);
-        case AppRoutes.searchScreen:
+      case AppRoutes.searchScreen:
         return _customMaterialPageRoute(SearchScreen(), settings);
-        case AppRoutes.editProfileScreen:
+      case AppRoutes.editProfileScreen:
         return _customMaterialPageRoute(EditProfileScreen(), settings);
-        case AppRoutes.commentsScreen:
-        return _customMaterialPageRoute(CommentsScreen(), settings);
-        case AppRoutes.postDetailsScreen:
+      case AppRoutes.postDetailsScreen:
         return _customMaterialPageRoute(PostDetailsScreen(), settings);
-        case AppRoutes.newPostScreen:
+      case AppRoutes.newPostScreen:
         return _customMaterialPageRoute(NewPostScreen(), settings);
-        case AppRoutes.searchedUserProfileScreen:
-        return _customMaterialPageRoute(SearchedUserProfileScreen(), settings);
       default:
         return _customMaterialPageRoute(UnKnownRouteScreen(), settings);
     }

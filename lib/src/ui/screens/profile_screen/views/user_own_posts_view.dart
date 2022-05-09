@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../../models/post_model/post_model.dart';
+import '../../../../models/viewed_post_model/viewed_post_model.dart';
 import '../../../../repository/data_repository.dart';
 import '../../../../repository/storage_repository.dart';
 import '../widgets/small_post_view.dart';
@@ -18,11 +20,17 @@ class UserOwnPostsView extends StatefulWidget {
 }
 
 class _UserOwnPostsViewState extends State<UserOwnPostsView> {
-  final postsBloc = PostsBloc(DataRepository(), StorageRepository());
+  PostsBloc? postsBloc;
+  bool? isForLoggedInUser;
 
   @override
   void initState() {
-    postsBloc.add(FetchUserOwnPostsStarted(widget.userId));
+    isForLoggedInUser =
+        context.read<LoggedInUserBloc>().loggedInUser!.id == widget.userId;
+    postsBloc = context.read<PostsBloc>();
+    postsBloc!.add(isForLoggedInUser!
+        ? FetchUserPostsStarted(widget.userId)
+        : FetchSearchedUserPostsStarted(widget.userId));
     super.initState();
   }
 
@@ -34,14 +42,15 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
     final double itemWidth = size.width / 2;
 
     return BlocBuilder(
-        bloc: postsBloc,
         builder: (context, state) {
           if (state is Error)
             return Text(state.error);
           else if (state is PostsLoaded) {
             return state.posts.isNotEmpty
                 ? _buildOwnPosts(
-                    posts: state.posts,
+                    posts: isForLoggedInUser!
+                        ? postsBloc!.loggedInUserPosts
+                        : postsBloc!.searchedUserPosts,
                     itemHeight: itemHeight,
                     itemWidth: itemWidth)
                 : _buildEmptyOwnPosts();

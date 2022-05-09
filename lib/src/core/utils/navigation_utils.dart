@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 class NavigationUtils {
   NavigationUtils._();
 
-  static void pushNamed(
+  static Future pushNamed(
       {required String route,
       required BuildContext context,
       dynamic arguments}) {
-    Navigator.pushNamed(context, route, arguments: arguments);
+    return Navigator.pushNamed(context, route, arguments: arguments);
   }
 
-  static void pushNamedAndPopUntil(
-      String route, BuildContext context, [dynamic arguments]) {
+  static void pushNamedAndPopUntil(String route, BuildContext context,
+      [dynamic arguments]) {
     Navigator.pushNamedAndRemoveUntil(context, route, (route) => false,
         arguments: arguments);
   }
 
-  static void pushScreen({
+  static Future pushScreen({
     required Widget screen,
     required BuildContext context,
   }) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    return Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 }

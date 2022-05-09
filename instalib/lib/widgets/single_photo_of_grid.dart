@@ -20,7 +20,7 @@ class PostPhoto extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => PostScreen(
-                      post: post,
+                      postData: post,
                       ),
               ),
           );

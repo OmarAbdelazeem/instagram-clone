@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
-import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
-import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
@@ -51,7 +50,7 @@ class _LoginViewState extends State<LoginView> {
     else if (state is AuthSuccess) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       NavigationUtils.pushNamedAndPopUntil(AppRoutes.mainHomeScreen, context);
-      context.read<UsersBloc>().add(SetLoggedInUserStarted(state.user));
+      context.read<LoggedInUserBloc>().add(SetLoggedInUserStarted(state.user));
     } else if (state is Error)
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
   }

@@ -32,7 +32,7 @@ class SetLoggedInUserStarted extends UsersEvent {
 }
 
 class SetSearchedUserStarted extends UsersEvent {
-  final SearchedUser user;
+  final UserModel user;
 
   SetSearchedUserStarted(this.user);
 }

@@ -35,10 +35,10 @@ class ProfileDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            isMyProfile ? user.userName : user.userName,
+            user.userName!,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          isMyProfile ? Text(user.bio) : Text(user.bio),
+          Text(user.bio!),
         ],
       ),
     );
@@ -49,17 +49,17 @@ class ProfileDetails extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         isMyProfile
-            ? _buildLoggedInUserProfilePhoto(user.photoUrl)
-            : _buildSearchedUserProfilePhoto(user.photoUrl),
+            ? _buildLoggedInUserPhoto(user.photoUrl!)
+            : _buildSearchedUserProfilePhoto(user.photoUrl!),
         Container(
           height: 50,
           width: MediaQuery.of(context).size.width * 0.6,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _buildNumericInfo(user.postsCount, AppStrings.posts),
-              _buildNumericInfo(user.followersCount, AppStrings.followers),
-              _buildNumericInfo(user.followingCount, AppStrings.following),
+              _buildNumericInfo(user.postsCount!, AppStrings.posts),
+              _buildNumericInfo(user.followersCount!, AppStrings.followers),
+              _buildNumericInfo(user.followingCount!, AppStrings.following),
             ],
           ),
         ),
@@ -114,7 +114,7 @@ Widget _buildSearchedUserProfilePhoto(String photoUrl) {
         );
 }
 
-Widget _buildLoggedInUserProfilePhoto(String photoUrl) {
+Widget _buildLoggedInUserPhoto(String photoUrl) {
   //Todo fix this function
   return Container(
     height: 85,

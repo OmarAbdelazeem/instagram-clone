@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
-import 'package:instagramapp/src/ui/common/post_widget.dart';
+
+import '../../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../../models/viewed_post_model/viewed_post_model.dart';
+import '../../../common/post_view.dart';
 
 class UserMentionedPostsView extends StatelessWidget {
   final String userId;
@@ -16,7 +20,12 @@ class UserMentionedPostsView extends StatelessWidget {
         ? _buildEmptyMentionedPhotos()
         : ListView.builder(
             itemBuilder: (BuildContext context, int index) {
-              return PostWidget(post: posts[index]);
+              return PostView(
+                post: posts[index],
+                isLiked: context
+                    .read<PostsBloc>()
+                    .getPostLikesCount(posts[index].postId),
+              );
             },
           );
   }

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -8,29 +7,28 @@ part 'user_model.g.dart';
 
 @JsonSerializable()
 //Todo implement equatable to compare user in listening stream
-class UserModel{
-  String bio;
-  String id;
-  String userName;
-  String photoUrl;
-  String email;
-  int followingCount;
-  int followersCount;
-  int postsCount;
+class UserModel {
+  String? bio;
+  String? id;
+  String? userName;
+  String? photoUrl;
+  String? email;
+  int? followingCount;
+  int? followersCount;
+  int? postsCount;
   @TimestampConverter()
-  DateTime timestamp;
+  DateTime? timestamp;
 
-  UserModel({
-   required this.photoUrl,
-    required this.userName,
-    required this.bio,
-    required this.id,
-    required this.email,
-    required this.postsCount,
-    required this.followersCount,
-    required this.followingCount,
-    required this.timestamp
-  });
+  UserModel(
+      {this.photoUrl,
+      this.userName,
+      this.bio,
+      this.id,
+      this.email,
+      this.postsCount,
+      this.followersCount,
+      this.followingCount,
+      this.timestamp});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);

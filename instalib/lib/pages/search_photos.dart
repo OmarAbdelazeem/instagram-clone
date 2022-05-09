@@ -77,7 +77,7 @@ class _SearchPhotosState extends State<SearchPhotos> {
                           List<PostPhoto> posts = snapshot.data.docs.map(
                             (post) {
                               return PostPhoto(
-                                post: Post.fromDocument(post),
+                                postData: Post.fromDocument(post),
                               );
                             },
                           ).toList();

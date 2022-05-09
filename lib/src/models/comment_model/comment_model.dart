@@ -12,7 +12,7 @@ class CommentModel {
   final String comment;
   final String publisherName;
   final String postId;
-  final String commentId;
+  String? commentId;
   final String publisherPhotoUrl;
   @TimestampConverter()
   final DateTime timestamp;
@@ -20,9 +20,9 @@ class CommentModel {
   CommentModel(
       {required this.comment,
       required this.publisherId,
+      required this.commentId,
       required this.publisherName,
       required this.postId,
-      required this.commentId,
       required this.postUrl,
       required this.timestamp,
       required this.publisherPhotoUrl});

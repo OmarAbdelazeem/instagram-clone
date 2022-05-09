@@ -10,7 +10,7 @@ import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
 import '../../../../router.dart';
-import '../../../bloc/users_bloc/users_bloc.dart';
+import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';
 
@@ -21,8 +21,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedIndex = 0;
-  UsersBloc? usersBloc;
-  UserModel? user;
+  LoggedInUserBloc? loggedInUserBloc;
   List<AppTabItemModel> tabsItems = [
     AppTabItemModel(
         selectedItem: Icon(
@@ -54,12 +53,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    usersBloc = context.read<UsersBloc>();
-    user = usersBloc!.loggedInUser;
-    usersBloc!.add(ListenToLoggedInUserStarted());
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
+    loggedInUserBloc!.add(ListenToLoggedInUserStarted());
     _views = [
-      UserOwnPostsView(userId: user!.id),
-      UserMentionedPostsView(userId: user!.id)
+      UserOwnPostsView(userId: loggedInUserBloc!.loggedInUser!.id!),
+      UserMentionedPostsView(userId: loggedInUserBloc!.loggedInUser!.id!)
     ];
     super.initState();
   }
@@ -87,8 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUpperDetails() {
     return Column(
       children: [
-        BlocBuilder<UsersBloc, UsersState>(builder: (context, state) {
-          return ProfileDetails(user: context.read<UsersBloc>().loggedInUser!);
+        BlocBuilder<LoggedInUserBloc, LoggedInUserState>(builder: (context, state) {
+          return ProfileDetails(user: context.read<LoggedInUserBloc>().loggedInUser!);
         }),
         SizedBox(
           height: 12,
@@ -127,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        context.watch<UsersBloc>().loggedInUser!.userName,
+        context.watch<LoggedInUserBloc>().loggedInUser!.userName!,
         style: TextStyle(color: Colors.black),
       ),
       actions: <Widget>[

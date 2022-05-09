@@ -25,7 +25,7 @@ Widget userOwnPhotos(String id) {
       snapshot.data.docs.map(
         (post) {
           return PostPhoto(
-            post: Post.fromDocument(post),
+            postData: Post.fromDocument(post),
           );
         },
       ).toList();

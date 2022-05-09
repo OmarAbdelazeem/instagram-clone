@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
@@ -11,13 +11,12 @@ import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/time_line_actions_drob_down.dart';
 import '../../../../router.dart';
-import '../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../bloc/posts_bloc/posts_bloc.dart';
-import '../../../bloc/profile_bloc/profile_bloc.dart';
 import '../../../models/user_model/user_model.dart';
+import '../../../models/viewed_post_model/viewed_post_model.dart';
 import '../../../res/app_strings.dart';
 import '../../common/app_logo.dart';
-import '../../common/post_widget.dart';
+import '../../common/post_view.dart';
 
 class TimeLineScreen extends StatefulWidget {
   @override
@@ -27,28 +26,10 @@ class TimeLineScreen extends StatefulWidget {
 class _TimeLineScreenState extends State<TimeLineScreen> {
   bool isEmptyPosts = false;
 
-
-  List<PostWidget> posts = [
-    PostWidget(
-      post: PostModel(
-          timestamp: DateTime.now(),
-          commentsCount: 5,
-          postId: "1",
-          caption: "test",
-          likesCount: 12,
-          photoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-          publisherId: "12",
-          publisherName: "Omar",
-          publisherProfilePhotoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg"),
-    )
-  ];
-
   List<UserModel> users = [
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -56,10 +37,11 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         postsCount: 1,
         followersCount: 3,
         followingCount: 5,
-        timestamp: (Timestamp.now()).toDate()),
+   timestamp: (Timestamp.now()).toDate()),
+
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -67,10 +49,11 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         postsCount: 1,
         followersCount: 3,
         followingCount: 5,
-        timestamp: (Timestamp.now()).toDate()),
+  timestamp: (Timestamp.now()).toDate()),
+
     UserModel(
         photoUrl:
-        "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
+            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
         userName: "Omar Abdelazeem",
         bio: "this is a bio",
         id: "123",
@@ -78,7 +61,8 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         postsCount: 1,
         followersCount: 3,
         followingCount: 5,
-        timestamp: (Timestamp.now()).toDate()),
+   timestamp: (Timestamp.now()).toDate())
+
   ];
 
   @override
@@ -93,7 +77,22 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
       appBar: _buildAppBar(),
       body: RefreshIndicator(
         onRefresh: () => getTimeLinePosts(),
-        child: isEmptyPosts ? _buildRecommendedUsers() : _buildTimelinePosts(),
+        child: BlocBuilder<PostsBloc, PostsState>(
+            builder: (BuildContext context, state) {
+              print("state is $state");
+          if (state is PostsLoaded) {
+            final timelinePosts = context.read<PostsBloc>().timelinePosts;
+            if (timelinePosts.isNotEmpty)
+              return _buildTimelinePosts(timelinePosts);
+            else
+              return _buildRecommendedUsers();
+          } else if (state is Error)
+            return Text(state.error);
+          else
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+        }),
       ),
     );
   }
@@ -127,39 +126,24 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
   Future getTimeLinePosts() async {
     context.read<PostsBloc>().add(FetchAllTimelinePostsStarted(
-        context
-            .read<UsersBloc>()
-            .loggedInUser!
-            .id));
+        context.read<LoggedInUserBloc>().loggedInUser!.id!));
   }
 
-  _buildTimelinePosts() {
-    return BlocConsumer<PostsBloc, PostsState>(
-        listener: (BuildContext context, state) {
-          if (state is PostsLoaded && state.posts.isEmpty) {
-            setState(() {
-              isEmptyPosts = true;
-            });
-          }
-        }, builder: (BuildContext context, state) {
-      if (state is PostsLoaded) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemBuilder: (context, index) => PostWidget(post: state.posts[index]),
-          itemCount: state.posts.length,
-        );
-      } else if (state is Error)
-        return Text(state.error);
-      else
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-    });
+  _buildTimelinePosts(List<PostModel> timelinePosts) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemBuilder: (context, index) => PostView(
+          post: timelinePosts[index],
+          isLiked: context
+              .read<PostsBloc>()
+              .getPostLikesCount(timelinePosts[index].postId)),
+      itemCount: timelinePosts.length,
+    );
   }
 
   _buildRecommendedUsers() {
     return Column(
-    mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
@@ -184,7 +168,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
-              // return Container();
               return RecommendedUser(users[index]);
             },
             itemCount: users.length,

@@ -18,8 +18,8 @@ class SearchedPostScreen extends StatefulWidget {
 class _SearchedPostScreenState extends State<SearchedPostScreen> {
   @override
   void initState() {
-    context.read<PostsBloc>().add(
-        PostDetailsLoadStarted(postId: widget.postId, userId: widget.userId));
+    // context.read<PostsBloc>().add(
+    //     PostDetailsLoadStarted(postId: widget.postId));
     // TODO: implement initState
     super.initState();
   }

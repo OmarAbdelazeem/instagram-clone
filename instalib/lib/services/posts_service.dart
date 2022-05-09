@@ -28,7 +28,7 @@ class PostServices {
           .get();
       List<PostWidget> posts = snapshot.docs.map((doc) {
         return PostWidget(
-          post: Post.fromDocument(doc),
+          postData: Post.fromDocument(doc),
         );
       }).toList();
       return posts;
@@ -62,12 +62,12 @@ class PostServices {
           .collection('userLikes')
           .doc(Data.currentPost.postId)
           .delete();
-      postsRef.doc(Data.currentPost.publisherId).collection('userPosts').doc(Data.currentPost.postId).update({
+      postsRef.doc(Data.currentPost.userId).collection('userPosts').doc(Data.currentPost.postId).update({
         'likes': FieldValue.arrayRemove([Data.defaultUser.searchedUserId])
       });
 
       await notificationRef
-          .doc(Data.currentPost.publisherId)
+          .doc(Data.currentPost.userId)
           .collection('userNotification')
           .doc(Data.currentPost.postId)
           .get()
@@ -82,12 +82,12 @@ class PostServices {
           .set({});
       print('current post id is ${Data.currentPost.postId}');
 
-      postsRef.doc(Data.currentPost.publisherId).collection('userPosts').doc(Data.currentPost.postId).update({
+      postsRef.doc(Data.currentPost.userId).collection('userPosts').doc(Data.currentPost.postId).update({
         'likes': FieldValue.arrayUnion([Data.defaultUser.searchedUserId])
       });
 
       postsRef
-          .doc(Data.currentPost.publisherId)
+          .doc(Data.currentPost.userId)
           .collection('userPosts')
           .doc(Data.currentPost.postId)
           .update({
@@ -95,7 +95,7 @@ class PostServices {
       });
 
       await notificationRef
-          .doc(Data.currentPost.publisherId)
+          .doc(Data.currentPost.userId)
           .collection('userNotification')
           .doc(Data.currentPost.postId)
           .set({
@@ -132,7 +132,7 @@ class PostServices {
     });
 
     await notificationRef
-        .doc(Data.currentPost.publisherId)
+        .doc(Data.currentPost.userId)
         .collection('userNotification')
         .doc(commentId)
         .set({

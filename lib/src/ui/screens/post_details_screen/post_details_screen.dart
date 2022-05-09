@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 
-import '../../common/post_widget.dart';
+import '../../../models/viewed_post_model/viewed_post_model.dart';
+import '../../common/post_view.dart';
 
 class PostDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final post = ModalRoute.of(context)!.settings.arguments as PostModel;
+
     return Scaffold(
-      // drawerScrimColor: Colors.black,
       appBar: _buildAppBar(),
-      body: PostWidget(
+      body: PostView(
         post: post,
+        isLiked: context.read<PostsBloc>().getPostLikesCount(post.postId),
       ),
     );
   }
 
   AppBar _buildAppBar() {
     return AppBar(
-      iconTheme: IconThemeData(
-        color: Colors.black, //change your color here
-      ),
-      // backgroundColor: Color(0xfffafafa),
       title: Text(
         AppStrings.post,
         style: TextStyle(color: Colors.black),

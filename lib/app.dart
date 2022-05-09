@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
-import 'package:instagramapp/src/bloc/follow_bloc/follow_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
-import 'package:instagramapp/src/bloc/profile_bloc/profile_bloc.dart';
+import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -52,14 +53,15 @@ class MyApp extends StatelessWidget {
                 context.read<DataRepository>(),
               ),
             ),
-            BlocProvider<FollowBloc>(
-              create: (context) => FollowBloc(
-                context.read<DataRepository>(),
-              ),
-            ),
-            BlocProvider<ProfileBloc>(
-              create: (context) => ProfileBloc(),
-            ),
+            BlocProvider<LoggedInUserBloc>(
+                create: (context) =>
+                    LoggedInUserBloc(context.read<DataRepository>())),
+            BlocProvider<SearchedUserBloc>(
+                create: (context) =>
+                    SearchedUserBloc(context.read<DataRepository>())),
+            BlocProvider<PostItemBloc>(
+                create: (context) =>
+                    PostItemBloc(context.read<DataRepository>()))
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

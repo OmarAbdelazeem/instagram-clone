@@ -52,14 +52,14 @@ class _RecommendedUserState extends State<RecommendedUser> {
                 height: 10,
               ),
               Text(
-                widget.user.userName,
+                widget.user.userName!,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
               ),
               SizedBox(
                 height: 5,
               ),
               Text(
-                widget.user.bio,
+                widget.user.bio!,
                 style: TextStyle(color: Colors.grey),
               ),
               SizedBox(

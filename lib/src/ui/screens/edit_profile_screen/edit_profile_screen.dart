@@ -25,7 +25,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       postsCount: 1,
       followersCount: 3,
       followingCount: 5,
-      timestamp: (Timestamp.now()).toDate());
+      //Todo fix this
+       timestamp: (Timestamp.now()).toDate());
+
   bool _displayNameValid = true;
   bool _bioValid = true;
 
@@ -163,7 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: CircleAvatar(
                           radius: 50.0,
                           backgroundImage:
-                              CachedNetworkImageProvider(user!.photoUrl),
+                              CachedNetworkImageProvider(user!.photoUrl!),
                         ),
                       ),
                       Padding(

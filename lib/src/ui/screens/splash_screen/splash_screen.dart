@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
-import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import '../../../../router.dart';
 import '../../../core/utils/navigation_utils.dart';
 
@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
           NavigationUtils.pushNamedAndPopUntil(
               AppRoutes.mainHomeScreen, context);
           print("state.user id is ${state.user.id}");
-          context.read<UsersBloc>().add(SetLoggedInUserStarted(state.user));
+          context.read<LoggedInUserBloc>().add(SetLoggedInUserStarted(state.user));
         } else
           NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);
       },

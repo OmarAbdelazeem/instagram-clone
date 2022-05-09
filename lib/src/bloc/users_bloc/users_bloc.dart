@@ -14,33 +14,31 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
 
   UsersBloc(this._dataRepository) : super(UsersInitial()) {
     on<SearchByTermEventStarted>(_onSearchByTermStarted);
-    on<SearchByIdEventStarted>(_onSearchByIdStarted);
-    on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
-    on<SetSearchedUserStarted>(_onSetSearchedUserStarted);
-    on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
-    on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
+    // on<SearchByIdEventStarted>(_onSearchByIdStarted);
+    // on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
+    // on<SetSearchedUserStarted>(_onSetSearchedUserStarted);
+    // on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
+    // on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     // on<FetchRecommendedUsersStarted>(_onFetchRecommendedUsersStarted);
   }
 
   UserModel? loggedInUser;
-  SearchedUser? searchedUser;
+  UserModel? searchedUser;
 
   _onSearchByTermStarted(SearchByTermEventStarted event, emit) async {
     if (event.term.isNotEmpty) {
       emit(UsersLoading());
       try {
         var fetchedUsersData = await _dataRepository.searchForUser(event.term);
-        List<SearchedUser> fetchedUsers =
+        List<UserModel> fetchedUsers =
             List.generate(fetchedUsersData.docs.length, (index) {
           var currentUserData = fetchedUsersData.docs[index];
-          return SearchedUser(
-              UserModel.fromJson(
-                  currentUserData.data() as Map<String, dynamic>),
-              false);
+          return UserModel.fromJson(
+              currentUserData.data() as Map<String, dynamic>);
         });
 
         int loggedInUserIndex = fetchedUsers.indexWhere((element) {
-          return element.data.id == AuthRepository().getCurrentUser()!.uid;
+          return element.id == AuthRepository().getCurrentUser()!.uid;
         });
         if (loggedInUserIndex != -1) {
           fetchedUsers.removeAt(loggedInUserIndex);
@@ -72,28 +70,28 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   //   }
   // }
 
-  _onSearchByIdStarted(SearchByIdEventStarted event, emit) async {
-    try {
-      emit(UsersLoading());
-      final jsonUserDetails =
-          await _dataRepository.getUserDetails(event.searchedUserId);
-      bool isFollowing = await _dataRepository.checkIfUserFollowingSearched(
-          senderId: loggedInUser!.id, receiverId: event.searchedUserId);
-      searchedUser = SearchedUser(
-          UserModel.fromJson(jsonUserDetails.data() as Map<String, dynamic>),
-          isFollowing);
-
-      emit(SearchedUserLoaded(searchedUser!));
-    } catch (e) {
-      print(e.toString());
-      emit(UsersError(e.toString()));
-    }
-  }
+  // _onSearchByIdStarted(SearchByIdEventStarted event, emit) async {
+  //   try {
+  //     emit(UsersLoading());
+  //     final jsonUserDetails =
+  //         await _dataRepository.getUserDetails(event.searchedUserId);
+  //     bool isFollowing = await _dataRepository.checkIfUserFollowingSearched(
+  //         senderId: loggedInUser!.id, receiverId: event.searchedUserId);
+  //     searchedUser = SearchedUser(
+  //         UserModel.fromJson(jsonUserDetails.data() as Map<String, dynamic>),
+  //         isFollowing);
+  //
+  //     emit(SearchedUserLoaded(searchedUser!));
+  //   } catch (e) {
+  //     print(e.toString());
+  //     emit(UsersError(e.toString()));
+  //   }
+  // }
 
   _onListenToLoggedInUserStarted(ListenToLoggedInUserStarted event, state) {
     try {
       _dataRepository
-          .listenToUserDetails(loggedInUser!.id)
+          .listenToUserDetails(loggedInUser!.id!)
           .listen((streamEvent) {
         if (streamEvent.data() != null) {
           loggedInUser =
@@ -109,12 +107,10 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   _onListenToSearchedUserStarted(ListenToSearchedUserStarted event, state) {
     try {
       _dataRepository
-          .listenToUserDetails(searchedUser!.data.id)
+          .listenToUserDetails(searchedUser!.id!)
           .listen((streamEvent) {
         if (streamEvent.data() != null) {
-          searchedUser = SearchedUser(
-              UserModel.fromJson(streamEvent.data() as Map<String, dynamic>),
-              searchedUser!.isFollowing);
+          searchedUser = UserModel.fromJson(streamEvent.data() as Map<String, dynamic>);
           emit(SearchedUserLoaded(searchedUser!));
         }
       });

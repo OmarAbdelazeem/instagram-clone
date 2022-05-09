@@ -16,7 +16,6 @@ class DataRepository {
   final usersRef = FirebaseFirestore.instance.collection("users");
   final usersCommentsRef =
       FirebaseFirestore.instance.collection("usersComments");
-  final usersLikesRef = FirebaseFirestore.instance.collection("usersLikes");
   final usersFollowersRef =
       FirebaseFirestore.instance.collection("usersFollowers");
   final usersFollowingRef =
@@ -26,7 +25,7 @@ class DataRepository {
     return await usersRef.doc(userId).get();
   }
 
-  Stream<DocumentSnapshot> listenToUserDetails(String id) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToUserDetails(String id) {
     return usersRef.doc(id).snapshots();
   }
 
@@ -41,37 +40,41 @@ class DataRepository {
   Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(
       String userId) async {
     return await postsRef
-        .doc(userId)
-        .collection('posts')
         .orderBy('timestamp', descending: true)
+        .where("publisherId", isEqualTo: userId)
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getTimelinePostsIds(
-      String userId) async {
-    return await timelineRef
-        .doc(userId)
-        .collection('timeline')
-        // .orderBy('timestamp', descending: true)
-        .get();
+  Stream<QuerySnapshot<Map<String, dynamic>>> listenToTimelinePostsIds(
+      String userId) {
+    return timelineRef.doc(userId).collection('timeline').limit(10).snapshots();
+  }
 
+  Future<QuerySnapshot<Map<String, dynamic>>> getPostComments(
+      String postId) async {
+    return await postsCommentsRef.doc(postId).collection("postsComments").get();
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getPostDetails(
-      {required String postId,required String userId}) async {
-    return await postsRef.doc(userId).collection("posts").doc(postId).get();
+      {required String postId}) async {
+    return await postsRef.doc(postId).get();
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToPostDetails(
+      {required String postId}) {
+    return postsRef.doc(postId).get().asStream();
   }
 
   Future<bool> checkIfUserLikesPost(String userId, String postId) async {
-    return (await usersLikesRef
-            .doc(userId)
-            .collection("usersLikes")
+    return (await postsLikesRef
             .doc(postId)
+            .collection("postsLikes")
+            .doc(userId)
             .get())
         .exists;
   }
 
-  addLikeToPost(String postId, String userId) async {
+  addLikeToPost({required String postId, required String userId}) async {
     /// 1) add user id to postsLikes collection of post
 
     await postsLikesRef
@@ -82,36 +85,29 @@ class DataRepository {
 
     /// 2) increment likesCount of post
 
-    postsRef
-        .doc(userId)
-        .collection("posts")
-        .doc(postId)
-        .update({"likesCount": FieldValue.increment(1)});
+    postsRef.doc(postId).update({"likesCount": FieldValue.increment(1)});
   }
 
-  removeLikeFromPost(String postId, String userId) async {
+  removeLikeFromPost(
+      {required String postId, required String publisherId}) async {
     /// 1) remove user id from postsLikes collection of post
 
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
-        .doc(userId)
+        .doc(publisherId)
         .delete();
 
     /// 2) decrement likesCount of post
 
-    postsRef
-        .doc(userId)
-        .collection("posts")
-        .doc(postId)
-        .update({"likesCount": FieldValue.increment(-1)});
+    postsRef.doc(postId).update({"likesCount": FieldValue.increment(-1)});
   }
 
   Future addComment(CommentModel comment) async {
     /// 1) add comment to postsComments collection of post
 
     await postsCommentsRef
-        .doc(comment.publisherId)
+        .doc(comment.postId)
         .collection('postsComments')
         .doc(comment.commentId)
         .set(comment.toJson());
@@ -119,8 +115,6 @@ class DataRepository {
     /// 2) increment commentsCount of post
 
     postsRef
-        .doc(comment.publisherId)
-        .collection("posts")
         .doc(comment.postId)
         .update({"commentsCount": FieldValue.increment(1)});
   }
@@ -137,8 +131,6 @@ class DataRepository {
     /// 2) decrement commentsCount of post
 
     postsRef
-        .doc(comment.publisherId)
-        .collection("posts")
         .doc(comment.postId)
         .update({"commentsCount": FieldValue.increment(-1)});
   }
@@ -153,11 +145,7 @@ class DataRepository {
     PostModel post,
   ) async {
     /// 1) add post in publisher postsRef
-    await postsRef
-        .doc(post.publisherId)
-        .collection("posts")
-        .doc(post.postId)
-        .set(post.toJson());
+    await postsRef.doc(post.postId).set(post.toJson());
 
     /// 2) add post id to user followers timeline
 
@@ -209,10 +197,9 @@ class DataRepository {
 
     ///5) add receiver posts to sender timeline
     var postsQuerySnapshot = await postsRef
-        .doc(receiverId)
-        .collection("posts")
         .orderBy("timestamp", descending: true)
-        .limit(5)
+        .where("publisherId", isEqualTo: receiverId)
+        .limit(3)
         .get();
     postsQuerySnapshot.docs.forEach((doc) async {
       await timelineRef
@@ -224,7 +211,7 @@ class DataRepository {
   }
 
   removeFollower({required String receiverId, required String senderId}) async {
-    ///1) remove receiver id to sender usersFollowing collection
+    ///1) remove receiver id from sender usersFollowing collection
     await usersFollowingRef
         .doc(senderId)
         .collection("usersFollowing")
@@ -237,9 +224,9 @@ class DataRepository {
         .doc(senderId)
         .update({"followingCount": FieldValue.increment(-1)});
 
-    ///3) delete sender from receiver usersFollowers receiver
+    ///3) remove senderId from receiver usersFollowers receiver
 
-    await usersFollowingRef
+    await usersFollowersRef
         .doc(receiverId)
         .collection("usersFollowers")
         .doc(senderId)

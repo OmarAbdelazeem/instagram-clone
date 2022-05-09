@@ -8,7 +8,7 @@ class UsersInitial extends UsersState {}
 class UsersLoading extends UsersState {}
 
 class UsersLoaded extends UsersState {
-  final List<SearchedUser> users;
+  final List<UserModel> users;
 
   UsersLoaded(this.users);
 }
@@ -20,7 +20,7 @@ class LoggedInUserLoaded extends UsersState {
 }
 
 class SearchedUserLoaded extends UsersState {
-  final SearchedUser searchedUser;
+  final UserModel searchedUser;
 
   SearchedUserLoaded(this.searchedUser);
 }

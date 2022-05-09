@@ -8,26 +8,27 @@ part 'post_model.g.dart';
 @JsonSerializable()
 class PostModel {
   String caption;
-  String publisherName;
   String photoUrl;
   String postId;
+  String publisherName;
   int likesCount;
   int commentsCount;
-  String publisherId;
   String publisherProfilePhotoUrl;
+  String publisherId;
   @TimestampConverter()
   DateTime timestamp;
 
-  PostModel(
-      {required this.publisherName,
-      required this.caption,
-      required this.photoUrl,
-      required this.postId,
-      required this.commentsCount,
-      required this.publisherId,
-      required this.timestamp,
-      required this.likesCount,
-      required this.publisherProfilePhotoUrl});
+  PostModel({
+    required this.caption,
+    required this.photoUrl,
+    required this.postId,
+    required this.publisherName,
+    required this.publisherProfilePhotoUrl,
+    required this.commentsCount,
+    required this.publisherId,
+    required this.timestamp,
+    required this.likesCount,
+  });
 
   factory PostModel.fromJson(Map<String, dynamic> json) =>
       _$PostModelFromJson(json);

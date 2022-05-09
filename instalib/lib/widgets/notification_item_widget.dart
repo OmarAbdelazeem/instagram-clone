@@ -36,7 +36,7 @@ class NotificationItemWidget extends StatelessWidget {
     PostServices postServices = PostServices();
     postServices.getPostInfo(postId: notification.postId).then((post){
       Data.changeCurrentPost(post);
-      NavigationFunctions.navigateToPage(context, PostScreen(post: post,));
+      NavigationFunctions.navigateToPage(context, PostScreen(postData: post,));
     });
 
   }

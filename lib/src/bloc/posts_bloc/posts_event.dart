@@ -1,28 +1,35 @@
 part of 'posts_bloc.dart';
 
 @immutable
-abstract class TimeLineEvent {}
+abstract class PostsEvent {}
 
-class FetchAllTimelinePostsStarted extends TimeLineEvent {
-  final String userId;
+class FetchAllTimelinePostsStarted extends PostsEvent {
+  final String loggedInUserId;
 
-  FetchAllTimelinePostsStarted(this.userId);
+  FetchAllTimelinePostsStarted(this.loggedInUserId);
 }
 
-class FetchUserOwnPostsStarted extends TimeLineEvent {
-  final String userId;
-
-  FetchUserOwnPostsStarted(this.userId);
-}
-
-class PostDetailsLoadStarted extends TimeLineEvent {
-  final String userId;
+class AddPostIdToLikes extends PostsEvent {
   final String postId;
 
-  PostDetailsLoadStarted({required this.userId, required this.postId});
+  AddPostIdToLikes(this.postId);
 }
 
-class PostUploadStarted extends TimeLineEvent {
+class ListenToTimelinePosts extends PostsEvent {}
+
+class FetchUserPostsStarted extends PostsEvent {
+  final String userId;
+
+  FetchUserPostsStarted(this.userId);
+}
+
+// class FetchSearchedUserPostsStarted extends PostsEvent {
+//   final String userId;
+//
+//   FetchSearchedUserPostsStarted(this.userId);
+// }
+
+class PostUploadStarted extends PostsEvent {
   final XFile imageFile;
   final String caption;
   final UserModel user;

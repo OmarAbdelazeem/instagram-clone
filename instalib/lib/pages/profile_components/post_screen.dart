@@ -21,7 +21,7 @@ class PostScreen extends StatelessWidget {
         ),
       ),
       body: PostWidget(
-        post: post,
+        postData: post,
       ),
     );
   }

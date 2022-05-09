@@ -9,9 +9,9 @@ part of 'comment_model.dart';
 CommentModel _$CommentModelFromJson(Map<String, dynamic> json) => CommentModel(
       comment: json['comment'] as String,
       publisherId: json['publisherId'] as String,
+      commentId: json['commentId'] as String?,
       publisherName: json['publisherName'] as String,
       postId: json['postId'] as String,
-      commentId: json['commentId'] as String,
       postUrl: json['postUrl'] as String,
       timestamp:
           const TimestampConverter().fromJson(json['timestamp'] as Timestamp),

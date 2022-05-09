@@ -4,17 +4,19 @@ import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 
 import '../../../../../router.dart';
+import '../../../../models/viewed_post_model/viewed_post_model.dart';
 
 class SmallPostView extends StatelessWidget {
-  final PostModel post;
+  PostModel post;
 
-  const SmallPostView({Key? key, required this.post}) : super(key: key);
+  SmallPostView({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        NavigationUtils.pushNamed(route: AppRoutes.postDetailsScreen,
+        NavigationUtils.pushNamed(
+            route: AppRoutes.postDetailsScreen,
             context: context,
             arguments: post);
       },
