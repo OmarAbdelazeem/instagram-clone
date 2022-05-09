@@ -31,10 +31,9 @@ class _PostViewState extends State<PostView> {
   int? postLikesCount;
   PostItemBloc? postItemBloc;
   PostsBloc? postsBloc;
-  bool isLiked = false;
 
   void likeButtonTapped() {
-    if (widget.isLiked) {
+    if (postItemBloc!.isLiked) {
       postItemBloc!.add(RemoveLikeStarted(
           postId: widget.post.postId,
           userId: context.read<LoggedInUserBloc>().loggedInUser!.id!));
@@ -130,15 +129,13 @@ class _PostViewState extends State<PostView> {
                   if (state is PostIsLiked) {
                     postsBloc!.addPostIdToLikes(
                         id: widget.post.postId, likes: widget.post.likesCount);
-                    widget.isLiked = true;
                   } else if (state is PostIsUnLiked) {
                     postsBloc!.removePostIdFromLikes(widget.post.postId);
-                    widget.isLiked = false;
                   }
                 },
                 builder: (context, state) {
                   return IconButton(
-                      icon: widget.isLiked
+                      icon: postItemBloc!.isLiked
                           ? Icon(
                               Icons.favorite,
                             )

@@ -5,7 +5,7 @@ import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
+import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
 import '../../common/app_tabs.dart';
 import 'widgets/profile_details.dart';

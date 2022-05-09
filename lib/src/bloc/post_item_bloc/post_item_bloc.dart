@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
+
+import '../posts_bloc/posts_bloc.dart';
 
 part 'post_item_event.dart';
 
@@ -19,10 +22,12 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     on<RemoveLikeStarted>(_onRemoveLikeStarted);
     on<LoadCommentsStarted>(_onLoadCommentsStarted);
     on<AddCommentStarted>(_onAddCommentStarted);
+    on<CheckIfPostIsLikedStarted>(_onCheckIfPostIsLikedStarted);
   }
 
   PostModel? currentPost;
   List<CommentModel> comments = [];
+  bool isLiked = false;
 
   FutureOr<void> _onListenToPostStarted(
       ListenToPostStarted event, Emitter<PostItemState> state) {
@@ -81,6 +86,16 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
       emit(CommentAdded());
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  _onCheckIfPostIsLikedStarted(
+      CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
+    int likes = event.postsBloc.getPostLikesCount(currentPost!.postId);
+    if (likes > -1) {
+      emit(PostIsLiked());
+    } else {
+      emit(PostIsUnLiked());
     }
   }
 }

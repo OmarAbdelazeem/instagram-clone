@@ -5,10 +5,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../../models/post_model/post_model.dart';
-import '../../../../models/viewed_post_model/viewed_post_model.dart';
-import '../../../../repository/data_repository.dart';
-import '../../../../repository/storage_repository.dart';
-import '../widgets/small_post_view.dart';
+
 
 class UserOwnPostsView extends StatefulWidget {
   final String userId;
@@ -28,9 +25,7 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
     isForLoggedInUser =
         context.read<LoggedInUserBloc>().loggedInUser!.id == widget.userId;
     postsBloc = context.read<PostsBloc>();
-    postsBloc!.add(isForLoggedInUser!
-        ? FetchUserPostsStarted(widget.userId)
-        : FetchSearchedUserPostsStarted(widget.userId));
+    postsBloc!.add(FetchUserPostsStarted(widget.userId));
     super.initState();
   }
 

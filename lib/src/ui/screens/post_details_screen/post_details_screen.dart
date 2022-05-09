@@ -16,7 +16,6 @@ class PostDetailsScreen extends StatelessWidget {
       appBar: _buildAppBar(),
       body: PostView(
         post: post,
-        isLiked: context.read<PostsBloc>().getPostLikesCount(post.postId),
       ),
     );
   }

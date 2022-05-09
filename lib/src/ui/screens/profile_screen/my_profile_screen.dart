@@ -7,7 +7,7 @@ import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/views/user_mentioned_posts_view.dart';
+import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
 import '../../../../router.dart';
 import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';

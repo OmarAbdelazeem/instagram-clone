@@ -29,6 +29,12 @@ class AddCommentStarted extends PostItemEvent {
   AddCommentStarted({required this.comment});
 }
 
+class CheckIfPostIsLikedStarted extends PostItemEvent {
+  final PostsBloc postsBloc;
+
+  CheckIfPostIsLikedStarted(this.postsBloc);
+}
+
 class ListenToPostStarted extends PostItemEvent {
   final String postId;
 

@@ -6,9 +6,9 @@ import '../../../../res/app_strings.dart';
 class ProfileDetails extends StatelessWidget {
   final UserModel user;
   final bool isMyProfile;
-  final int count;
 
-  const ProfileDetails({Key? key, required this.user, this.isMyProfile = false, this.count=2})
+
+  const ProfileDetails({Key? key, required this.user, this.isMyProfile = false})
       : super(key: key);
 
   @override
