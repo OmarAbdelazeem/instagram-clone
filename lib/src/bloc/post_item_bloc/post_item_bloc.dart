@@ -6,7 +6,7 @@ import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
-
+import '../../core/saved_posts_likes.dart';
 import '../posts_bloc/posts_bloc.dart';
 
 part 'post_item_event.dart';
@@ -44,20 +44,25 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   }
 
   FutureOr<void> _onAddLikeStarted(
-      AddLikeStarted event, Emitter<PostItemState> state) {
+      AddLikeStarted event, Emitter<PostItemState> state) async {
     try {
       emit(PostIsLiked());
-      _dataRepository.addLikeToPost(postId: event.postId, userId: event.userId);
+      SavedPostsLikes.addPostIdToLikes(
+          id: event.postId,
+          likes: SavedPostsLikes.getPostLikesCount(event.postId) + 1);
+      await _dataRepository.addLikeToPost(
+          postId: event.postId, userId: event.userId);
     } catch (e) {
       print(e.toString());
     }
   }
 
   FutureOr<void> _onRemoveLikeStarted(
-      RemoveLikeStarted event, Emitter<PostItemState> state) {
+      RemoveLikeStarted event, Emitter<PostItemState> state) async {
     try {
       emit(PostIsUnLiked());
-      _dataRepository.removeLikeFromPost(
+      SavedPostsLikes.removePostIdFromLikes(event.postId);
+      await _dataRepository.removeLikeFromPost(
           postId: event.postId, publisherId: event.userId);
     } catch (e) {
       print(e.toString());
@@ -91,7 +96,7 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   _onCheckIfPostIsLikedStarted(
       CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
-    int likes = event.postsBloc.getPostLikesCount(currentPost!.postId);
+    int likes = SavedPostsLikes.getPostLikesCount(currentPost!.postId);
     if (likes > -1) {
       emit(PostIsLiked());
     } else {

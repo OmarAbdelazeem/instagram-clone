@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
-import '../../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../../models/post_model/post_model.dart';
+import '../../../common/small_post_view.dart';
 
-
-class UserOwnPostsView extends StatefulWidget {
-  final String userId;
-
-  UserOwnPostsView({Key? key, required this.userId}) : super(key: key);
+class SearchedUserPostsView extends StatefulWidget {
+  SearchedUserPostsView({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<UserOwnPostsView> createState() => _UserOwnPostsViewState();
+  State<SearchedUserPostsView> createState() => _SearchedUserPostsViewState();
 }
 
-class _UserOwnPostsViewState extends State<UserOwnPostsView> {
-  PostsBloc? postsBloc;
-  bool? isForLoggedInUser;
+class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
+  SearchedUserBloc? _searchedUserBloc;
 
   @override
   void initState() {
-    isForLoggedInUser =
-        context.read<LoggedInUserBloc>().loggedInUser!.id == widget.userId;
-    postsBloc = context.read<PostsBloc>();
-    postsBloc!.add(FetchUserPostsStarted(widget.userId));
+    _searchedUserBloc = context.read<SearchedUserBloc>();
+    _searchedUserBloc!.add(FetchSearchedUserPostsStarted());
+    // postsBloc!.add(FetchUserPostsStarted());
     super.initState();
   }
 
@@ -36,18 +34,16 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
     final double itemHeight = (size.height - kToolbarHeight - 24) / 4;
     final double itemWidth = size.width / 2;
 
-    return BlocBuilder(
+    return BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
         builder: (context, state) {
-          if (state is Error)
+          if (state is LoggedInUserError)
             return Text(state.error);
-          else if (state is PostsLoaded) {
+          else if (state is LoggedInUserPostsLoaded) {
             return state.posts.isNotEmpty
                 ? _buildOwnPosts(
-                    posts: isForLoggedInUser!
-                        ? postsBloc!.loggedInUserPosts
-                        : postsBloc!.searchedUserPosts,
-                    itemHeight: itemHeight,
-                    itemWidth: itemWidth)
+                posts: _searchedUserBloc!.posts,
+                itemHeight: itemHeight,
+                itemWidth: itemWidth)
                 : _buildEmptyOwnPosts();
           } else
             return Center(
@@ -91,8 +87,8 @@ class _UserOwnPostsViewState extends State<UserOwnPostsView> {
 
   Widget _buildOwnPosts(
       {required List<PostModel> posts,
-      required double itemHeight,
-      required double itemWidth}) {
+        required double itemHeight,
+        required double itemWidth}) {
     return GridView.builder(
       padding: EdgeInsets.zero,
       shrinkWrap: true,

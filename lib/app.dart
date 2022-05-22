@@ -42,12 +42,12 @@ class MyApp extends StatelessWidget {
                   context.read<DataRepository>(),
                   context.read<StorageRepository>()),
             ),
-            BlocProvider<PostsBloc>(
-              create: (context) => PostsBloc(
-                context.read<DataRepository>(),
-                context.read<StorageRepository>(),
-              ),
-            ),
+            // BlocProvider<PostsBloc>(
+            //   create: (context) => PostsBloc(
+            //     context.read<DataRepository>(),
+            //     context.read<StorageRepository>(),
+            //   ),
+            // ),
             BlocProvider<UsersBloc>(
               create: (context) => UsersBloc(
                 context.read<DataRepository>(),

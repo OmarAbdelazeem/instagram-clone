@@ -8,11 +8,11 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/views/logged_in_user_post_view.dart';
 import '../../../../router.dart';
 import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import '../../common/app_tabs.dart';
-import 'widgets/profile_details.dart';
+import '../../common/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -56,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     loggedInUserBloc!.add(ListenToLoggedInUserStarted());
     _views = [
-      UserOwnPostsView(userId: loggedInUserBloc!.loggedInUser!.id!),
+      LoggedInUserPostsView(),
       UserMentionedPostsView(userId: loggedInUserBloc!.loggedInUser!.id!)
     ];
     super.initState();

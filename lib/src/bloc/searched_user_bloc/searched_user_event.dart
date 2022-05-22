@@ -28,3 +28,5 @@ class CheckIfUserIsFollowedStarted extends SearchedUserEvent {
 
   CheckIfUserIsFollowedStarted({required this.loggedInUserId});
 }
+
+class FetchSearchedUserPostsStarted extends SearchedUserEvent {}

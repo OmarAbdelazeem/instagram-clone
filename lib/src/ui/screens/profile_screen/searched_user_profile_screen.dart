@@ -6,9 +6,9 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
-import 'package:instagramapp/src/ui/screens/profile_screen/views/user_own_posts_view.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/views/searched_user_posts_view.dart';
 import '../../common/app_tabs.dart';
-import 'widgets/profile_details.dart';
+import '../../common/profile_details.dart';
 
 class SearchedUserProfileScreen extends StatefulWidget {
   final String searchedUserId;
@@ -65,7 +65,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
         loggedInUserId: loggedInUserBloc!.loggedInUser!.id!));
 
     _views = [
-      UserOwnPostsView(userId: widget.searchedUserId),
+      SearchedUserPostsView(),
       UserMentionedPostsView(userId: widget.searchedUserId)
     ];
     super.initState();

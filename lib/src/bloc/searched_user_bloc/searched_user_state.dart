@@ -4,6 +4,7 @@ part of 'searched_user_bloc.dart';
 abstract class SearchedUserState {}
 
 class SearchedUserInitial extends SearchedUserState {}
+
 class SearchedUserLoading extends SearchedUserState {}
 
 class SearchedUserLoaded extends SearchedUserState {
@@ -12,11 +13,20 @@ class SearchedUserLoaded extends SearchedUserState {
   SearchedUserLoaded(this.user);
 }
 
+class SearchedUserPostsLoaded extends SearchedUserState {
+  final List<PostModel> posts;
+
+  SearchedUserPostsLoaded(this.posts);
+}
+
+class SearchedUserPostsLoading extends SearchedUserState {}
+
 class SearchedUserError extends SearchedUserState {
   final String error;
 
   SearchedUserError(this.error);
 }
 
-class SearchedUserIsFollowed extends SearchedUserState{}
-class SearchedUserIsUnFollowed extends SearchedUserState{}
+class SearchedUserIsFollowed extends SearchedUserState {}
+
+class SearchedUserIsUnFollowed extends SearchedUserState {}

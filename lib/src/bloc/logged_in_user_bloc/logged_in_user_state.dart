@@ -12,3 +12,11 @@ class LoggedInUserError extends LoggedInUserState {
 
   LoggedInUserError(this.error);
 }
+
+class LoggedInUserPostsLoading extends LoggedInUserState {}
+
+class LoggedInUserPostsLoaded extends LoggedInUserState {
+  final List<PostModel> posts;
+
+  LoggedInUserPostsLoaded(this.posts);
+}

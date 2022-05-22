@@ -10,6 +10,7 @@ import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
 import '../../bloc/posts_bloc/posts_bloc.dart';
 import '../../bloc/searched_user_bloc/searched_user_bloc.dart';
+import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
 import '../../res/app_strings.dart';
@@ -30,7 +31,7 @@ class PostView extends StatefulWidget {
 class _PostViewState extends State<PostView> {
   int? postLikesCount;
   PostItemBloc? postItemBloc;
-  PostsBloc? postsBloc;
+  // PostsBloc? postsBloc;
 
   void likeButtonTapped() {
     if (postItemBloc!.isLiked) {
@@ -52,7 +53,7 @@ class _PostViewState extends State<PostView> {
   @override
   void initState() {
     postItemBloc = PostItemBloc(context.read<DataRepository>());
-    postsBloc = context.read<PostsBloc>();
+    // postsBloc = context.read<PostsBloc>();
     postItemBloc!.add(ListenToPostStarted(postId: widget.post.postId));
 
     super.initState();
@@ -60,9 +61,9 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    int likesCountResult = postsBloc!.getPostLikesCount(widget.post.postId);
+    int likesCountResult = SavedPostsLikes.getPostLikesCount(widget.post.postId);
     if (likesCountResult > -1) {
-      widget.post.likesCount = postsBloc!.getPostLikesCount(widget.post.postId);
+      widget.post.likesCount = SavedPostsLikes.getPostLikesCount(widget.post.postId);
     }
 
     return Column(
@@ -126,12 +127,12 @@ class _PostViewState extends State<PostView> {
             BlocConsumer(
                 bloc: postItemBloc,
                 listener: (context, state) {
-                  if (state is PostIsLiked) {
-                    postsBloc!.addPostIdToLikes(
-                        id: widget.post.postId, likes: widget.post.likesCount);
-                  } else if (state is PostIsUnLiked) {
-                    postsBloc!.removePostIdFromLikes(widget.post.postId);
-                  }
+                  // if (state is PostIsLiked) {
+                  //   postsBloc!.addPostIdToLikes(
+                  //       id: widget.post.postId, likes: widget.post.likesCount);
+                  // } else if (state is PostIsUnLiked) {
+                  //   postsBloc!.removePostIdFromLikes(widget.post.postId);
+                  // }
                 },
                 builder: (context, state) {
                   return IconButton(

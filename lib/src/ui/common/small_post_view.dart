@@ -4,7 +4,6 @@ import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 
 import '../../../../../router.dart';
-import '../../../../models/viewed_post_model/viewed_post_model.dart';
 
 class SmallPostView extends StatelessWidget {
   PostModel post;

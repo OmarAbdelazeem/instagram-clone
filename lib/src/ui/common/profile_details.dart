@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 
-import '../../../../res/app_strings.dart';
+import '../../res/app_strings.dart';
+
 
 class ProfileDetails extends StatelessWidget {
   final UserModel user;
