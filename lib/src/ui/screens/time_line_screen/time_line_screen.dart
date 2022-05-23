@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
+import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
@@ -26,6 +27,8 @@ class TimeLineScreen extends StatefulWidget {
 }
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
+  late TimeLineBloc timeLineBloc;
+  late LoggedInUserBloc loggedInUserBloc;
   List<UserModel> users = [
     UserModel(
         photoUrl:
@@ -63,22 +66,25 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    timeLineBloc = TimeLineBloc(
+      context.read<DataRepository>(),
+        context.read<OfflineLikesRepository>()
+    );
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
+    timeLineBloc
+        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final timeLineBloc = TimeLineBloc(
-      context.read<DataRepository>(),
-    );
     return Scaffold(
       appBar: _buildAppBar(),
       body: BlocProvider<TimeLineBloc>(
-        create: (context) => timeLineBloc..add(FetchTimeLinePostsStarted(
-            context.read<LoggedInUserBloc>().loggedInUser!.id!)),
+        create: (context) => timeLineBloc,
         child: RefreshIndicator(
-          onRefresh: () => getTimeLinePosts(timeLineBloc),
+          onRefresh: () => getTimeLinePosts(),
           child: BlocBuilder<TimeLineBloc, TimeLineState>(
               builder: (BuildContext context, state) {
             print("state is $state");
@@ -97,25 +103,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
           }),
         ),
       ),
-      // body: RefreshIndicator(
-      //   onRefresh: () => getTimeLinePosts(),
-      //   child: BlocBuilder<TimeLineBloc, TimeLineState>(
-      //       builder: (BuildContext context, state) {
-      //     print("state is $state");
-      //     if (state is TimeLineLoaded) {
-      //       final timelinePosts = context.read<TimeLineBloc>().posts;
-      //       if (timelinePosts.isNotEmpty)
-      //         return _buildTimelinePosts(timelinePosts);
-      //       else
-      //         return _buildRecommendedUsers();
-      //     } else if (state is TimeLineError)
-      //       return Text(state.error);
-      //     else
-      //       return Center(
-      //         child: CircularProgressIndicator(),
-      //       );
-      //   }),
-      // ),
     );
   }
 
@@ -146,9 +133,9 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     );
   }
 
-  Future getTimeLinePosts(TimeLineBloc timeLineBloc) async {
-    timeLineBloc.add(FetchTimeLinePostsStarted(
-        context.read<LoggedInUserBloc>().loggedInUser!.id!));
+  Future getTimeLinePosts() async {
+    timeLineBloc
+        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
   }
 
   _buildTimelinePosts(List<PostModel> timelinePosts) {

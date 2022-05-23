@@ -3,11 +3,11 @@ part of 'searched_user_bloc.dart';
 @immutable
 abstract class SearchedUserEvent {}
 
-class SetSearchedUserIdStarted extends SearchedUserEvent {
-  final String searchedUserId;
-
-  SetSearchedUserIdStarted(this.searchedUserId);
-}
+// class SetSearchedUserIdStarted extends SearchedUserEvent {
+//   final String searchedUserId;
+//
+//   SetSearchedUserIdStarted(this.searchedUserId);
+// }
 
 class ListenToSearchedUserStarted extends SearchedUserEvent {}
 

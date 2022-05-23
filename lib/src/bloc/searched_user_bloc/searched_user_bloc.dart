@@ -12,10 +12,11 @@ part 'searched_user_state.dart';
 
 class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   final DataRepository _dataRepository;
+  final OfflineLikesRepository _offlineLikesRepo;
 
-  SearchedUserBloc(this._dataRepository) : super(SearchedUserInitial()) {
+  SearchedUserBloc(this._dataRepository, this._offlineLikesRepo)
+      : super(SearchedUserInitial()) {
     on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
-    on<SetSearchedUserIdStarted>(_onSetSearchedUserIdStarted);
     on<FollowUserEventStarted>(_onFollowStarted);
     on<UnFollowUserEventStarted>(_onUnFollowStarted);
     on<CheckIfUserIsFollowedStarted>(_onCheckUserFollowingStateStarted);
@@ -26,7 +27,6 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   UserModel? _searchedUser;
   bool? _isFollowed;
   String? _searchedUserId;
-
 
   _onListenToSearchedUserStarted(
       ListenToSearchedUserStarted event, Emitter<SearchedUserState> state) {
@@ -45,10 +45,10 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
     }
   }
 
-  _onSetSearchedUserIdStarted(
-      SetSearchedUserIdStarted event, Emitter<SearchedUserState> state) {
-    _searchedUserId = event.searchedUserId;
-  }
+  // _onSetSearchedUserIdStarted(
+  //     SetSearchedUserIdStarted event, Emitter<SearchedUserState> state) {
+  //   _searchedUserId = event.searchedUserId;
+  // }
 
   void _onFetchSearchedUserPostsStarted(FetchSearchedUserPostsStarted event,
       Emitter<SearchedUserState> emit) async {
@@ -61,8 +61,8 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
             _searchedUserId!, post.postId);
         if (isLiked)
-          SavedPostsLikes.addPostIdToLikes(
-              id: post.postId, likes: post.likesCount);
+          _offlineLikesRepo.addPostLikesInfo(
+              id: post.postId, likes: post.likesCount,isLiked: isLiked);
         _posts.add(post);
       });
 
@@ -116,6 +116,10 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   get isFollowed => _isFollowed;
 
   get searchedUser => _searchedUser;
+
+  void setSearchedUserId(String id) {
+    _searchedUserId = id;
+  }
 
   List<PostModel> get posts => _posts;
 }

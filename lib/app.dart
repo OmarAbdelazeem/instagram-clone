@@ -7,6 +7,7 @@ import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
+import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_thems.dart';
@@ -29,6 +30,9 @@ class MyApp extends StatelessWidget {
           ),
           RepositoryProvider<StorageRepository>(
             create: (context) => StorageRepository(),
+          ),
+          RepositoryProvider<OfflineLikesRepository>(
+            create: (context) => OfflineLikesRepository(),
           ),
         ],
         child: MultiBlocProvider(
@@ -54,14 +58,15 @@ class MyApp extends StatelessWidget {
               ),
             ),
             BlocProvider<LoggedInUserBloc>(
-                create: (context) =>
-                    LoggedInUserBloc(context.read<DataRepository>())),
-            BlocProvider<SearchedUserBloc>(
-                create: (context) =>
-                    SearchedUserBloc(context.read<DataRepository>())),
-            BlocProvider<PostItemBloc>(
-                create: (context) =>
-                    PostItemBloc(context.read<DataRepository>()))
+                create: (context) => LoggedInUserBloc(
+                    context.read<DataRepository>(),
+                    context.read<OfflineLikesRepository>())),
+            // BlocProvider<SearchedUserBloc>(
+            //     create: (context) =>
+            //         SearchedUserBloc(context.read<DataRepository>())),
+            // BlocProvider<PostItemBloc>(
+            //     create: (context) =>
+            //         PostItemBloc(context.read<DataRepository>()))
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

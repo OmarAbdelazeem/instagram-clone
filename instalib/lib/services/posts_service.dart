@@ -49,7 +49,7 @@ class PostServices {
     DocumentSnapshot doc = await likesRef
         .doc(Data.defaultUser.searchedUserId)
         .collection('userLikes')
-        .doc(Data.currentPost.postId)
+        .doc(Data._currentPost.postId)
         .get();
     print('doc.exists is ${doc.exists}');
     return doc.exists;
@@ -60,16 +60,16 @@ class PostServices {
       await likesRef
           .doc(Data.defaultUser.searchedUserId)
           .collection('userLikes')
-          .doc(Data.currentPost.postId)
+          .doc(Data._currentPost.postId)
           .delete();
-      postsRef.doc(Data.currentPost.userId).collection('userPosts').doc(Data.currentPost.postId).update({
+      postsRef.doc(Data._currentPost.userId).collection('userPosts').doc(Data._currentPost.postId).update({
         'likes': FieldValue.arrayRemove([Data.defaultUser.searchedUserId])
       });
 
       await notificationRef
-          .doc(Data.currentPost.userId)
+          .doc(Data._currentPost.userId)
           .collection('userNotification')
-          .doc(Data.currentPost.postId)
+          .doc(Data._currentPost.postId)
           .get()
           .then((doc) {
         if (doc.exists) doc.reference.delete();
@@ -78,33 +78,33 @@ class PostServices {
       await likesRef
           .doc(Data.defaultUser.searchedUserId)
           .collection('userLikes')
-          .doc(Data.currentPost.postId)
+          .doc(Data._currentPost.postId)
           .set({});
-      print('current post id is ${Data.currentPost.postId}');
+      print('current post id is ${Data._currentPost.postId}');
 
-      postsRef.doc(Data.currentPost.userId).collection('userPosts').doc(Data.currentPost.postId).update({
+      postsRef.doc(Data._currentPost.userId).collection('userPosts').doc(Data._currentPost.postId).update({
         'likes': FieldValue.arrayUnion([Data.defaultUser.searchedUserId])
       });
 
       postsRef
-          .doc(Data.currentPost.userId)
+          .doc(Data._currentPost.userId)
           .collection('userPosts')
-          .doc(Data.currentPost.postId)
+          .doc(Data._currentPost.postId)
           .update({
         'likes': FieldValue.arrayUnion([Data.defaultUser.searchedUserId])
       });
 
       await notificationRef
-          .doc(Data.currentPost.userId)
+          .doc(Data._currentPost.userId)
           .collection('userNotification')
-          .doc(Data.currentPost.postId)
+          .doc(Data._currentPost.postId)
           .set({
         'ownerId': Data.defaultUser.searchedUserId,
         'type': 'like',
         'timestamp': timestamp,
-        'postUrl': Data.currentPost.photoUrl,
+        'postUrl': Data._currentPost.photoUrl,
         'ownerName': Data.defaultUser.userName,
-        'postId': Data.currentPost.postId,
+        'postId': Data._currentPost.postId,
         'userPhotoUrl': Data.defaultUser.photoUrl
       });
     }
@@ -118,7 +118,7 @@ class PostServices {
 //    final commentId = await _commentsRef.get();
     String commentId = Uuid().v4();
     await commentsRef
-        .doc(Data.currentPost.postId)
+        .doc(Data._currentPost.postId)
         .collection('postComments')
         .doc(commentId)
         .set({
@@ -128,21 +128,21 @@ class PostServices {
       'commentId': commentId,
       'userComment': comment,
       'timestamp': timestamp,
-      'postId': Data.currentPost.postId
+      'postId': Data._currentPost.postId
     });
 
     await notificationRef
-        .doc(Data.currentPost.userId)
+        .doc(Data._currentPost.userId)
         .collection('userNotification')
         .doc(commentId)
         .set({
       'ownerId': Data.defaultUser.searchedUserId,
       'type': 'comment',
       'timestamp': timestamp,
-      'postUrl': Data.currentPost.photoUrl,
+      'postUrl': Data._currentPost.photoUrl,
       'comment': comment,
       'ownerName': Data.defaultUser.userName,
-      'postId': Data.currentPost.postId,
+      'postId': Data._currentPost.postId,
       'userPhotoUrl': Data.defaultUser.photoUrl
     });
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
+import 'package:instagramapp/src/core/saved_posts_likes.dart';
+import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
@@ -22,8 +24,8 @@ class SearchedUserProfileScreen extends StatefulWidget {
 
 class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   int selectedIndex = 0;
-  SearchedUserBloc? searchedUserBloc;
-  LoggedInUserBloc? loggedInUserBloc;
+  late SearchedUserBloc searchedUserBloc;
+  late LoggedInUserBloc loggedInUserBloc;
 
   List<AppTabItemModel> tabsItems = [
     AppTabItemModel(
@@ -55,25 +57,32 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
   @override
   void initState() {
-    searchedUserBloc = context.read<SearchedUserBloc>();
+    setUpProfile();
+    super.initState();
+  }
+
+  void setUpProfile() {
+    searchedUserBloc = SearchedUserBloc(
+        context.read<DataRepository>(), context.read<OfflineLikesRepository>());
     loggedInUserBloc = context.read<LoggedInUserBloc>();
-    context
-        .read<SearchedUserBloc>()
-        .add(SetSearchedUserIdStarted(widget.searchedUserId));
-    searchedUserBloc!.add(ListenToSearchedUserStarted());
-    searchedUserBloc!.add(CheckIfUserIsFollowedStarted(
-        loggedInUserId: loggedInUserBloc!.loggedInUser!.id!));
+    searchedUserBloc.setSearchedUserId(widget.searchedUserId);
+    searchedUserBloc.add(CheckIfUserIsFollowedStarted(
+        loggedInUserId: loggedInUserBloc.loggedInUser!.id!));
+
+    searchedUserBloc.add(ListenToSearchedUserStarted());
 
     _views = [
       SearchedUserPostsView(),
       UserMentionedPostsView(userId: widget.searchedUserId)
     ];
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: _buildContent());
+    return BlocProvider<SearchedUserBloc>(
+      create: (_) => searchedUserBloc,
+      child: Scaffold(appBar: _buildAppBar(), body: _buildContent()),
+    );
   }
 
   PreferredSize _buildAppBar() {
@@ -83,12 +92,12 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
         preferredSize: Size(appBarWidth, appBarHeight),
         child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
             builder: (BuildContext _, state) {
-          bool condition = searchedUserBloc!.searchedUser != null &&
-              searchedUserBloc!.isFollowed != null;
+          bool condition = searchedUserBloc.searchedUser != null &&
+              searchedUserBloc.isFollowed != null;
 
           return AppBar(
             title: Text(
-              condition ? searchedUserBloc!.searchedUser!.userName! : "...",
+              condition ? searchedUserBloc.searchedUser.userName! : "...",
               style: TextStyle(color: Colors.black),
             ),
             actions: <Widget>[
@@ -111,8 +120,8 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
       },
       child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
           builder: (BuildContext _, state) {
-        if (searchedUserBloc!.searchedUser != null &&
-            searchedUserBloc!.isFollowed != null) {
+        if (searchedUserBloc.searchedUser != null &&
+            searchedUserBloc.isFollowed != null) {
           return Column(
             children: <Widget>[
               _buildUpperDetails(state),
@@ -137,7 +146,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   Widget _buildUpperDetails(SearchedUserState state) {
     return Column(
       children: [
-        ProfileDetails(user: searchedUserBloc!.searchedUser!),
+        ProfileDetails(user: searchedUserBloc.searchedUser!),
         SizedBox(
           height: 12,
         ),
@@ -173,24 +182,20 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   Widget _buildFollowButton() {
     return AppButton(
       height: 40,
-      color: context.read<SearchedUserBloc>().isFollowed
-          ? AppColors.white
-          : AppColors.blue,
+      color: searchedUserBloc.isFollowed ? AppColors.white : AppColors.blue,
       titleStyle: TextStyle(
-        color: context.read<SearchedUserBloc>().isFollowed
-            ? AppColors.black
-            : AppColors.white,
+        color: searchedUserBloc.isFollowed ? AppColors.black : AppColors.white,
       ),
-      title: context.read<SearchedUserBloc>().isFollowed
+      title: searchedUserBloc.isFollowed
           ? AppStrings.following
           : AppStrings.follow,
       onTap: () {
-        if (context.read<SearchedUserBloc>().isFollowed) {
-          searchedUserBloc!.add(
-              UnFollowUserEventStarted(loggedInUserBloc!.loggedInUser!.id!));
+        if (searchedUserBloc.isFollowed) {
+          searchedUserBloc.add(
+              UnFollowUserEventStarted(loggedInUserBloc.loggedInUser!.id!));
         } else {
-          searchedUserBloc!
-              .add(FollowUserEventStarted(loggedInUserBloc!.loggedInUser!.id!));
+          searchedUserBloc
+              .add(FollowUserEventStarted(loggedInUserBloc.loggedInUser!.id!));
         }
       },
     );

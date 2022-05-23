@@ -31,6 +31,7 @@ class AddCommentStarted extends PostItemEvent {
 
 class CheckIfPostIsLikedStarted extends PostItemEvent {}
 
+
 class ListenToPostStarted extends PostItemEvent {
   final String postId;
 

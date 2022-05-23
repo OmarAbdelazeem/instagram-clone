@@ -3,13 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
-import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
-import '../../bloc/posts_bloc/posts_bloc.dart';
-import '../../bloc/searched_user_bloc/searched_user_bloc.dart';
 import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
@@ -29,17 +26,15 @@ class PostView extends StatefulWidget {
 }
 
 class _PostViewState extends State<PostView> {
-  int? postLikesCount;
-  PostItemBloc? postItemBloc;
-  // PostsBloc? postsBloc;
+  late PostItemBloc postItemBloc;
 
   void likeButtonTapped() {
-    if (postItemBloc!.isLiked) {
-      postItemBloc!.add(RemoveLikeStarted(
+    if (postItemBloc.isLiked) {
+      postItemBloc.add(RemoveLikeStarted(
           postId: widget.post.postId,
           userId: context.read<LoggedInUserBloc>().loggedInUser!.id!));
     } else {
-      postItemBloc!.add(AddLikeStarted(
+      postItemBloc.add(AddLikeStarted(
           postId: widget.post.postId,
           userId: context.read<LoggedInUserBloc>().loggedInUser!.id!));
     }
@@ -47,41 +42,43 @@ class _PostViewState extends State<PostView> {
 
   void onCommentButtonTapped() {
     NavigationUtils.pushScreen(
-        screen: CommentsScreen(widget.post, postItemBloc!), context: context);
+        screen: CommentsScreen(widget.post, postItemBloc), context: context);
   }
 
   @override
-  void initState() {
-    postItemBloc = PostItemBloc(context.read<DataRepository>());
-    // postsBloc = context.read<PostsBloc>();
-    postItemBloc!.add(ListenToPostStarted(postId: widget.post.postId));
+  void didChangeDependencies() {
+    postItemBloc = PostItemBloc(
+        context.read<DataRepository>(), context.read<OfflineLikesRepository>());
+    // postItemBloc.setInitialPostLikes(widget.post.likesCount);
 
-    super.initState();
+    postItemBloc.setCurrentPost(widget.post);
+    // postItemBloc.add(ListenToPostStarted(postId: widget.post.postId));
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    int likesCountResult = SavedPostsLikes.getPostLikesCount(widget.post.postId);
-    if (likesCountResult > -1) {
-      widget.post.likesCount = SavedPostsLikes.getPostLikesCount(widget.post.postId);
-    }
+    postItemBloc.add(CheckIfPostIsLikedStarted());
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: _buildPostHeader()),
-        _buildPostImage(),
-        _buildPostActions(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [_buildLikesCount(), _buildPublisherNameAndCaption()],
-          ),
-        )
-      ],
+    return BlocProvider(
+      create: (_) => postItemBloc,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              child: _buildPostHeader()),
+          _buildPostImage(),
+          _buildPostActions(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [_buildLikesCount(), _buildPublisherNameAndCaption()],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -104,14 +101,14 @@ class _PostViewState extends State<PostView> {
   }
 
   Widget _buildLikesCount() {
-    return BlocBuilder(
-      bloc: postItemBloc,
+    return BlocBuilder<PostItemBloc, PostItemState>(
       builder: (context, state) {
-        if (state is PostIsLiked)
-          postLikesCount = postLikesCount! + 1;
-        else if (state is PostIsUnLiked) postLikesCount = postLikesCount! - 1;
+        // if (state is PostIsLiked)
+        //   widget.post.likesCount = widget.post.likesCount + 1;
+        // else if (state is PostIsUnLiked)
+        //   widget.post.likesCount = widget.post.likesCount - 1;
         return Text(
-          '$postLikesCount ${AppStrings.likes}',
+          '${postItemBloc.currentPost.likesCount} ${AppStrings.likes}',
           style: TextStyle(fontWeight: FontWeight.bold),
         );
       },
@@ -124,25 +121,15 @@ class _PostViewState extends State<PostView> {
       children: <Widget>[
         Row(
           children: <Widget>[
-            BlocConsumer(
-                bloc: postItemBloc,
-                listener: (context, state) {
-                  // if (state is PostIsLiked) {
-                  //   postsBloc!.addPostIdToLikes(
-                  //       id: widget.post.postId, likes: widget.post.likesCount);
-                  // } else if (state is PostIsUnLiked) {
-                  //   postsBloc!.removePostIdFromLikes(widget.post.postId);
-                  // }
-                },
-                builder: (context, state) {
-                  return IconButton(
-                      icon: postItemBloc!.isLiked
-                          ? Icon(
-                              Icons.favorite,
-                            )
-                          : Icon(Icons.favorite_border),
-                      onPressed: likeButtonTapped);
-                }),
+            BlocBuilder<PostItemBloc, PostItemState>(builder: (context, state) {
+              return IconButton(
+                  icon: postItemBloc.isLiked
+                      ? Icon(
+                          Icons.favorite,
+                        )
+                      : Icon(Icons.favorite_border),
+                  onPressed: likeButtonTapped);
+            }),
             IconButton(
                 icon: SvgPicture.asset(
                   AppImages.commentButtonSvg,

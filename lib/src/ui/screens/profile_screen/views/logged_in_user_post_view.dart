@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
-import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../../models/post_model/post_model.dart';
 import '../../../common/small_post_view.dart';
 
@@ -22,7 +21,6 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
   void initState() {
     _loggedInUserBloc = context.read<LoggedInUserBloc>();
     _loggedInUserBloc!.add(FetchLoggedInUserPostsStarted());
-    // postsBloc!.add(FetchUserPostsStarted());
     super.initState();
   }
 
@@ -37,17 +35,17 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
         builder: (context, state) {
       if (state is LoggedInUserError)
         return Text(state.error);
-      else if (state is LoggedInUserPostsLoaded) {
-        return state.posts.isNotEmpty
+      else if (state is LoggedInUserPostsLoading) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      } else
+        return _loggedInUserBloc!.posts.isNotEmpty
             ? _buildOwnPosts(
                 posts: _loggedInUserBloc!.posts,
                 itemHeight: itemHeight,
                 itemWidth: itemWidth)
             : _buildEmptyOwnPosts();
-      } else
-        return Center(
-          child: CircularProgressIndicator(),
-        );
     });
   }
 

@@ -43,10 +43,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
             Column(
               children: <Widget>[
                 commentWidget(
-                  postCaption: Data.currentPost.caption,
-                  postName: Data.currentPost.name,
-                    timestamp: Data.currentPost.timestamp,
-                    postPhotoUrl: Data.currentPost.publisherProfilePhotoUrl
+                  postCaption: Data._currentPost.caption,
+                  postName: Data._currentPost.name,
+                    timestamp: Data._currentPost.timestamp,
+                    postPhotoUrl: Data._currentPost.publisherProfilePhotoUrl
                 ),
                 Divider(
                   thickness: 0.2,
@@ -56,7 +56,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
             ),
             StreamBuilder<QuerySnapshot>(
               stream: commentsRef
-                  .doc(Data.currentPost.postId)
+                  .doc(Data._currentPost.postId)
                   .collection('postComments')
                   .orderBy('timestamp', descending: true)
                   .snapshots(),

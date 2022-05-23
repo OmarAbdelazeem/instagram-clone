@@ -15,8 +15,10 @@ part 'logged_in_user_state.dart';
 
 class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
   final DataRepository _dataRepository;
+  final OfflineLikesRepository _offlineLikesRepo;
 
-  LoggedInUserBloc(this._dataRepository) : super(LoggedInUserInitial()) {
+  LoggedInUserBloc(this._dataRepository, this._offlineLikesRepo)
+      : super(LoggedInUserInitial()) {
     on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
     on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
     on<FetchLoggedInUserPostsStarted>(_onFetchLoggedInUserPosts);
@@ -57,8 +59,8 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
             loggedInUser!.id!, post.postId);
         if (isLiked)
-          SavedPostsLikes.addPostIdToLikes(
-              id: post.postId, likes: post.likesCount);
+          _offlineLikesRepo.addPostLikesInfo(
+              id: post.postId, likes: post.likesCount, isLiked: isLiked);
         posts.add(post);
       });
 

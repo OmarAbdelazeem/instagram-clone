@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         BlocBuilder<LoggedInUserBloc, LoggedInUserState>(builder: (context, state) {
-          return ProfileDetails(user: context.read<LoggedInUserBloc>().loggedInUser!);
+          return ProfileDetails(user: loggedInUserBloc!.loggedInUser!);
         }),
         SizedBox(
           height: 12,

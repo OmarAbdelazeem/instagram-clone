@@ -13,8 +13,10 @@ part 'time_line_state.dart';
 
 class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   final DataRepository _dataRepository;
+  final OfflineLikesRepository _offlineLikesRepo;
 
-  TimeLineBloc(this._dataRepository) : super(TimeLineInitial()) {
+  TimeLineBloc(this._dataRepository, this._offlineLikesRepo)
+      : super(TimeLineInitial()) {
     on<FetchTimeLinePostsStarted>(_onFetchTimelinePostsStarted);
   }
 
@@ -31,6 +33,7 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
 
       // 2) get every post data that related to it's id
       await for (var eventItem in timelinePostsData) {
+        List<PostModel> postsTemp = [];
         for (var doc in eventItem.docs) {
           if (doc.data().isNotEmpty) {
             final postData = await _dataRepository.getPostDetails(
@@ -41,12 +44,12 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
             bool isLiked = await _dataRepository.checkIfUserLikesPost(
                 event.userId, post.postId);
             if (isLiked)
-              SavedPostsLikes.addPostIdToLikes(
-                  id: post.postId, likes: post.likesCount);
-            _posts.add(post);
+              _offlineLikesRepo.addPostLikesInfo(
+                  id: post.postId, likes: post.likesCount, isLiked: isLiked);
+            postsTemp.add(post);
           }
         }
-
+        _posts = postsTemp;
         emit(TimeLineLoaded(_posts));
       }
     } on Exception catch (e) {
