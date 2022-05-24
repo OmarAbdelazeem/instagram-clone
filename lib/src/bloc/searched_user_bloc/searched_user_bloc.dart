@@ -12,9 +12,11 @@ part 'searched_user_state.dart';
 
 class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   final DataRepository _dataRepository;
+  final String _loggedInUserId;
   final OfflineLikesRepository _offlineLikesRepo;
 
-  SearchedUserBloc(this._dataRepository, this._offlineLikesRepo)
+  SearchedUserBloc(
+      this._dataRepository, this._offlineLikesRepo, this._loggedInUserId)
       : super(SearchedUserInitial()) {
     on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     on<FollowUserEventStarted>(_onFollowStarted);
@@ -58,11 +60,14 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
         PostModel post =
             PostModel.fromJson(item.data() as Map<String, dynamic>);
+
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
-            _searchedUserId!, post.postId);
-        if (isLiked)
-          _offlineLikesRepo.addPostLikesInfo(
-              id: post.postId, likes: post.likesCount,isLiked: isLiked);
+            _loggedInUserId, post.postId);
+
+        print("isLiked from searchedUserBloc $isLiked");
+
+        _offlineLikesRepo.addPostLikesInfo(
+            id: post.postId, likes: post.likesCount, isLiked: isLiked);
         _posts.add(post);
       });
 
@@ -78,7 +83,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       emit(SearchedUserIsFollowed());
       _isFollowed = true;
       await _dataRepository.addFollower(
-          receiverId: _searchedUserId!, senderId: event.loggedInUserId);
+          receiverId: _searchedUserId!, senderId: _loggedInUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -91,7 +96,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       emit(SearchedUserIsUnFollowed());
       _isFollowed = false;
       await _dataRepository.removeFollower(
-          receiverId: _searchedUserId!, senderId: event.loggedInUserId);
+          receiverId: _searchedUserId!, senderId: _loggedInUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -103,7 +108,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
     try {
       emit(SearchedUserLoading());
       _isFollowed = await _dataRepository.checkIfUserFollowingSearched(
-          receiverId: _searchedUserId!, senderId: event.loggedInUserId);
+          receiverId: _searchedUserId!, senderId: _loggedInUserId);
       if (_isFollowed!) {
         emit(SearchedUserIsFollowed());
       } else

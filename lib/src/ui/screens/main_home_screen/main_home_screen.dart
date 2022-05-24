@@ -16,9 +16,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
     TimeLineScreen(),
-     ExplorePhotosScreen(),
+    ExplorePhotosScreen(),
     const ExploreVideosScreen(),
-     ProfileScreen(),
+    ProfileScreen(),
   ];
   final List<BottomNavigationBarItemModel> bottomNavigationBarItems = [
     BottomNavigationBarItemModel(
@@ -40,7 +40,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return WillPopScope(
         onWillPop: _onWillPopScope,
         child: Scaffold(
-            body: IndexedStack(index: _currentIndex, children: _screens),
+          body: _screens[_currentIndex],
+            // body: IndexedStack(index: _currentIndex, children: _screens),
             bottomNavigationBar: _buildBottomNavigationBar()));
   }
 

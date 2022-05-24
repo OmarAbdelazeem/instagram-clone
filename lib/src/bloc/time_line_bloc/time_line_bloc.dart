@@ -43,9 +43,9 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
             // 3) check if logged in user liked this post
             bool isLiked = await _dataRepository.checkIfUserLikesPost(
                 event.userId, post.postId);
-            if (isLiked)
-              _offlineLikesRepo.addPostLikesInfo(
-                  id: post.postId, likes: post.likesCount, isLiked: isLiked);
+            _offlineLikesRepo.addPostLikesInfo(
+                id: post.postId, likes: post.likesCount, isLiked: isLiked);
+
             postsTemp.add(post);
           }
         }

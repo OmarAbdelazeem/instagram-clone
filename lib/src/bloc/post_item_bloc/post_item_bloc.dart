@@ -33,8 +33,8 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   // int _likesCount = 0;
 
-  FutureOr<void> _onListenToPostStarted(ListenToPostStarted event,
-      Emitter<PostItemState> state) {
+  FutureOr<void> _onListenToPostStarted(
+      ListenToPostStarted event, Emitter<PostItemState> state) {
     emit(PostLoading());
     try {
       _dataRepository.listenToPostDetails(postId: event.postId).listen((event) {
@@ -47,16 +47,14 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     } catch (e) {}
   }
 
-  FutureOr<void> _onAddLikeStarted(AddLikeStarted event,
-      Emitter<PostItemState> state) async {
+  FutureOr<void> _onAddLikeStarted(
+      AddLikeStarted event, Emitter<PostItemState> state) async {
     try {
       emit(PostIsLiked());
       _isLiked = true;
       _currentPost!.likesCount++;
       _offlineLikesRepo.addPostLikesInfo(
-          id: currentPost.postId,
-          likes: currentPost.likesCount,
-          isLiked: isLiked);
+          id: currentPost.postId, likes: currentPost.likesCount, isLiked: true);
       await _dataRepository.addLikeToPost(
           postId: event.postId, userId: event.userId);
     } catch (e) {
@@ -64,8 +62,8 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     }
   }
 
-  FutureOr<void> _onRemoveLikeStarted(RemoveLikeStarted event,
-      Emitter<PostItemState> state) async {
+  FutureOr<void> _onRemoveLikeStarted(
+      RemoveLikeStarted event, Emitter<PostItemState> state) async {
     try {
       emit(PostIsUnLiked());
       _isLiked = false;
@@ -73,7 +71,7 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
       _offlineLikesRepo.addPostLikesInfo(
           id: currentPost.postId,
           likes: currentPost.likesCount,
-          isLiked: isLiked);
+          isLiked: false);
       await _dataRepository.removeLikeFromPost(
           postId: event.postId, publisherId: event.userId);
     } catch (e) {
@@ -81,8 +79,8 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     }
   }
 
-  FutureOr<void> _onLoadCommentsStarted(LoadCommentsStarted event,
-      Emitter<PostItemState> state) async {
+  FutureOr<void> _onLoadCommentsStarted(
+      LoadCommentsStarted event, Emitter<PostItemState> state) async {
     try {
       emit(CommentsLoading());
       final commentsData = await _dataRepository.getPostComments(event.postId);
@@ -93,8 +91,8 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     } catch (e) {}
   }
 
-  FutureOr<void> _onAddCommentStarted(AddCommentStarted event,
-      Emitter<PostItemState> state) async {
+  FutureOr<void> _onAddCommentStarted(
+      AddCommentStarted event, Emitter<PostItemState> state) async {
     try {
       emit(AddingComment(event.comment.commentId!));
       comments.add(event.comment);
@@ -106,39 +104,26 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     }
   }
 
-  _onCheckIfPostIsLikedStarted(CheckIfPostIsLikedStarted event,
-      Emitter<PostItemState> state) {
-    Map<String, dynamic> result = _offlineLikesRepo.getPostLikesInfo(
-        _currentPost!.postId);
-    // _currentPost!.likesCount = result["likes"];
-    // _isLiked = result["isLiked"];
+  _onCheckIfPostIsLikedStarted(
+      CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
+    Map<String, dynamic>? result =
+        _offlineLikesRepo.getPostLikesInfo(_currentPost!.postId);
+    print("result is $result");
+    _currentPost!.likesCount = result!["likes"];
+    _isLiked = result["isLiked"];
     if (_isLiked) {
       emit(PostIsLiked());
     } else {
       emit(PostIsUnLiked());
     }
-    // if (likes > -1) {
-    //   _currentPost!.likesCount = likes;
-    //   _isLiked = true;
-    //   emit(PostIsLiked());
-    // } else {
-    //   _currentPost!.likesCount = _currentPost!.likesCount;
-    //   _isLiked = false;
-    //   emit(PostIsUnLiked());
   }
 
+  bool get isLiked => _isLiked;
 
-bool get isLiked => _isLiked;
+  PostModel get currentPost => _currentPost!;
 
-PostModel get currentPost => _currentPost!;
+  void setCurrentPost(PostModel post) {
+    _currentPost = post;
+  }
 
-// int get likesCount => _likesCount;
-
-void setCurrentPost(PostModel post) {
-  _currentPost = post;
-}
-
-// void setInitialPostLikes(int likes) {
-//   _likesCount = likes;
-// }
 }

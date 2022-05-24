@@ -62,12 +62,14 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   }
 
   void setUpProfile() {
-    searchedUserBloc = SearchedUserBloc(
-        context.read<DataRepository>(), context.read<OfflineLikesRepository>());
     loggedInUserBloc = context.read<LoggedInUserBloc>();
+    searchedUserBloc = SearchedUserBloc(
+        context.read<DataRepository>(),
+        context.read<OfflineLikesRepository>(),
+        loggedInUserBloc.loggedInUser!.id!);
+
     searchedUserBloc.setSearchedUserId(widget.searchedUserId);
-    searchedUserBloc.add(CheckIfUserIsFollowedStarted(
-        loggedInUserId: loggedInUserBloc.loggedInUser!.id!));
+    searchedUserBloc.add(CheckIfUserIsFollowedStarted());
 
     searchedUserBloc.add(ListenToSearchedUserStarted());
 
@@ -192,10 +194,10 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
       onTap: () {
         if (searchedUserBloc.isFollowed) {
           searchedUserBloc.add(
-              UnFollowUserEventStarted(loggedInUserBloc.loggedInUser!.id!));
+              UnFollowUserEventStarted());
         } else {
           searchedUserBloc
-              .add(FollowUserEventStarted(loggedInUserBloc.loggedInUser!.id!));
+              .add(FollowUserEventStarted());
         }
       },
     );

@@ -103,6 +103,7 @@ class _PostViewState extends State<PostView> {
   Widget _buildLikesCount() {
     return BlocBuilder<PostItemBloc, PostItemState>(
       builder: (context, state) {
+        print("Bloc builder from postItem called");
         // if (state is PostIsLiked)
         //   widget.post.likesCount = widget.post.likesCount + 1;
         // else if (state is PostIsUnLiked)
