@@ -32,9 +32,9 @@ class NotificationItemWidget extends StatelessWidget {
     });
   }
   void onPostClicked(BuildContext context){
-    print('post id is ${notification.postId}');
+    print('post id is ${notification.id}');
     PostServices postServices = PostServices();
-    postServices.getPostInfo(postId: notification.postId).then((post){
+    postServices.getPostInfo(id: notification.id).then((post){
       Data.changeCurrentPost(post);
       NavigationFunctions.navigateToPage(context, PostScreen(postData: post,));
     });

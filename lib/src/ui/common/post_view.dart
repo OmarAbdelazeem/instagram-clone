@@ -13,7 +13,6 @@ import '../../repository/data_repository.dart';
 import '../../res/app_strings.dart';
 import '../screens/profile_screen/searched_user_profile_screen.dart';
 
-// Todo refactor this file
 class PostView extends StatefulWidget {
   final PostModel post;
 
@@ -45,20 +44,29 @@ class _PostViewState extends State<PostView> {
         screen: CommentsScreen(widget.post, postItemBloc), context: context);
   }
 
+
+
   @override
-  void didChangeDependencies() {
+  void initState() {
     postItemBloc = PostItemBloc(
         context.read<DataRepository>(), context.read<OfflineLikesRepository>());
-    // postItemBloc.setInitialPostLikes(widget.post.likesCount);
-
     postItemBloc.setCurrentPost(widget.post);
-    // postItemBloc.add(ListenToPostStarted(postId: widget.post.postId));
-    super.didChangeDependencies();
+    postItemBloc.add(CheckIfPostIsLikedStarted());
+    // TODO: implement initState
+    super.initState();
   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   postItemBloc = PostItemBloc(
+  //       context.read<DataRepository>(), context.read<OfflineLikesRepository>());
+  //   postItemBloc.setCurrentPost(widget.post);
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    postItemBloc.add(CheckIfPostIsLikedStarted());
+    // postItemBloc.add(CheckIfPostIsLikedStarted());
 
     return BlocProvider(
       create: (_) => postItemBloc,
@@ -103,11 +111,6 @@ class _PostViewState extends State<PostView> {
   Widget _buildLikesCount() {
     return BlocBuilder<PostItemBloc, PostItemState>(
       builder: (context, state) {
-        print("Bloc builder from postItem called");
-        // if (state is PostIsLiked)
-        //   widget.post.likesCount = widget.post.likesCount + 1;
-        // else if (state is PostIsUnLiked)
-        //   widget.post.likesCount = widget.post.likesCount - 1;
         return Text(
           '${postItemBloc.currentPost.likesCount} ${AppStrings.likes}',
           style: TextStyle(fontWeight: FontWeight.bold),

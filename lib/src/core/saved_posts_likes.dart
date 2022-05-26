@@ -16,4 +16,17 @@ class OfflineLikesRepository {
     return postsLikesInfo[postId];
   }
 
+  Stream<Map<String, dynamic>?> listenToLikesInfo(
+      String postId) async* {
+    yield postsLikesInfo[postId];
+    // yield getPostLikesInfo(postId);
+    // var likesInfo = getPostLikesInfo(postId);
+    // if (likesCount != likesInfo!["likes"]) yield likesInfo;
+  }
+
+  Stream<int> countStream(int to) async* {
+    for (int i = 1; i <= to; i++) {
+      yield i;
+    }
+  }
 }

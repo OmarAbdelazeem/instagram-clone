@@ -56,7 +56,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
             ),
             StreamBuilder<QuerySnapshot>(
               stream: commentsRef
-                  .doc(Data._currentPost.postId)
+                  .doc(Data._currentPost.id)
                   .collection('postComments')
                   .orderBy('timestamp', descending: true)
                   .snapshots(),

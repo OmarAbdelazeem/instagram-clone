@@ -106,6 +106,17 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   _onCheckIfPostIsLikedStarted(
       CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
+    // _offlineLikesRepo.listenToLikesInfo(_currentPost!.postId).listen((result) {
+    //   print("result is $result");
+    //   _currentPost!.likesCount = result!["likes"];
+    //   _isLiked = result["isLiked"];
+    //   if (_isLiked) {
+    //     emit(PostIsLiked());
+    //   } else {
+    //     emit(PostIsUnLiked());
+    //   }
+    // });
+
     Map<String, dynamic>? result =
         _offlineLikesRepo.getPostLikesInfo(_currentPost!.postId);
     print("result is $result");
