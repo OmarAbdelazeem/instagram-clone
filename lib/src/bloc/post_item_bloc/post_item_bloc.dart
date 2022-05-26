@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
+import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
 import '../../core/saved_posts_likes.dart';
-import '../posts_bloc/posts_bloc.dart';
 
 part 'post_item_event.dart';
 
@@ -15,9 +14,10 @@ part 'post_item_state.dart';
 
 class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   final DataRepository _dataRepository;
+  final LikesBloc _likesBloc;
   final OfflineLikesRepository _offlineLikesRepo;
 
-  PostItemBloc(this._dataRepository, this._offlineLikesRepo)
+  PostItemBloc(this._dataRepository, this._offlineLikesRepo, this._likesBloc)
       : super(PostItemInitial()) {
     on<ListenToPostStarted>(_onListenToPostStarted);
     on<AddLikeStarted>(_onAddLikeStarted);
@@ -50,6 +50,7 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   FutureOr<void> _onAddLikeStarted(
       AddLikeStarted event, Emitter<PostItemState> state) async {
     try {
+      _likesBloc.add(AddPostLikesInfoStarted(isLiked: true , id: "1",likes: 7));
       emit(PostIsLiked());
       _isLiked = true;
       _currentPost!.likesCount++;
@@ -65,6 +66,7 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   FutureOr<void> _onRemoveLikeStarted(
       RemoveLikeStarted event, Emitter<PostItemState> state) async {
     try {
+      _likesBloc.add(AddPostLikesInfoStarted(isLiked: true , id: "2",likes: 7));
       emit(PostIsUnLiked());
       _isLiked = false;
       _currentPost!.likesCount--;
@@ -106,6 +108,12 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   _onCheckIfPostIsLikedStarted(
       CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
+    _likesBloc.stream.listen((likesState) {
+      if (likesState is LikesChanged) {
+        print("change is ${likesState.postId}");
+      }
+    });
+
     // _offlineLikesRepo.listenToLikesInfo(_currentPost!.postId).listen((result) {
     //   print("result is $result");
     //   _currentPost!.likesCount = result!["likes"];
@@ -117,16 +125,16 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     //   }
     // });
 
-    Map<String, dynamic>? result =
-        _offlineLikesRepo.getPostLikesInfo(_currentPost!.postId);
-    print("result is $result");
-    _currentPost!.likesCount = result!["likes"];
-    _isLiked = result["isLiked"];
-    if (_isLiked) {
-      emit(PostIsLiked());
-    } else {
-      emit(PostIsUnLiked());
-    }
+    // Map<String, dynamic>? result =
+    //     _offlineLikesRepo.getPostLikesInfo(_currentPost!.postId);
+    // print("result is $result");
+    // _currentPost!.likesCount = result!["likes"];
+    // _isLiked = result["isLiked"];
+    // if (_isLiked) {
+    //   emit(PostIsLiked());
+    // } else {
+    //   emit(PostIsUnLiked());
+    // }
   }
 
   bool get isLiked => _isLiked;
@@ -136,5 +144,4 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   void setCurrentPost(PostModel post) {
     _currentPost = post;
   }
-
 }

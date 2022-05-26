@@ -6,6 +6,7 @@ import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
+import '../../bloc/likes_bloc/likes_bloc.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
 import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
@@ -44,25 +45,23 @@ class _PostViewState extends State<PostView> {
         screen: CommentsScreen(widget.post, postItemBloc), context: context);
   }
 
-
-
   @override
   void initState() {
-    postItemBloc = PostItemBloc(
-        context.read<DataRepository>(), context.read<OfflineLikesRepository>());
+    postItemBloc = PostItemBloc(context.read<DataRepository>(),
+        context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
     postItemBloc.setCurrentPost(widget.post);
     postItemBloc.add(CheckIfPostIsLikedStarted());
     // TODO: implement initState
     super.initState();
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   postItemBloc = PostItemBloc(
-  //       context.read<DataRepository>(), context.read<OfflineLikesRepository>());
-  //   postItemBloc.setCurrentPost(widget.post);
-  //   super.didChangeDependencies();
-  // }
+  @override
+  void didChangeDependencies() {
+    postItemBloc = PostItemBloc(context.read<DataRepository>(),
+        context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
+    postItemBloc.setCurrentPost(widget.post);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +108,7 @@ class _PostViewState extends State<PostView> {
   }
 
   Widget _buildLikesCount() {
-    return BlocBuilder<PostItemBloc, PostItemState>(
+    return BlocBuilder<LikesBloc, LikesState>(
       builder: (context, state) {
         return Text(
           '${postItemBloc.currentPost.likesCount} ${AppStrings.likes}',
