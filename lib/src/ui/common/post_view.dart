@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -47,25 +48,24 @@ class _PostViewState extends State<PostView> {
 
   @override
   void initState() {
-    postItemBloc = PostItemBloc(context.read<DataRepository>(),
-        context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
-    postItemBloc.setCurrentPost(widget.post);
+    postItemBloc = PostItemBloc(
+        context.read<DataRepository>(), context.read<LikesBloc>(), widget.post);
+    // postItemBloc.setCurrentPost(widget.post);
     postItemBloc.add(CheckIfPostIsLikedStarted());
     // TODO: implement initState
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    postItemBloc = PostItemBloc(context.read<DataRepository>(),
-        context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
-    postItemBloc.setCurrentPost(widget.post);
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   postItemBloc = PostItemBloc(context.read<DataRepository>(),
+  //       context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
+  //   postItemBloc.setCurrentPost(widget.post);
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // postItemBloc.add(CheckIfPostIsLikedStarted());
 
     return BlocProvider(
       create: (_) => postItemBloc,
@@ -108,7 +108,7 @@ class _PostViewState extends State<PostView> {
   }
 
   Widget _buildLikesCount() {
-    return BlocBuilder<LikesBloc, LikesState>(
+    return BlocBuilder<PostItemBloc, PostItemState>(
       builder: (context, state) {
         return Text(
           '${postItemBloc.currentPost.likesCount} ${AppStrings.likes}',
@@ -162,11 +162,13 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Image _buildPostImage() {
-    return Image.network(
-      widget.post.photoUrl,
-      width: double.infinity,
-      height: 250,
+  CachedNetworkImage _buildPostImage() {
+    return CachedNetworkImage(
+      imageUrl: widget.post.photoUrl,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => SizedBox(
+          height: 250, child: Center(child: CircularProgressIndicator())),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 
@@ -188,7 +190,7 @@ class _PostViewState extends State<PostView> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(widget.post.publisherName),
+                child: Text(widget.post.publisherName,style: TextStyle(fontWeight: FontWeight.bold)),
               )
             ],
           ),

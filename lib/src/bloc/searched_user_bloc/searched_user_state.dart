@@ -7,6 +7,8 @@ class SearchedUserInitial extends SearchedUserState {}
 
 class SearchedUserLoading extends SearchedUserState {}
 
+class SearchedUserEmptyPosts extends SearchedUserState {}
+
 class SearchedUserLoaded extends SearchedUserState {
   final UserModel user;
 

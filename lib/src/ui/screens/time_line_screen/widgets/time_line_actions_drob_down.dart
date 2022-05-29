@@ -14,7 +14,6 @@ class TimelineActionsDropDown extends StatefulWidget {
 }
 
 class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
-  String? _dropDownValue;
   XFile? _imageFile;
 
   List<DropDownItemModel> items = [
@@ -50,8 +49,12 @@ class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
   Widget build(BuildContext context) {
     return DropdownButton(
       icon: Padding(
-          padding: EdgeInsets.only(top: 4),
-          child: Icon(Icons.add_box_outlined)),
+          padding: EdgeInsets.only(top: 7),
+          child: Icon(
+            Icons.add_box_outlined,
+            color: Colors.black,
+          )),
+      // alignment: Alignment.bottomRight,
       underline: Container(),
       items: items.map(
         (val) {

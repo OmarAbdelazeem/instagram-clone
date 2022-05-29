@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/core/saved_posts_likes.dart';
@@ -63,10 +64,8 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
   void setUpProfile() {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
-    searchedUserBloc = SearchedUserBloc(
-        context.read<DataRepository>(),
-        context.read<OfflineLikesRepository>(),
-        loggedInUserBloc.loggedInUser!.id!);
+    searchedUserBloc = SearchedUserBloc(context.read<DataRepository>(),
+        context.read<LikesBloc>(), loggedInUserBloc.loggedInUser!.id!);
 
     searchedUserBloc.setSearchedUserId(widget.searchedUserId);
     searchedUserBloc.add(CheckIfUserIsFollowedStarted());
@@ -100,7 +99,11 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
           return AppBar(
             title: Text(
               condition ? searchedUserBloc.searchedUser.userName! : "...",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
             actions: <Widget>[
               IconButton(
@@ -193,11 +196,9 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
           : AppStrings.follow,
       onTap: () {
         if (searchedUserBloc.isFollowed) {
-          searchedUserBloc.add(
-              UnFollowUserEventStarted());
+          searchedUserBloc.add(UnFollowUserEventStarted());
         } else {
-          searchedUserBloc
-              .add(FollowUserEventStarted());
+          searchedUserBloc.add(FollowUserEventStarted());
         }
       },
     );

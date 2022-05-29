@@ -4,14 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
-import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/widgets/comment_view.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/utils/navigation_utils.dart';
 import '../../../res/app_strings.dart';
+import '../../common/timestamp_view.dart';
+import '../profile_screen/searched_user_profile_screen.dart';
 
 class CommentsScreen extends StatefulWidget {
   final PostModel post;
@@ -25,16 +27,6 @@ class CommentsScreen extends StatefulWidget {
 
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
-
-  // List<CommentWidget> comments = [
-  //   CommentWidget(
-  //     postCaption: "test",
-  //     postName: "test",
-  //     postPhotoUrl:
-  //         "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-  //     timestamp: Timestamp.now(),
-  //   )
-  // ];
 
   void onPostButtonTapped() {
     if (commentController.text.isNotEmpty) {
@@ -63,35 +55,57 @@ class _CommentsScreenState extends State<CommentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Container(
-        padding: const EdgeInsets.all(8.0),
-        height: double.infinity,
-        child: Column(
-          children: <Widget>[
-            _buildPostCaption(),
-            Expanded(child: _buildComments()),
-            _buildCommentTextField()
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildPostCaption(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TimeStampView(widget.post.timestamp),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Divider(),
+          SizedBox(
+            height: 8,
+          ),
+          Expanded(child: _buildComments()),
+          _buildCommentTextField()
+        ],
       ),
     );
   }
 
   Widget _buildPostCaption() {
-    return Row(
-      children: <Widget>[
-        Text(
-          widget.post.publisherName,
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        NavigationUtils.pushScreen(
+            screen: SearchedUserProfileScreen(widget.post.publisherId),
+            context: context);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+        child: Row(
+          children: <Widget>[
+            ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              widget.post.publisherName,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              widget.post.caption,
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
         ),
-        SizedBox(
-          width: 5,
-        ),
-        Text(
-          widget.post.caption,
-          style: TextStyle(fontSize: 16),
-        ),
-      ],
+      ),
     );
   }
 
@@ -99,9 +113,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return BlocBuilder<PostItemBloc, PostItemState>(
       bloc: widget.postItemBloc,
       builder: (_, state) {
-        print("state is $state");
-        // if (state is CommentsLoaded)
-
         if (state is CommentsLoading)
           return Center(
             child: CircularProgressIndicator(),
@@ -111,7 +122,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
           itemBuilder: (_, index) => CommentView(
               comment: widget.postItemBloc.comments[index],
               isUploaded: state is AddingComment &&
-                  state.commentId == widget.postItemBloc.comments[index].commentId),
+                  state.commentId ==
+                      widget.postItemBloc.comments[index].commentId),
           itemCount: widget.postItemBloc.comments.length,
         );
       },
@@ -133,11 +145,12 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return AppBar(
       title: Text(
         AppStrings.comments,
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
       ),
-      actions: <Widget>[
-        Icon(Icons.more_vert),
-      ],
     );
   }
 }

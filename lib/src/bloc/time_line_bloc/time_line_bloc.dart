@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../core/saved_posts_likes.dart';
@@ -13,9 +14,10 @@ part 'time_line_state.dart';
 
 class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   final DataRepository _dataRepository;
-  final OfflineLikesRepository _offlineLikesRepo;
+  final LikesBloc _likesBloc;
 
-  TimeLineBloc(this._dataRepository, this._offlineLikesRepo)
+
+  TimeLineBloc(this._dataRepository, this._likesBloc)
       : super(TimeLineInitial()) {
     on<FetchTimeLinePostsStarted>(_onFetchTimelinePostsStarted);
   }
@@ -43,8 +45,8 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
             // 3) check if logged in user liked this post
             bool isLiked = await _dataRepository.checkIfUserLikesPost(
                 event.userId, post.postId);
-            _offlineLikesRepo.addPostLikesInfo(
-                id: post.postId, likes: post.likesCount, isLiked: isLiked);
+            _likesBloc.add(AddPostLikesInfoStarted(
+                id: post.postId, likes: post.likesCount, isLiked: isLiked));
 
             postsTemp.add(post);
           }

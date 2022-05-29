@@ -36,7 +36,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
                 children: [
                   for (int i = 0; i < widget.items.length; i++)
                     buildBottomNavigationBarItem(
-                        i, widget.items[i].selectedSvgPath, context)
+                        i, widget.items[i].svgPath, context)
                 ],
               ),
             ),
@@ -73,11 +73,9 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
 
 class BottomNavigationBarItemModel {
   String? title;
-  String selectedSvgPath;
-  String unSelectedSvgPath;
+  String svgPath;
 
   BottomNavigationBarItemModel(
       {this.title,
-      required this.selectedSvgPath,
-      required this.unSelectedSvgPath});
+      required this.svgPath,});
 }

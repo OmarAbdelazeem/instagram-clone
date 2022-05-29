@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
+import '../likes_bloc/likes_bloc.dart';
 
 part 'logged_in_user_event.dart';
 
@@ -15,9 +16,9 @@ part 'logged_in_user_state.dart';
 
 class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
   final DataRepository _dataRepository;
-  final OfflineLikesRepository _offlineLikesRepo;
+  final LikesBloc _likesBloc;
 
-  LoggedInUserBloc(this._dataRepository, this._offlineLikesRepo)
+  LoggedInUserBloc(this._dataRepository, this._likesBloc)
       : super(LoggedInUserInitial()) {
     on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
     on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
@@ -32,7 +33,6 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
       _dataRepository
           .listenToUserDetails(loggedInUser!.id!)
           .listen((streamEvent) {
-        print("streamEvent.data() is ${streamEvent.data()}");
         if (streamEvent.data() != null) {
           loggedInUser =
               UserModel.fromJson(streamEvent.data() as Map<String, dynamic>);
@@ -58,12 +58,19 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
             PostModel.fromJson(item.data() as Map<String, dynamic>);
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
             loggedInUser!.id!, post.postId);
-        _offlineLikesRepo.addPostLikesInfo(
-            id: post.postId, likes: post.likesCount, isLiked: isLiked);
+        _likesBloc.add(AddPostLikesInfoStarted(
+            id: post.postId, likes: post.likesCount, isLiked: isLiked));
+        posts.add(post);
+        posts.add(post);
+        posts.add(post);
+        posts.add(post);
+        posts.add(post);
         posts.add(post);
       });
 
-      emit(LoggedInUserPostsLoaded(_posts));
+      emit(_posts.isNotEmpty
+          ? LoggedInUserPostsLoaded(_posts)
+          : LoggedInUserEmptyPosts());
     } on Exception catch (e) {
       emit(LoggedInUserError(e.toString()));
     }

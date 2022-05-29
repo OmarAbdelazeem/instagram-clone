@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../common/profile_photo.dart';
+import '../../../common/timestamp_view.dart';
 
 class CommentView extends StatelessWidget {
   final CommentModel comment;
@@ -12,27 +12,24 @@ class CommentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("isUploaded is $isUploaded");
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _buildUpperPartView(),
-        SizedBox(
-          height: 5,
-        ),
-        // _buildTimestampView()
-        !isUploaded ? _buildTimestampView() : Text("Posting"),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _buildUpperPartView(),
+          SizedBox(
+            height: 5,
+          ),
+          !isUploaded ? TimeStampView(comment.timestamp) : Text("Posting"),
+          SizedBox(
+            height: 12,
+          ),
+        ],
+      ),
     );
   }
 
-  Text _buildTimestampView() {
-    return Text(
-      timeago.format(comment.timestamp),
-      style: TextStyle(fontSize: 11, color: Colors.grey),
-      overflow: TextOverflow.ellipsis,
-    );
-  }
 
   Row _buildUpperPartView() {
     return Row(

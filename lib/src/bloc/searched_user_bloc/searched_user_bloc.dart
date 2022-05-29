@@ -5,6 +5,7 @@ import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:meta/meta.dart';
 import '../../core/saved_posts_likes.dart';
 import '../../repository/data_repository.dart';
+import '../likes_bloc/likes_bloc.dart';
 
 part 'searched_user_event.dart';
 
@@ -13,10 +14,9 @@ part 'searched_user_state.dart';
 class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   final DataRepository _dataRepository;
   final String _loggedInUserId;
-  final OfflineLikesRepository _offlineLikesRepo;
+  final LikesBloc _likesBloc;
 
-  SearchedUserBloc(
-      this._dataRepository, this._offlineLikesRepo, this._loggedInUserId)
+  SearchedUserBloc(this._dataRepository, this._likesBloc, this._loggedInUserId)
       : super(SearchedUserInitial()) {
     on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     on<FollowUserEventStarted>(_onFollowStarted);
@@ -47,11 +47,6 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
     }
   }
 
-  // _onSetSearchedUserIdStarted(
-  //     SetSearchedUserIdStarted event, Emitter<SearchedUserState> state) {
-  //   _searchedUserId = event.searchedUserId;
-  // }
-
   void _onFetchSearchedUserPostsStarted(FetchSearchedUserPostsStarted event,
       Emitter<SearchedUserState> emit) async {
     try {
@@ -64,14 +59,19 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
             _loggedInUserId, post.postId);
 
-        print("isLiked from searchedUserBloc $isLiked");
-
-        _offlineLikesRepo.addPostLikesInfo(
-            id: post.postId, likes: post.likesCount, isLiked: isLiked);
+        _likesBloc.add(AddPostLikesInfoStarted(
+            id: post.postId, likes: post.likesCount, isLiked: isLiked));
+        _posts.add(post);
+        _posts.add(post);
+        _posts.add(post);
+        _posts.add(post);
         _posts.add(post);
       });
 
-      emit(SearchedUserPostsLoaded(_posts));
+      emit(_posts.isNotEmpty
+          ? SearchedUserPostsLoaded(_posts)
+          : SearchedUserEmptyPosts());
+
     } on Exception catch (e) {
       emit(SearchedUserError(e.toString()));
     }

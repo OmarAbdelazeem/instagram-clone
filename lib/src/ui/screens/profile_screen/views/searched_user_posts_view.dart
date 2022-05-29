@@ -6,6 +6,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
 import '../../../../models/post_model/post_model.dart';
 import '../../../common/small_post_view.dart';
+import '../../../common/small_posts_grid_view.dart';
 
 class SearchedUserPostsView extends StatefulWidget {
   SearchedUserPostsView({
@@ -28,26 +29,19 @@ class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 4;
-    final double itemWidth = size.width / 2;
-
     return BlocBuilder<SearchedUserBloc, SearchedUserState>(
         builder: (context, state) {
       if (state is SearchedUserError)
         return Text(state.error);
-      else if (state is SearchedUserLoading) {
+      else if (state is SearchedUserPostsLoading) {
         return Center(
           child: CircularProgressIndicator(),
         );
-      } else
-        return _searchedUserBloc.posts.isNotEmpty
-            ? _buildOwnPosts(
-                posts: _searchedUserBloc.posts,
-                itemHeight: itemHeight,
-                itemWidth: itemWidth)
-            : _buildEmptyOwnPosts();
+      } else if (state is SearchedUserEmptyPosts)
+        return _buildEmptyOwnPosts();
+      else {
+        return SmallPostsGridView(_searchedUserBloc.posts);
+      }
     });
   }
 
@@ -84,22 +78,5 @@ class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
     );
   }
 
-  Widget _buildOwnPosts(
-      {required List<PostModel> posts,
-      required double itemHeight,
-      required double itemWidth}) {
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      itemCount: posts.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 5,
-        childAspectRatio: 0.6 / 0.8,
-      ),
-      itemBuilder: (context, index) {
-        return SmallPostView(post: posts[index]);
-      },
-    );
-  }
+
 }

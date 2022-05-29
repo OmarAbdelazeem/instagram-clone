@@ -61,7 +61,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (loggedInUser != null) {
         final userJson =
         (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
-        print("userJson is ${userJson}");
         _user = UserModel.fromJson(userJson as Map<String, dynamic>);
         emit(AuthSuccess(_user!));
       } else {

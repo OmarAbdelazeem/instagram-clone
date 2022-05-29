@@ -21,11 +21,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        print("state is $state");
         if (state is AuthSuccess) {
           NavigationUtils.pushNamedAndPopUntil(
               AppRoutes.mainHomeScreen, context);
-          print("state.user id is ${state.user.id}");
           context.read<LoggedInUserBloc>().add(SetLoggedInUserStarted(state.user));
         } else
           NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);

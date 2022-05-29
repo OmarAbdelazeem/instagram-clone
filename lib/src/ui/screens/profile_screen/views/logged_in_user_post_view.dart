@@ -4,6 +4,7 @@ import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.da
 import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../models/post_model/post_model.dart';
 import '../../../common/small_post_view.dart';
+import '../../../common/small_posts_grid_view.dart';
 
 class LoggedInUserPostsView extends StatefulWidget {
   LoggedInUserPostsView({
@@ -41,10 +42,7 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
         );
       } else
         return _loggedInUserBloc!.posts.isNotEmpty
-            ? _buildOwnPosts(
-                posts: _loggedInUserBloc!.posts,
-                itemHeight: itemHeight,
-                itemWidth: itemWidth)
+            ? SmallPostsGridView(_loggedInUserBloc!.posts)
             : _buildEmptyOwnPosts();
     });
   }
@@ -82,22 +80,5 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
     );
   }
 
-  Widget _buildOwnPosts(
-      {required List<PostModel> posts,
-      required double itemHeight,
-      required double itemWidth}) {
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      itemCount: posts.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 5,
-        childAspectRatio: 0.6 / 0.8,
-      ),
-      itemBuilder: (context, index) {
-        return SmallPostView(post: posts[index]);
-      },
-    );
-  }
+
 }

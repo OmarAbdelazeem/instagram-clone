@@ -6,6 +6,8 @@ abstract class LoggedInUserState {}
 class LoggedInUserInitial extends LoggedInUserState {}
 
 class LoggedInUserLoaded extends LoggedInUserState {}
+class LoggedInUserEmptyPosts extends LoggedInUserState {}
+
 
 class LoggedInUserError extends LoggedInUserState {
   final String error;

@@ -24,7 +24,10 @@ class PostDetailsScreen extends StatelessWidget {
     return AppBar(
       title: Text(
         AppStrings.post,
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
       ),
     );
   }

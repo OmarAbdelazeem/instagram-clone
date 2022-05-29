@@ -5,6 +5,8 @@ class AppImages {
   static final String homeFilledSvg = '${base}homeFilled.svg';
   static final String searchEmptySvg = '${base}searchEmpty.svg';
   static final String searchFilledSvg = '${base}searchFilled.svg';
+  static final String videoSvg = '${base}video.svg';
+  static final String personSvg = '${base}person.svg';
   static final String sendButtonSvg = '${base}sendButton.svg';
   static final String addButtonSvg = '${base}addButton.svg';
   static final String commentButtonSvg = '${base}commentButton.svg';

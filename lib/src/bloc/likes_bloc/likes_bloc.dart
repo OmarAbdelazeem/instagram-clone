@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:instagramapp/src/models/likes_info_model/likes_info_model.dart';
 import 'package:meta/meta.dart';
 
 part 'likes_event.dart';
@@ -11,7 +12,6 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
   LikesBloc() : super(LikesInitial()) {
     on<AddPostLikesInfoStarted>(_onAddPostLikesInfoStarted);
   }
-
 
   Map<String, Map<String, dynamic>> _postsLikesInfo = {};
 
@@ -27,12 +27,7 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
     emit(LikesChanged(event.id));
   }
 
-
-  Map<String, dynamic>? getPostLikesInfo(String postId) {
-    return _postsLikesInfo[postId];
+  LikesInfo? getPostLikesInfo(String postId) {
+    return LikesInfo.fromMap(_postsLikesInfo[postId]!);
   }
-
-
-
-
 }

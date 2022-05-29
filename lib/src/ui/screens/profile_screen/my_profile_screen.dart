@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppBar(
       title: Text(
         context.watch<LoggedInUserBloc>().loggedInUser!.userName!,
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         IconButton(

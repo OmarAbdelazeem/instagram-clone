@@ -45,6 +45,13 @@ class DataRepository {
         .get();
   }
 
+  Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts(
+      String userId) async {
+    return await postsRef
+        .orderBy('timestamp', descending: true)
+        .get();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> listenToTimelinePostsIds(
       String userId) {
     return timelineRef.doc(userId).collection('timeline').limit(10).snapshots();
@@ -261,22 +268,26 @@ class DataRepository {
   }
 
 //Todo implement this function to fetch all recommended users
-// getRecommendedUsers(String loggedInUserId) async {
-//   // usersRef.snapshots().
-//
-//   var query =
-//       usersRef.snapshots().map((snapshot) => snapshot.docs.where((doc) {
-//             String userId = doc['userId'];
-//             usersFollowingRef.doc(userId).get();
-//           }));
-//   // List<> recommendedUsers =[];
-//
-//   // var query =
-//   // usersRef.snapshots().map((snapshot) => snapshot.docs.forEach((doc) async{
-//   //  final isDocExist = (await usersRef.doc(doc.id).get()).exists;
-//   //  // if(isDocExist)
-//   //  //   recommendedUsers.add(doc);
-//   // }));
-//
-// }
+getRecommendedUsers(String loggedInUserId) async {
+  await for(var snapshot in usersRef.snapshots()){
+
+    // String userId = snapshot.docs.;
+    //           usersFollowingRef.doc(userId).get();
+  }
+
+  // var query =
+  //     usersRef.snapshots().map((snapshot) => snapshot.docs.where((doc) {
+  //           String userId = doc['userId'];
+  //           usersFollowingRef.doc(userId).get();
+  //         }));
+  // List<> recommendedUsers =[];
+
+  // var query =
+  // usersRef.snapshots().map((snapshot) => snapshot.docs.forEach((doc) async{
+  //  final isDocExist = (await usersRef.doc(doc.id).get()).exists;
+  //  // if(isDocExist)
+  //  //   recommendedUsers.add(doc);
+  // }));
+
+}
 }

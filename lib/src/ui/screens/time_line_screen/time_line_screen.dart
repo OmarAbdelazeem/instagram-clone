@@ -13,6 +13,7 @@ import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/time_line_actions_drob_down.dart';
 import '../../../../router.dart';
+import '../../../bloc/likes_bloc/likes_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../../models/viewed_post_model/viewed_post_model.dart';
@@ -69,7 +70,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   void didChangeDependencies() {
     timeLineBloc = TimeLineBloc(
       context.read<DataRepository>(),
-        context.read<OfflineLikesRepository>()
+      context.read<LikesBloc>(),
     );
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     timeLineBloc
@@ -87,7 +88,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
           onRefresh: () => getTimeLinePosts(),
           child: BlocBuilder<TimeLineBloc, TimeLineState>(
               builder: (BuildContext context, state) {
-            print("state is $state");
             if (state is TimeLineLoaded) {
               final timelinePosts = timeLineBloc.posts;
               if (timelinePosts.isNotEmpty)
@@ -140,7 +140,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
   _buildTimelinePosts(List<PostModel> timelinePosts) {
     return ListView.builder(
-      shrinkWrap: true,
       itemBuilder: (context, index) => PostView(
         post: timelinePosts[index],
       ),

@@ -54,7 +54,6 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
               if (state is Loading)
                 showLoadingDialog(context, _keyLoader);
               else if (state is AuthSuccess) {
-                print("state is AuthSuccess");
                 Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                     .pop();
                 NavigationUtils.pushNamed(

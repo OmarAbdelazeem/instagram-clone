@@ -19,9 +19,13 @@ class SmallPostView extends StatelessWidget {
             context: context,
             arguments: post);
       },
-      child: CachedNetworkImage(
+     child: CachedNetworkImage(
         imageUrl: post.photoUrl,
+         fit: BoxFit.cover,
+        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => Icon(Icons.error),
       ),
+
     );
   }
 }

@@ -22,17 +22,13 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   ];
   final List<BottomNavigationBarItemModel> bottomNavigationBarItems = [
     BottomNavigationBarItemModel(
-        selectedSvgPath: AppImages.homeFilledSvg,
-        unSelectedSvgPath: AppImages.homeFilledSvg),
+        svgPath: AppImages.homeFilledSvg,),
     BottomNavigationBarItemModel(
-        selectedSvgPath: AppImages.searchFilledSvg,
-        unSelectedSvgPath: AppImages.searchFilledSvg),
+        svgPath: AppImages.searchFilledSvg,),
     BottomNavigationBarItemModel(
-        selectedSvgPath: AppImages.searchFilledSvg,
-        unSelectedSvgPath: AppImages.searchFilledSvg),
+        svgPath: AppImages.videoSvg,),
     BottomNavigationBarItemModel(
-        selectedSvgPath: AppImages.searchFilledSvg,
-        unSelectedSvgPath: AppImages.searchFilledSvg),
+        svgPath: AppImages.personSvg,),
   ];
 
   @override
@@ -40,8 +36,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return WillPopScope(
         onWillPop: _onWillPopScope,
         child: Scaffold(
-          body: _screens[_currentIndex],
-            // body: IndexedStack(index: _currentIndex, children: _screens),
+            body: IndexedStack(index: _currentIndex, children: _screens),
             bottomNavigationBar: _buildBottomNavigationBar()));
   }
 

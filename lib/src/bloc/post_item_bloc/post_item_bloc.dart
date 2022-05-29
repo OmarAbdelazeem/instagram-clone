@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
+import 'package:instagramapp/src/models/likes_info_model/likes_info_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
@@ -15,11 +16,10 @@ part 'post_item_state.dart';
 class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   final DataRepository _dataRepository;
   final LikesBloc _likesBloc;
-  final OfflineLikesRepository _offlineLikesRepo;
+  final PostModel _currentPost;
 
-  PostItemBloc(this._dataRepository, this._offlineLikesRepo, this._likesBloc)
+  PostItemBloc(this._dataRepository, this._likesBloc, this._currentPost)
       : super(PostItemInitial()) {
-    on<ListenToPostStarted>(_onListenToPostStarted);
     on<AddLikeStarted>(_onAddLikeStarted);
     on<RemoveLikeStarted>(_onRemoveLikeStarted);
     on<LoadCommentsStarted>(_onLoadCommentsStarted);
@@ -27,35 +27,20 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     on<CheckIfPostIsLikedStarted>(_onCheckIfPostIsLikedStarted);
   }
 
-  PostModel? _currentPost;
   List<CommentModel> comments = [];
   bool _isLiked = false;
-
-  // int _likesCount = 0;
-
-  FutureOr<void> _onListenToPostStarted(
-      ListenToPostStarted event, Emitter<PostItemState> state) {
-    emit(PostLoading());
-    try {
-      _dataRepository.listenToPostDetails(postId: event.postId).listen((event) {
-        if (event.data() != null) {
-          _currentPost =
-              PostModel.fromJson(event.data() as Map<String, dynamic>);
-          emit(PostLoaded(_currentPost!));
-        }
-      });
-    } catch (e) {}
-  }
 
   FutureOr<void> _onAddLikeStarted(
       AddLikeStarted event, Emitter<PostItemState> state) async {
     try {
-      _likesBloc.add(AddPostLikesInfoStarted(isLiked: true , id: "1",likes: 7));
       emit(PostIsLiked());
       _isLiked = true;
-      _currentPost!.likesCount++;
-      _offlineLikesRepo.addPostLikesInfo(
-          id: currentPost.postId, likes: currentPost.likesCount, isLiked: true);
+      _currentPost.likesCount++;
+      _likesBloc.add(AddPostLikesInfoStarted(
+          isLiked: true,
+          id: _currentPost.postId,
+          likes: _currentPost.likesCount));
+
       await _dataRepository.addLikeToPost(
           postId: event.postId, userId: event.userId);
     } catch (e) {
@@ -66,14 +51,14 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   FutureOr<void> _onRemoveLikeStarted(
       RemoveLikeStarted event, Emitter<PostItemState> state) async {
     try {
-      _likesBloc.add(AddPostLikesInfoStarted(isLiked: true , id: "2",likes: 7));
       emit(PostIsUnLiked());
       _isLiked = false;
-      _currentPost!.likesCount--;
-      _offlineLikesRepo.addPostLikesInfo(
-          id: currentPost.postId,
-          likes: currentPost.likesCount,
-          isLiked: false);
+      _currentPost.likesCount--;
+      _likesBloc.add(AddPostLikesInfoStarted(
+          isLiked: false,
+          id: _currentPost.postId,
+          likes: _currentPost.likesCount));
+
       await _dataRepository.removeLikeFromPost(
           postId: event.postId, publisherId: event.userId);
     } catch (e) {
@@ -108,40 +93,47 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   _onCheckIfPostIsLikedStarted(
       CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
-    _likesBloc.stream.listen((likesState) {
-      if (likesState is LikesChanged) {
-        print("change is ${likesState.postId}");
-      }
-    });
+    /// 1) initialize likes count and check if post isLiked
+    getInitialValueOfLikes();
 
-    // _offlineLikesRepo.listenToLikesInfo(_currentPost!.postId).listen((result) {
-    //   print("result is $result");
-    //   _currentPost!.likesCount = result!["likes"];
-    //   _isLiked = result["isLiked"];
-    //   if (_isLiked) {
-    //     emit(PostIsLiked());
-    //   } else {
-    //     emit(PostIsUnLiked());
-    //   }
-    // });
+    /// 2) listen to likes count check if post isLiked if there is another event
+    if(!_likesBloc.isClosed){
+      _likesBloc.stream.listen((likesState) {
+        if (likesState is LikesChanged) {
+          LikesInfo likesInfo = _likesBloc.getPostLikesInfo(currentPost.postId)!;
+          _isLiked = likesInfo.isLiked;
+          _currentPost.likesCount = likesInfo.likes;
+          //Todo handle emit state inside stream
+          if (_isLiked) {
+            emit(PostIsLiked());
+          }
+          else {
+            emit(PostIsUnLiked());
+          }
+        }
+      });
+    }
 
-    // Map<String, dynamic>? result =
-    //     _offlineLikesRepo.getPostLikesInfo(_currentPost!.postId);
-    // print("result is $result");
-    // _currentPost!.likesCount = result!["likes"];
-    // _isLiked = result["isLiked"];
-    // if (_isLiked) {
-    //   emit(PostIsLiked());
-    // } else {
-    //   emit(PostIsUnLiked());
-    // }
+
+  }
+
+
+
+  void getInitialValueOfLikes() {
+    LikesInfo likesInfo = _likesBloc.getPostLikesInfo(_currentPost.postId)!;
+    _isLiked = likesInfo.isLiked;
+    _currentPost.likesCount = likesInfo.likes;
+    if (_isLiked) {
+      emit(PostIsLiked());
+    } else {
+      emit(PostIsUnLiked());
+    }
   }
 
   bool get isLiked => _isLiked;
 
-  PostModel get currentPost => _currentPost!;
 
-  void setCurrentPost(PostModel post) {
-    _currentPost = post;
-  }
+
+  PostModel get currentPost => _currentPost;
+
 }
