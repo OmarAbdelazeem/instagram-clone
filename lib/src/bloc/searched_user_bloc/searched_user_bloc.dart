@@ -62,10 +62,10 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         _posts.add(post);
-        _posts.add(post);
-        _posts.add(post);
-        _posts.add(post);
-        _posts.add(post);
+        // _posts.add(post);
+        // _posts.add(post);
+        // _posts.add(post);
+        // _posts.add(post);
       });
 
       emit(_posts.isNotEmpty

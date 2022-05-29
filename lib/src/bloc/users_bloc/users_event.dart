@@ -9,9 +9,7 @@ class SearchByTermEventStarted extends UsersEvent {
   SearchByTermEventStarted({required this.term});
 }
 
-class PreviousSearchRemoved extends UsersEvent{
-
-}
+class PreviousSearchRemoved extends UsersEvent {}
 
 class SearchByIdEventStarted extends UsersEvent {
   final String searchedUserId;
@@ -19,11 +17,7 @@ class SearchByIdEventStarted extends UsersEvent {
   SearchByIdEventStarted({required this.searchedUserId});
 }
 
-class FetchRecommendedUsersStarted extends UsersEvent {
-  final String userId;
-
-  FetchRecommendedUsersStarted(this.userId);
-}
+class FetchRecommendedUsersStarted extends UsersEvent {}
 
 class SetLoggedInUserStarted extends UsersEvent {
   final UserModel user;

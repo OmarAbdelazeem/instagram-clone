@@ -25,7 +25,8 @@ class DataRepository {
     return await usersRef.doc(userId).get();
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToUserDetails(String id) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToUserDetails(
+      String id) {
     return usersRef.doc(id).snapshots();
   }
 
@@ -47,9 +48,7 @@ class DataRepository {
 
   Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts(
       String userId) async {
-    return await postsRef
-        .orderBy('timestamp', descending: true)
-        .get();
+    return await postsRef.orderBy('timestamp', descending: true).get();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> listenToTimelinePostsIds(
@@ -268,26 +267,27 @@ class DataRepository {
   }
 
 //Todo implement this function to fetch all recommended users
-getRecommendedUsers(String loggedInUserId) async {
-  await for(var snapshot in usersRef.snapshots()){
+  Future<List<QueryDocumentSnapshot>> getRecommendedUsers(
+      String loggedInUserId) async {
+    List<QueryDocumentSnapshot> queryDocumentSnapshots = [];
 
-    // String userId = snapshot.docs.;
-    //           usersFollowingRef.doc(userId).get();
+    await for (var snapshot in usersRef.snapshots()) {
+      for (var snapshotDoc in snapshot.docs) {
+        String userId = snapshotDoc.data()['id'];
+        if (userId == loggedInUserId) continue;
+        final userIsFollowed = (await usersFollowingRef
+                .doc(loggedInUserId)
+                .collection("usersFollowing")
+                .doc(userId)
+                .get())
+            .exists;
+
+        if (!userIsFollowed) queryDocumentSnapshots.add(snapshotDoc);
+      }
+      print("the end of the stream");
+      return queryDocumentSnapshots;
+    }
+
+    return [];
   }
-
-  // var query =
-  //     usersRef.snapshots().map((snapshot) => snapshot.docs.where((doc) {
-  //           String userId = doc['userId'];
-  //           usersFollowingRef.doc(userId).get();
-  //         }));
-  // List<> recommendedUsers =[];
-
-  // var query =
-  // usersRef.snapshots().map((snapshot) => snapshot.docs.forEach((doc) async{
-  //  final isDocExist = (await usersRef.doc(doc.id).get()).exists;
-  //  // if(isDocExist)
-  //  //   recommendedUsers.add(doc);
-  // }));
-
-}
 }

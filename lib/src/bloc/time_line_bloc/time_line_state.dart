@@ -7,6 +7,8 @@ class TimeLineInitial extends TimeLineState {}
 
 class TimeLineLoading extends TimeLineState {}
 
+class EmptyTimeline extends TimeLineState {}
+
 class TimeLineLoaded extends TimeLineState {
   final List<PostModel> posts;
 

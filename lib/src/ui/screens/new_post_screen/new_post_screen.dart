@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
@@ -26,10 +27,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
   XFile? imageFile;
 
   _onShareTapped() async {
-    context.read<PostsBloc>().add(PostUploadStarted(imageFile!,
-        captionController.text, context.read<UsersBloc>().loggedInUser!));
+    context.read<PostsBloc>().add(PostUploadStarted(
+        imageFile!,
+        captionController.text,
+        context.read<LoggedInUserBloc>().loggedInUser!));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   Widget _buildTagPeopleButton() {
     return TextButton(
       onPressed: () {},
-      child: Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
+      child:
+          Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
     );
   }
 

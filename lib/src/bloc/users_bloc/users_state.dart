@@ -19,6 +19,10 @@ class LoggedInUserLoaded extends UsersState {
   LoggedInUserLoaded(this.user);
 }
 
+class RecommendedUsersLoaded extends UsersState {}
+
+class EmptyUsers extends UsersState {}
+
 class SearchedUserLoaded extends UsersState {
   final UserModel searchedUser;
 

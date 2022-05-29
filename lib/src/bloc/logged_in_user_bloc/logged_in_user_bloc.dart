@@ -61,11 +61,11 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         posts.add(post);
-        posts.add(post);
-        posts.add(post);
-        posts.add(post);
-        posts.add(post);
-        posts.add(post);
+        // posts.add(post);
+        // posts.add(post);
+        // posts.add(post);
+        // posts.add(post);
+        // posts.add(post);
       });
 
       emit(_posts.isNotEmpty

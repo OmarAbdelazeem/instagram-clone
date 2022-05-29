@@ -16,7 +16,6 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   final DataRepository _dataRepository;
   final LikesBloc _likesBloc;
 
-
   TimeLineBloc(this._dataRepository, this._likesBloc)
       : super(TimeLineInitial()) {
     on<FetchTimeLinePostsStarted>(_onFetchTimelinePostsStarted);
@@ -52,7 +51,7 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
           }
         }
         _posts = postsTemp;
-        emit(TimeLineLoaded(_posts));
+        emit(_posts.isNotEmpty ? TimeLineLoaded(_posts) : EmptyTimeline());
       }
     } on Exception catch (e) {
       emit(TimeLineError(e.toString()));

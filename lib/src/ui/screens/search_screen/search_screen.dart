@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
@@ -20,12 +21,14 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
-  UsersBloc? usersBloc = UsersBloc(DataRepository());
+  late UsersBloc usersBloc;
 
   @override
   void initState() {
+    usersBloc = UsersBloc(context.read<DataRepository>(),
+        context.read<LoggedInUserBloc>().loggedInUser!.id!);
     searchController.addListener(() {
-      usersBloc!.add(SearchByTermEventStarted(term: searchController.text));
+      usersBloc.add(SearchByTermEventStarted(term: searchController.text));
     });
 
     super.initState();
@@ -52,26 +55,29 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildUsersContent() {
-    return BlocBuilder<UsersBloc, UsersState>(
-        bloc: usersBloc,
-        builder: (BuildContext context, state) {
-          if (state is UsersLoaded)
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                return SearchResult(state.users[index]);
-              },
-              itemCount: state.users.length,
-            );
-          else if (state is UsersLoading)
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          else if (state is Error)
-            return Center(
-              child: Text(AppStrings.error),
-            );
-          else
-            return Container();
-        });
+    return BlocProvider<UsersBloc>(
+      create: (_) => usersBloc,
+      child: BlocBuilder<UsersBloc, UsersState>(
+          bloc: usersBloc,
+          builder: (BuildContext context, state) {
+            if (state is UsersLoaded)
+              return ListView.builder(
+                itemBuilder: (context, index) {
+                  return SearchResult(state.users[index]);
+                },
+                itemCount: state.users.length,
+              );
+            else if (state is UsersLoading)
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            else if (state is Error)
+              return Center(
+                child: Text(AppStrings.error),
+              );
+            else
+              return Container();
+          }),
+    );
   }
 }

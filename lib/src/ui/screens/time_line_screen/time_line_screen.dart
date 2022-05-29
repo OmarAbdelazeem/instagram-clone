@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
+import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
@@ -30,51 +31,24 @@ class TimeLineScreen extends StatefulWidget {
 class _TimeLineScreenState extends State<TimeLineScreen> {
   late TimeLineBloc timeLineBloc;
   late LoggedInUserBloc loggedInUserBloc;
-  List<UserModel> users = [
-    UserModel(
-        photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-        userName: "Omar Abdelazeem",
-        bio: "this is a bio",
-        id: "123",
-        email: "omar@email.com",
-        postsCount: 1,
-        followersCount: 3,
-        followingCount: 5,
-        timestamp: (Timestamp.now()).toDate()),
-    UserModel(
-        photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-        userName: "Omar Abdelazeem",
-        bio: "this is a bio",
-        id: "123",
-        email: "omar@email.com",
-        postsCount: 1,
-        followersCount: 3,
-        followingCount: 5,
-        timestamp: (Timestamp.now()).toDate()),
-    UserModel(
-        photoUrl:
-            "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-        userName: "Omar Abdelazeem",
-        bio: "this is a bio",
-        id: "123",
-        email: "omar@email.com",
-        postsCount: 1,
-        followersCount: 3,
-        followingCount: 5,
-        timestamp: (Timestamp.now()).toDate())
-  ];
+  late UsersBloc usersBloc;
+
+  Future getTimeLinePosts() async {
+    timeLineBloc
+        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
+  }
 
   @override
   void didChangeDependencies() {
+    final dataRepository = context.read<DataRepository>();
     timeLineBloc = TimeLineBloc(
-      context.read<DataRepository>(),
+      dataRepository,
       context.read<LikesBloc>(),
     );
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     timeLineBloc
         .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
+    usersBloc = UsersBloc(dataRepository, loggedInUserBloc.loggedInUser!.id!);
     super.didChangeDependencies();
   }
 
@@ -82,24 +56,31 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: BlocProvider<TimeLineBloc>(
-        create: (context) => timeLineBloc,
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<TimeLineBloc>(
+            create: (context) => timeLineBloc,
+          ),
+          BlocProvider<UsersBloc>(
+            create: (context) => usersBloc,
+          ),
+        ],
         child: RefreshIndicator(
           onRefresh: () => getTimeLinePosts(),
-          child: BlocBuilder<TimeLineBloc, TimeLineState>(
-              builder: (BuildContext context, state) {
-            if (state is TimeLineLoaded) {
-              final timelinePosts = timeLineBloc.posts;
-              if (timelinePosts.isNotEmpty)
-                return _buildTimelinePosts(timelinePosts);
-              else
-                return _buildRecommendedUsers();
-            } else if (state is TimeLineError)
+          child: BlocConsumer<TimeLineBloc, TimeLineState>(
+              listener: (BuildContext context, state) {
+            if (state is EmptyTimeline) {
+              usersBloc.add(FetchRecommendedUsersStarted());
+            }
+          }, builder: (BuildContext context, state) {
+            if (state is TimeLineLoading)
+              return Center(child: CircularProgressIndicator());
+            else if (state is EmptyTimeline)
+              return _buildRecommendedUsers();
+            else if (state is TimeLineError)
               return Text(state.error);
             else
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return _buildTimelinePosts(timeLineBloc.posts);
           }),
         ),
       ),
@@ -133,11 +114,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     );
   }
 
-  Future getTimeLinePosts() async {
-    timeLineBloc
-        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
-  }
-
   _buildTimelinePosts(List<PostModel> timelinePosts) {
     return ListView.builder(
       itemBuilder: (context, index) => PostView(
@@ -148,38 +124,46 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   }
 
   _buildRecommendedUsers() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          AppStrings.welcomeToInstagram,
-          style: TextStyle(
-            fontSize: 30,
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          AppStrings.followPeopleToStartSeeingPhotos,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 17,
-          ),
-        ),
-        Container(
-          height: 250,
-          child: ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return RecommendedUser(users[index]);
-            },
-            itemCount: users.length,
-          ),
-        ),
-      ],
+    return BlocBuilder<UsersBloc, UsersState>(
+      builder: (BuildContext context, state) {
+        return ListView(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  AppStrings.welcomeToInstagram,
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  AppStrings.followPeopleToStartSeeingPhotos,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+                Container(
+                  height: 250,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return RecommendedUser(usersBloc.recommendedUsers[index]);
+                    },
+                    itemCount: usersBloc.recommendedUsers.length,
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 }

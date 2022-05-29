@@ -47,28 +47,12 @@ class MyApp extends StatelessWidget {
                   context.read<DataRepository>(),
                   context.read<StorageRepository>()),
             ),
-            // BlocProvider<PostsBloc>(
-            //   create: (context) => PostsBloc(
-            //     context.read<DataRepository>(),
-            //     context.read<StorageRepository>(),
-            //   ),
-            // ),
-            BlocProvider<UsersBloc>(
-              create: (context) => UsersBloc(
-                context.read<DataRepository>(),
-              ),
-            ),
             BlocProvider(create: (context) => LikesBloc()),
             BlocProvider<LoggedInUserBloc>(
                 create: (context) => LoggedInUserBloc(
-                    context.read<DataRepository>(),
-                  context.read<LikesBloc>(),)),
-            // BlocProvider<SearchedUserBloc>(
-            //     create: (context) =>
-            //         SearchedUserBloc(context.read<DataRepository>())),
-            // BlocProvider<PostItemBloc>(
-            //     create: (context) =>
-            //         PostItemBloc(context.read<DataRepository>()))
+                      context.read<DataRepository>(),
+                      context.read<LikesBloc>(),
+                    )),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
