@@ -4,8 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
-
-import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
 import '../likes_bloc/likes_bloc.dart';
@@ -61,11 +59,6 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         posts.add(post);
-        // posts.add(post);
-        // posts.add(post);
-        // posts.add(post);
-        // posts.add(post);
-        // posts.add(post);
       });
 
       emit(_posts.isNotEmpty

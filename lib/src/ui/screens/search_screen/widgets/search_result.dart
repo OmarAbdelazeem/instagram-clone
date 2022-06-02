@@ -18,7 +18,7 @@ class SearchResult extends StatelessWidget {
     return InkWell(
       onTap: () {
         NavigationUtils.pushScreen(
-            screen: SearchedUserProfileScreen(searchedUser.id!),
+            screen: SearchedUserProfileScreen(searchedUserId: searchedUser.id!),
             context: context);
       },
       child: Padding(

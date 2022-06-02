@@ -81,7 +81,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return InkWell(
       onTap: () {
         NavigationUtils.pushScreen(
-            screen: SearchedUserProfileScreen(widget.post.publisherId),
+            screen: SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
             context: context);
       },
       child: Padding(

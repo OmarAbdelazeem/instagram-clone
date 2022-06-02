@@ -4,7 +4,6 @@ part of 'time_line_bloc.dart';
 abstract class TimeLineEvent {}
 
 class FetchTimeLinePostsStarted extends TimeLineEvent {
-  final String userId;
-
-  FetchTimeLinePostsStarted(this.userId);
 }
+
+class ListenToTimelinePostsStarted extends TimeLineEvent {}

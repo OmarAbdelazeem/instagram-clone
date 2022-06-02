@@ -15,6 +15,8 @@ class TimeLineLoaded extends TimeLineState {
   TimeLineLoaded(this.posts);
 }
 
+class TimeLineChanged extends TimeLineState {}
+
 class TimeLineError extends TimeLineState {
   final String error;
 

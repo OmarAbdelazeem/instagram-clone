@@ -34,23 +34,27 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   late UsersBloc usersBloc;
 
   Future getTimeLinePosts() async {
-    timeLineBloc
-        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
+    timeLineBloc.add(FetchTimeLinePostsStarted());
   }
 
   @override
-  void didChangeDependencies() {
-    final dataRepository = context.read<DataRepository>();
-    timeLineBloc = TimeLineBloc(
-      dataRepository,
-      context.read<LikesBloc>(),
-    );
+  void initState() {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
-    timeLineBloc
-        .add(FetchTimeLinePostsStarted(loggedInUserBloc.loggedInUser!.id!));
+
+    final dataRepository = context.read<DataRepository>();
+
+    timeLineBloc = TimeLineBloc(dataRepository, context.read<LikesBloc>(),
+        loggedInUserBloc.loggedInUser!.id!);
+
+    timeLineBloc.add(FetchTimeLinePostsStarted());
+
+    // timeLineBloc.add(ListenToTimelinePostsStarted());
+
     usersBloc = UsersBloc(dataRepository, loggedInUserBloc.loggedInUser!.id!);
-    super.didChangeDependencies();
+    // TODO: implement initState
+    super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +153,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
                   ),
                 ),
                 Container(
-                  height: 250,
+                  height: 220,
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,

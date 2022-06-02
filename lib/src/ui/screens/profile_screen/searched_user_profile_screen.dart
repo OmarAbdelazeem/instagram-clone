@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
@@ -16,7 +17,8 @@ import '../../common/profile_details.dart';
 class SearchedUserProfileScreen extends StatefulWidget {
   final String searchedUserId;
 
-  SearchedUserProfileScreen(this.searchedUserId);
+  SearchedUserProfileScreen(
+      {required this.searchedUserId});
 
   @override
   _SearchedUserProfileScreenState createState() =>
@@ -64,10 +66,14 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
   void setUpProfile() {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
-    searchedUserBloc = SearchedUserBloc(context.read<DataRepository>(),
-        context.read<LikesBloc>(), loggedInUserBloc.loggedInUser!.id!);
+    searchedUserBloc = SearchedUserBloc(
+        context.read<DataRepository>(),
+        context.read<LikesBloc>(),
+        loggedInUserBloc.loggedInUser!.id!,
+        widget.searchedUserId,
+        context.read<FollowingBloc>()
+    );
 
-    searchedUserBloc.setSearchedUserId(widget.searchedUserId);
     searchedUserBloc.add(CheckIfUserIsFollowedStarted());
 
     searchedUserBloc.add(ListenToSearchedUserStarted());
@@ -160,9 +166,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Expanded(
-                child: _buildFollowButton(),
-              ),
+              Expanded(child: _buildFollowButton()),
               SizedBox(
                 width: 10,
               ),

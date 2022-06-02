@@ -5,6 +5,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
+import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
+import 'package:instagramapp/src/repository/data_repository.dart';
+import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
@@ -23,42 +26,60 @@ class _NewPostScreenState extends State<NewPostScreen> {
   TextEditingController captionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
+  late UploadPostBloc uploadPostBloc;
   bool loading = false;
   XFile? imageFile;
 
   _onShareTapped() async {
-    context.read<PostsBloc>().add(PostUploadStarted(
+
+    uploadPostBloc.add(PostUploadStarted(
         imageFile!,
         captionController.text,
-        context.read<LoggedInUserBloc>().loggedInUser!));
+        context
+            .read<LoggedInUserBloc>()
+            .loggedInUser!));
+  }
+
+  @override
+  void initState() {
+    uploadPostBloc = UploadPostBloc(
+        context.read<StorageRepository>(), context.read<DataRepository>());
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    imageFile = ModalRoute.of(context)!.settings.arguments as XFile;
+    imageFile = ModalRoute
+        .of(context)!
+        .settings
+        .arguments as XFile;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildWriteACaptionTextFormField(context),
-          ),
-          Divider(
-            color: AppColors.grey,
-          ),
-          _buildTagPeopleButton(),
-          Divider(
-            color: AppColors.grey,
-          ),
-          _buildAddLocationButton(),
-          Divider(
-            color: AppColors.grey,
-          ),
-        ],
+    return BlocProvider<UploadPostBloc>(
+      create: (_) => uploadPostBloc,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _buildWriteACaptionTextFormField(context),
+            ),
+            Divider(
+              color: AppColors.grey,
+            ),
+            _buildTagPeopleButton(),
+            Divider(
+              color: AppColors.grey,
+            ),
+            _buildAddLocationButton(),
+            Divider(
+              color: AppColors.grey,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -75,7 +96,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     return TextButton(
       onPressed: () {},
       child:
-          Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
+      Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
     );
   }
 
@@ -100,7 +121,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         style: TextStyle(color: Colors.black),
       ),
       actions: <Widget>[
-        BlocListener<PostsBloc, PostsState>(
+        BlocListener<UploadPostBloc, UploadPostState>(
           listener: (context, state) {
             if (state is UpLoadingPost) showLoadingDialog(context, _keyLoader);
             if (state is PostUploaded) {

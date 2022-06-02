@@ -83,7 +83,6 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     try {
       emit(AddingComment(event.comment.commentId!));
       comments.add(event.comment);
-      await Future.delayed(Duration(seconds: 3));
       await _dataRepository.addComment(event.comment);
       emit(CommentAdded());
     } catch (e) {
@@ -97,27 +96,21 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     getInitialValueOfLikes();
 
     /// 2) listen to likes count check if post isLiked if there is another event
-    if(!_likesBloc.isClosed){
-      _likesBloc.stream.listen((likesState) {
-        if (likesState is LikesChanged) {
-          LikesInfo likesInfo = _likesBloc.getPostLikesInfo(currentPost.postId)!;
-          _isLiked = likesInfo.isLiked;
-          _currentPost.likesCount = likesInfo.likes;
-          //Todo handle emit state inside stream
+    _likesBloc.stream.listen((likesState) {
+      if (likesState is LikesChanged) {
+        LikesInfo likesInfo = _likesBloc.getPostLikesInfo(currentPost.postId)!;
+        _isLiked = likesInfo.isLiked;
+        _currentPost.likesCount = likesInfo.likes;
+        if (!isClosed) {
           if (_isLiked) {
             emit(PostIsLiked());
-          }
-          else {
+          } else {
             emit(PostIsUnLiked());
           }
         }
-      });
-    }
-
-
+      }
+    });
   }
-
-
 
   void getInitialValueOfLikes() {
     LikesInfo likesInfo = _likesBloc.getPostLikesInfo(_currentPost.postId)!;
@@ -132,8 +125,5 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   bool get isLiked => _isLiked;
 
-
-
   PostModel get currentPost => _currentPost;
-
 }

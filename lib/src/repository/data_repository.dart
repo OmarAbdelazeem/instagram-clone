@@ -51,9 +51,15 @@ class DataRepository {
     return await postsRef.orderBy('timestamp', descending: true).get();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> listenToTimelinePostsIds(
+  Future<QuerySnapshot?>? getTimelinePostsIds(
       String userId) {
-    return timelineRef.doc(userId).collection('timeline').limit(10).snapshots();
+    return timelineRef.doc(userId).collection('timeline').limit(10).get();
+  }
+
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToTimeline(
+      String userId) {
+    return timelineRef.doc(userId).get().asStream();
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getPostComments(
@@ -284,7 +290,6 @@ class DataRepository {
 
         if (!userIsFollowed) queryDocumentSnapshots.add(snapshotDoc);
       }
-      print("the end of the stream");
       return queryDocumentSnapshots;
     }
 

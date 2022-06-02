@@ -179,7 +179,7 @@ class _PostViewState extends State<PostView> {
         InkWell(
           onTap: () {
             NavigationUtils.pushScreen(
-                screen: SearchedUserProfileScreen(widget.post.publisherId),
+                screen: SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
                 context: context);
           },
           child: Row(

@@ -10,3 +10,6 @@ main() async {
   runApp(MyApp());
 }
 
+
+///create following bloc as the same as likes bloc to notify follow button
+///if it is changed from another place

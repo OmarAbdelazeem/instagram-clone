@@ -30,4 +30,6 @@ class LikesBloc extends Bloc<LikesEvent, LikesState> {
   LikesInfo? getPostLikesInfo(String postId) {
     return LikesInfo.fromMap(_postsLikesInfo[postId]!);
   }
+
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
@@ -47,7 +48,8 @@ class MyApp extends StatelessWidget {
                   context.read<DataRepository>(),
                   context.read<StorageRepository>()),
             ),
-            BlocProvider(create: (context) => LikesBloc()),
+            BlocProvider<FollowingBloc>(create: (context) => FollowingBloc()),
+            BlocProvider<LikesBloc>(create: (context) => LikesBloc()),
             BlocProvider<LoggedInUserBloc>(
                 create: (context) => LoggedInUserBloc(
                       context.read<DataRepository>(),
