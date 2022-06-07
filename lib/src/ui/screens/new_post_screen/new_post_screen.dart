@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
@@ -27,18 +28,17 @@ class _NewPostScreenState extends State<NewPostScreen> {
   TextEditingController locationController = TextEditingController();
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   late UploadPostBloc uploadPostBloc;
+  late LoggedInUserBloc loggedInUserBloc;
   bool loading = false;
-  XFile? imageFile;
+  CroppedFile? imageFile;
+
 
   _onShareTapped() async {
-
-    uploadPostBloc.add(PostUploadStarted(
-        imageFile!,
-        captionController.text,
-        context
-            .read<LoggedInUserBloc>()
-            .loggedInUser!));
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
+    uploadPostBloc.add(PostUploadStarted(File(imageFile!.path), captionController.text,
+        loggedInUserBloc.loggedInUser!));
   }
+
 
   @override
   void initState() {
@@ -50,10 +50,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    imageFile = ModalRoute
-        .of(context)!
-        .settings
-        .arguments as XFile;
+    imageFile = ModalRoute.of(context)!.settings.arguments as CroppedFile;
+
+
 
     return BlocProvider<UploadPostBloc>(
       create: (_) => uploadPostBloc,
@@ -96,7 +95,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     return TextButton(
       onPressed: () {},
       child:
-      Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
+          Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
     );
   }
 

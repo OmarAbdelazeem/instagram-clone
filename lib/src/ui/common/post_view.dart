@@ -9,7 +9,6 @@ import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import '../../bloc/likes_bloc/likes_bloc.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
-import '../../core/saved_posts_likes.dart';
 import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
 import '../../res/app_strings.dart';
@@ -28,8 +27,9 @@ class PostView extends StatefulWidget {
 
 class _PostViewState extends State<PostView> {
   late PostItemBloc postItemBloc;
+  late Size mediaQuerySize;
 
-  void likeButtonTapped() {
+  void _onLikeButtonTapped() {
     if (postItemBloc.isLiked) {
       postItemBloc.add(RemoveLikeStarted(
           postId: widget.post.postId,
@@ -41,50 +41,44 @@ class _PostViewState extends State<PostView> {
     }
   }
 
-  void onCommentButtonTapped() {
+  void _onCommentButtonTapped() {
     NavigationUtils.pushScreen(
         screen: CommentsScreen(widget.post, postItemBloc), context: context);
   }
 
   @override
   void initState() {
+
     postItemBloc = PostItemBloc(
         context.read<DataRepository>(), context.read<LikesBloc>(), widget.post);
-    // postItemBloc.setCurrentPost(widget.post);
     postItemBloc.add(CheckIfPostIsLikedStarted());
-    // TODO: implement initState
+// TODO: implement initState
     super.initState();
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   postItemBloc = PostItemBloc(context.read<DataRepository>(),
-  //       context.read<OfflineLikesRepository>(), context.read<LikesBloc>());
-  //   postItemBloc.setCurrentPost(widget.post);
-  //   super.didChangeDependencies();
-  // }
-
   @override
   Widget build(BuildContext context) {
-
+    mediaQuerySize = MediaQuery.of(context).size;
     return BlocProvider(
       create: (_) => postItemBloc,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: _buildPostHeader()),
-          _buildPostImage(),
-          _buildPostActions(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [_buildLikesCount(), _buildPublisherNameAndCaption()],
-            ),
-          )
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: _buildPostHeader()),
+            Center(child: _buildPostImage()),
+            _buildPostActions(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [_buildLikesCount(), _buildPublisherNameAndCaption()],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -131,7 +125,7 @@ class _PostViewState extends State<PostView> {
                           Icons.favorite,
                         )
                       : Icon(Icons.favorite_border),
-                  onPressed: likeButtonTapped);
+                  onPressed: _onLikeButtonTapped);
             }),
             IconButton(
                 icon: SvgPicture.asset(
@@ -139,7 +133,7 @@ class _PostViewState extends State<PostView> {
                   width: 20,
                   height: 20,
                 ),
-                onPressed: onCommentButtonTapped),
+                onPressed: _onCommentButtonTapped),
             IconButton(
               icon: SvgPicture.asset(
                 AppImages.sendButtonSvg,
@@ -165,9 +159,10 @@ class _PostViewState extends State<PostView> {
   CachedNetworkImage _buildPostImage() {
     return CachedNetworkImage(
       imageUrl: widget.post.photoUrl,
-      fit: BoxFit.cover,
+      fit: BoxFit.fitWidth,
       placeholder: (context, url) => SizedBox(
-          height: 250, child: Center(child: CircularProgressIndicator())),
+          height: mediaQuerySize.height * 0.45,
+          child: Center(child: CircularProgressIndicator())),
       errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
@@ -179,7 +174,8 @@ class _PostViewState extends State<PostView> {
         InkWell(
           onTap: () {
             NavigationUtils.pushScreen(
-                screen: SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
+                screen: SearchedUserProfileScreen(
+                    searchedUserId: widget.post.publisherId),
                 context: context);
           },
           child: Row(
@@ -190,7 +186,8 @@ class _PostViewState extends State<PostView> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(widget.post.publisherName,style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(widget.post.publisherName,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               )
             ],
           ),

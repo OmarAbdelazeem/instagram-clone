@@ -20,10 +20,11 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
   pickAndSaveProfileImage(ImageSource source) async {
-    Navigator.pop(context);
-    final imageFile = await ImageUtils.pickImage(source);
-    if(imageFile!=null)
-    context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
+    //Todo fix this as before
+    // Navigator.pop(context);
+    // final imageFile = await ImageUtils.pickImage(source);
+    // if(imageFile!=null)
+    // context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
   }
 
   onSkipTapped() {

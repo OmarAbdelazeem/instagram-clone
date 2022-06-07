@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:instagramapp/src/ui/screens/activity_screen/activity_screen.dart';
 import 'package:instagramapp/src/ui/screens/explore_photos_screen/explore_photos_screen.dart';
-import 'package:instagramapp/src/ui/screens/explore_videos_screen/explore_videos_screen.dart';
 import 'package:instagramapp/src/ui/screens/main_home_screen/widgets/app_bottom_navigation_bar.dart';
 import '../../../res/app_images.dart';
 import '../profile_screen/my_profile_screen.dart';
@@ -17,7 +17,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   final List<Widget> _screens = [
     TimeLineScreen(),
     ExplorePhotosScreen(),
-    const ExploreVideosScreen(),
+    ActivityScreen(),
     ProfileScreen(),
   ];
   final List<BottomNavigationBarItemModel> bottomNavigationBarItems = [

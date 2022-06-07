@@ -1,11 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/core/utils/image_utils.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../../router.dart';
-import '../../../../res/app_images.dart';
 
 class TimelineActionsDropDown extends StatefulWidget {
   @override
@@ -24,18 +24,65 @@ class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
   ];
 
   void pickImage() async {
-    ImageUtils.pickImage(ImageSource.gallery).then((value) {
+    ImageUtils.pickImage(ImageSource.gallery).then((value) async {
       setState(() {
         _imageFile = value;
       });
       if (_imageFile != null) {
-        NavigationUtils.pushNamed(
-            route: AppRoutes.newPostScreen,
-            context: context,
-            arguments: _imageFile);
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: _imageFile!.path,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+          ],
+          aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+          compressFormat: ImageCompressFormat.png,
+          compressQuality: 80,
+
+          // androidUiSettings: AndroidUiSettings(
+          //   toolbarTitle: 'Cropper',
+          //   toolbarColor: Colors.deepOrange,
+          //   toolbarWidgetColor: Colors.white,
+          //   initAspectRatio: CropAspectRatioPreset.original,
+          // ),
+          // iosUiSettings: IOSUiSettings(
+          //   title: 'Cropper',
+          // ),
+        );
+        if (croppedFile != null) {
+
+          NavigationUtils.pushNamed(
+              route: AppRoutes.newPostScreen,
+              context: context,
+              arguments: croppedFile);
+        }
       }
     });
   }
+
+  // void pickVideo() async {
+  //   XFile? videoFile = await ImageUtils.pickVideo(ImageSource.gallery);
+  //   //Todo implement crop video functions here
+  //   if (videoFile != null) {
+  //     await ImageCropper().cropImage(
+  //       sourcePath: videoFile.path,
+  //       aspectRatioPresets: [
+  //         CropAspectRatioPreset.square,
+  //       ],
+  //       aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+  //       compressFormat: ImageCompressFormat.png,
+  //       compressQuality: 80,
+  //       // androidUiSettings: AndroidUiSettings(
+  //       //   toolbarTitle: 'Cropper',
+  //       //   toolbarColor: Colors.deepOrange,
+  //       //   toolbarWidgetColor: Colors.white,
+  //       //   initAspectRatio: CropAspectRatioPreset.original,
+  //       // ),
+  //       // iosUiSettings: IOSUiSettings(
+  //       //   title: 'Cropper',
+  //       // ),
+  //     );
+  //   }
+  // }
 
   void onChanged(String? val) {
     // Todo implement all functions
@@ -54,7 +101,6 @@ class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
             Icons.add_box_outlined,
             color: Colors.black,
           )),
-      // alignment: Alignment.bottomRight,
       underline: Container(),
       items: items.map(
         (val) {

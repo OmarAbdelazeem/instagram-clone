@@ -13,10 +13,10 @@ class StorageRepository {
   }
 
   Future<String> uploadProfilePhoto(
-      {required XFile selectedFile, required String userId}) {
+      {required File selectedFile, required String userId}) {
     final path =
         'posts/$userId/profilePhoto/${Path.basename(selectedFile.path)}';
-    return _uploadFile(selectedFile: File(selectedFile.path), path: path);
+    return _uploadFile(selectedFile: selectedFile, path: path);
   }
 
   Future<String> _uploadFile(

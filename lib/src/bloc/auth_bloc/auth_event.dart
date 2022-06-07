@@ -24,7 +24,7 @@ class SignUpWithEmailStarted extends AuthEvent {
 }
 
 class ProfilePhotoPicked extends AuthEvent {
-  final XFile imageFile;
+  final File imageFile;
 
   ProfilePhotoPicked(this.imageFile);
 }

@@ -49,6 +49,7 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
   void _onFetchLoggedInUserPosts(FetchLoggedInUserPostsStarted event,
       Emitter<LoggedInUserState> emit) async {
     try {
+      List<PostModel> tempPosts = [];
       emit(LoggedInUserPostsLoading());
       final data = (await _dataRepository.getUserPosts(loggedInUser!.id!)).docs;
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
@@ -58,9 +59,10 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
             loggedInUser!.id!, post.postId);
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
-        posts.add(post);
-      });
+        tempPosts.add(post);
 
+      });
+      _posts = tempPosts;
       emit(_posts.isNotEmpty
           ? LoggedInUserPostsLoaded(_posts)
           : LoggedInUserEmptyPosts());

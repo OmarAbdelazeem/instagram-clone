@@ -13,3 +13,6 @@ main() async {
 
 ///create following bloc as the same as likes bloc to notify follow button
 ///if it is changed from another place
+///1) pick videos and add type in post model
+///
+
