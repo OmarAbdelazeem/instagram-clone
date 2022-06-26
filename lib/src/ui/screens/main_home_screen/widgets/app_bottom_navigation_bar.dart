@@ -24,11 +24,15 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
     return SizedBox(
       height: 65,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10,),
+        padding: const EdgeInsets.symmetric(
+          vertical: 5,
+        ),
         child: Column(
           children: [
             Divider(),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25),
               child: Row(
@@ -48,7 +52,9 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
 
   Widget buildBottomNavigationBarItem(
       int index, String svgPath, BuildContext context) {
-    return GestureDetector(
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+
       onTap: () {
         setState(() {
           widget.onItemChanged(index);
@@ -56,11 +62,15 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
+        height: 32,
+        width: 50,
+        decoration: BoxDecoration(
+            color: AppColors.scaffoldBackgroundColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(30)),
         child: Center(
           child: SvgPicture.asset(
             svgPath,
             height: 20,
-            width: 21,
             color: widget.selectedIndex == index
                 ? AppColors.black
                 : AppColors.grey,
@@ -75,7 +85,8 @@ class BottomNavigationBarItemModel {
   String? title;
   String svgPath;
 
-  BottomNavigationBarItemModel(
-      {this.title,
-      required this.svgPath,});
+  BottomNavigationBarItemModel({
+    this.title,
+    required this.svgPath,
+  });
 }

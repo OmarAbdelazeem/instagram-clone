@@ -10,4 +10,5 @@ class AppImages {
   static final String sendButtonSvg = '${base}sendButton.svg';
   static final String addButtonSvg = '${base}addButton.svg';
   static final String commentButtonSvg = '${base}commentButton.svg';
+  static final String heartOutlineSvg = '${base}heartOutline.svg';
 }

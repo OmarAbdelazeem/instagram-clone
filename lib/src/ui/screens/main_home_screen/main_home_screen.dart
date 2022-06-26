@@ -26,7 +26,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     BottomNavigationBarItemModel(
         svgPath: AppImages.searchFilledSvg,),
     BottomNavigationBarItemModel(
-        svgPath: AppImages.videoSvg,),
+        svgPath: AppImages.heartOutlineSvg,),
     BottomNavigationBarItemModel(
         svgPath: AppImages.personSvg,),
   ];
