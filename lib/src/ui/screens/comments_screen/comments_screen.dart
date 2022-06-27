@@ -8,6 +8,7 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/widgets/comment_view.dart';
+import 'package:instagramapp/src/ui/screens/comments_screen/widgets/no_comments_yet.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/utils/navigation_utils.dart';
@@ -47,6 +48,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   @override
   void initState() {
     widget.postItemBloc.add(LoadCommentsStarted(widget.post.postId));
+
     // TODO: implement initState
     super.initState();
   }
@@ -56,56 +58,90 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return Scaffold(
       appBar: _buildAppBar(),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _buildPostCaption(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TimeStampView(widget.post.timestamp),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Divider(),
-          SizedBox(
-            height: 8,
-          ),
-          Expanded(child: _buildComments()),
+          BlocBuilder<PostItemBloc, PostItemState>(
+              bloc: widget.postItemBloc,
+              builder: (state, context) {
+                return Expanded(child: widget.post.caption.isNotEmpty &&
+                    widget.postItemBloc.comments.isNotEmpty
+                    ? _buildCaptionWithComments()
+                    : _buildNoCommentsYet());
+              }),
           _buildCommentTextField()
         ],
       ),
     );
   }
 
+  Widget _buildNoCommentsYet() {
+    return Column(
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.35),
+        NoCommentsYetView(),
+      ],
+    );
+  }
+
+  Widget _buildCaptionWithComments() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        widget.post.caption.isNotEmpty ? _buildPostCaption() : Container(),
+        widget.post.caption.isNotEmpty
+            ? SizedBox(
+                height: 8,
+              )
+            : Container(),
+        Expanded(child: _buildComments()),
+        Divider(),
+      ],
+    );
+  }
+
   Widget _buildPostCaption() {
-    return InkWell(
-      onTap: () {
-        NavigationUtils.pushScreen(
-            screen: SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
-            context: context);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-        child: Row(
-          children: <Widget>[
-            ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
-            SizedBox(
-              width: 5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {
+            NavigationUtils.pushScreen(
+                screen: SearchedUserProfileScreen(
+                    searchedUserId: widget.post.publisherId),
+                context: context);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+            child: Row(
+              children: <Widget>[
+                ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  widget.post.publisherName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  widget.post.caption,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-            Text(
-              widget.post.publisherName,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              widget.post.caption,
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: TimeStampView(widget.post.timestamp),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Divider(),
+      ],
     );
   }
 
@@ -132,13 +168,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   Widget _buildCommentTextField() {
     return AppTextField(
-      controller: commentController,
-      icon: ProfilePhoto(radius: 20),
-      suffixIcon: TextButton(
-          child:
-              Text(AppStrings.post, style: TextStyle(color: AppColors.black)),
-          onPressed: onPostButtonTapped),
-    );
+        fillColor: AppColors.scaffoldBackgroundColor,
+        hintText: AppStrings.addAComment,
+        controller: commentController,
+        icon: ProfilePhoto(radius: 20),
+        suffixIcon: TextButton(
+          child: Text(AppStrings.post, style: TextStyle(color: AppColors.blue)),
+          onPressed: onPostButtonTapped,
+        ));
   }
 
   AppBar _buildAppBar() {

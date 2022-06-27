@@ -63,4 +63,6 @@ class AppStrings {
   static const error = "Error";
   static const follow = "Follow";
   static const message = "Message";
+  static const noCommentsYet = "No comments yet";
+  static const startTheConversation = "Start the conversation";
 }
