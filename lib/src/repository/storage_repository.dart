@@ -7,15 +7,17 @@ import 'package:image_picker/image_picker.dart';
 class StorageRepository {
 
   Future<String> uploadPost(
-      {required XFile selectedFile, required String userId}) {
-    final path = 'posts/$userId/posts/${Path.basename(selectedFile.path)}';
+      {required File selectedFile, required String userId ,required String imageId}) {
+
+        final path = 'posts/$userId/$imageId';
+
     return _uploadFile(selectedFile: File(selectedFile.path), path: path);
   }
 
   Future<String> uploadProfilePhoto(
-      {required File selectedFile, required String userId}) {
-    final path =
-        'posts/$userId/profilePhoto/${Path.basename(selectedFile.path)}';
+      {required File selectedFile, required String userId ,required String imageId}) {
+         final path =
+        'profilePhotos/$userId/$imageId';
     return _uploadFile(selectedFile: selectedFile, path: path);
   }
 
@@ -25,7 +27,6 @@ class StorageRepository {
 
     var uploadTask = storageReference.putFile(selectedFile);
     await uploadTask;
-    // await uploadTask.onComplete;
     final fileURL = await storageReference.getDownloadURL();
     return fileURL;
   }

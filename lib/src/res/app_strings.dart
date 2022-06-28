@@ -65,4 +65,7 @@ class AppStrings {
   static const message = "Message";
   static const noCommentsYet = "No comments yet";
   static const startTheConversation = "Start the conversation";
+   static const edit = "Edit";
+     static const delete = "Delete";
+     static const peopleSuggestions = "'People Suggestions'";
 }

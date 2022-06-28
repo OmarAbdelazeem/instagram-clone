@@ -108,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Loading());
     try {
       final photoUrl = await _storageRepository.uploadProfilePhoto(
-          selectedFile: event.imageFile, userId: _user!.id!);
+          selectedFile: File(event.imageFile.path), userId: _user!.id!,imageId: _user!.id!);
       await _dataRepository.addProfilePhoto(_user!.id!, photoUrl);
       emit(ProfilePhotoUploaded(photoUrl));
     } catch (e) {

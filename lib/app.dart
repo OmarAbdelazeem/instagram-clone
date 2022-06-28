@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
             BlocProvider<LoggedInUserBloc>(
                 create: (context) => LoggedInUserBloc(
                       context.read<DataRepository>(),
+                      context.read<AuthRepository>(),
                       context.read<LikesBloc>(),
                     )),
           ],

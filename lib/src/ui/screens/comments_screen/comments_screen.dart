@@ -60,14 +60,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          BlocBuilder<PostItemBloc, PostItemState>(
-              bloc: widget.postItemBloc,
-              builder: (state, context) {
-                return Expanded(child: widget.post.caption.isNotEmpty &&
-                    widget.postItemBloc.comments.isNotEmpty
-                    ? _buildCaptionWithComments()
-                    : _buildNoCommentsYet());
-              }),
+          Expanded(child: _buildCaptionWithComments()),
           _buildCommentTextField()
         ],
       ),
@@ -85,7 +78,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   Widget _buildCaptionWithComments() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         widget.post.caption.isNotEmpty ? _buildPostCaption() : Container(),
         widget.post.caption.isNotEmpty
@@ -93,8 +86,20 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 height: 8,
               )
             : Container(),
-        Expanded(child: _buildComments()),
-        Divider(),
+        BlocBuilder<PostItemBloc, PostItemState>(
+          bloc: widget.postItemBloc,
+          builder: (_, state) {
+            if (state is CommentsLoading)
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            else if (widget.postItemBloc.comments.isEmpty) {
+              return _buildNoCommentsYet();
+            }
+
+            return Expanded(child: _buildComments(state));
+          },
+        ),
       ],
     );
   }
@@ -145,37 +150,31 @@ class _CommentsScreenState extends State<CommentsScreen> {
     );
   }
 
-  Widget _buildComments() {
-    return BlocBuilder<PostItemBloc, PostItemState>(
-      bloc: widget.postItemBloc,
-      builder: (_, state) {
-        if (state is CommentsLoading)
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-
-        return ListView.builder(
-          itemBuilder: (_, index) => CommentView(
-              comment: widget.postItemBloc.comments[index],
-              isUploaded: state is AddingComment &&
-                  state.commentId ==
-                      widget.postItemBloc.comments[index].commentId),
-          itemCount: widget.postItemBloc.comments.length,
-        );
-      },
+  Widget _buildComments(PostItemState state) {
+    return ListView.builder(
+      itemBuilder: (_, index) => CommentView(
+          comment: widget.postItemBloc.comments[index],
+          isUploaded: state is AddingComment &&
+              state.commentId == widget.postItemBloc.comments[index].commentId),
+      itemCount: widget.postItemBloc.comments.length,
     );
   }
 
   Widget _buildCommentTextField() {
-    return AppTextField(
-        fillColor: AppColors.scaffoldBackgroundColor,
-        hintText: AppStrings.addAComment,
-        controller: commentController,
-        icon: ProfilePhoto(radius: 20),
-        suffixIcon: TextButton(
-          child: Text(AppStrings.post, style: TextStyle(color: AppColors.blue)),
-          onPressed: onPostButtonTapped,
-        ));
+    return Column(
+      children: [
+        Divider(),
+        AppTextField(
+            fillColor: AppColors.scaffoldBackgroundColor,
+            hintText: AppStrings.addAComment,
+            controller: commentController,
+            icon: ProfilePhoto(radius: 20),
+            suffixIcon: TextButton(
+              child: Text(AppStrings.post, style: TextStyle(color: AppColors.blue)),
+              onPressed: onPostButtonTapped,
+            ))
+      ],
+    );
   }
 
   AppBar _buildAppBar() {

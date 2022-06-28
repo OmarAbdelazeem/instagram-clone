@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
-import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -16,7 +13,7 @@ import 'package:instagramapp/src/ui/common/app_text_field.dart';
 import '../../../../router.dart';
 import '../../../bloc/users_bloc/users_bloc.dart';
 import '../../../core/utils/navigation_utils.dart';
-import '../../common/loading_dialogue.dart';
+import '../../../core/utils/loading_dialogue.dart';
 
 class NewPostScreen extends StatefulWidget {
   @override

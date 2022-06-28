@@ -11,7 +11,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_logo.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
-import 'package:instagramapp/src/ui/common/loading_dialogue.dart';
+import 'package:instagramapp/src/core/utils/loading_dialogue.dart';
 import '../widgets/or_divider.dart';
 
 class LoginView extends StatefulWidget {

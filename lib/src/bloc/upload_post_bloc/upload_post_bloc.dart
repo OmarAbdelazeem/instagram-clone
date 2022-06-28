@@ -30,13 +30,14 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
       PostUploadStarted event, Emitter<UploadPostState> emit) async {
     emit(UpLoadingPost());
     try {
-      final photoUrl = await _storageRepository.uploadProfilePhoto(
-          selectedFile: event.imageFile, userId: event.user.id!);
+      final String postId = Uuid().v4();
+      final photoUrl = await _storageRepository.uploadPost(
+          selectedFile: event.imageFile, userId: event.user.id! ,imageId: postId);
       final post = PostModel(
           publisherName: event.user.userName!,
           caption: event.caption,
           photoUrl: photoUrl,
-          postId: Uuid().v4(),
+          postId: postId,
           publisherId: event.user.id!,
           timestamp: Timestamp.now().toDate(),
           likesCount: 0,

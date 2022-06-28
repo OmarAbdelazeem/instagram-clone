@@ -9,11 +9,9 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../router.dart';
 import '../../../bloc/explore_posts_bloc/explore_posts_bloc.dart';
 import '../../../bloc/likes_bloc/likes_bloc.dart';
-import '../../../models/post_model/post_model.dart';
 import '../../../repository/data_repository.dart';
 import '../../../res/app_images.dart';
 import '../../common/app_text_field.dart';
-import '../../common/small_post_view.dart';
 import '../../common/small_posts_grid_view.dart';
 
 class ExplorePhotosScreen extends StatefulWidget {
@@ -30,18 +28,16 @@ class _ExplorePhotosScreenState extends State<ExplorePhotosScreen> {
     final likesBloc = context.read<LikesBloc>();
     final dataRepository = context.read<DataRepository>();
     explorePostsBloc = ExplorePostsBloc(userId, likesBloc, dataRepository);
-    explorePostsBloc.add(FetchExplorePostsStarted());
 
     super.didChangeDependencies();
   }
 
+  Future fetchExplorePosts() async {
+    explorePostsBloc.add(FetchExplorePostsStarted());
+  }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 4;
-    final double itemWidth = size.width / 2;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -59,7 +55,11 @@ class _ExplorePhotosScreenState extends State<ExplorePhotosScreen> {
                   );
                 } else
                   return Expanded(
-                      child: SmallPostsGridView(explorePostsBloc.posts));
+                    child: RefreshIndicator(
+                      onRefresh: fetchExplorePosts,
+                      child: SmallPostsGridView(explorePostsBloc.posts),
+                    ),
+                  );
               }),
             )
           ],
@@ -84,6 +84,5 @@ class _ExplorePhotosScreenState extends State<ExplorePhotosScreen> {
         ),
       ),
     );
-
   }
 }

@@ -6,6 +6,7 @@ import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
 import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
+import '../../repository/auth_repository.dart';
 import '../likes_bloc/likes_bloc.dart';
 
 part 'logged_in_user_event.dart';
@@ -14,13 +15,15 @@ part 'logged_in_user_state.dart';
 
 class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
   final DataRepository _dataRepository;
+  final AuthRepository _authRepository;
   final LikesBloc _likesBloc;
 
-  LoggedInUserBloc(this._dataRepository, this._likesBloc)
+  LoggedInUserBloc(this._dataRepository,this._authRepository, this._likesBloc)
       : super(LoggedInUserInitial()) {
     on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
     on<SetLoggedInUserStarted>(_onSetLoggedInUserStarted);
     on<FetchLoggedInUserPostsStarted>(_onFetchLoggedInUserPosts);
+    on<FetchLoggedInUserDetailsStarted>(_onFetchLoggedInUserDetailsStarted);
   }
 
   UserModel? loggedInUser;
@@ -44,6 +47,18 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
 
   _onSetLoggedInUserStarted(SetLoggedInUserStarted event, emit) {
     loggedInUser = event.user;
+  }
+
+
+  Future<void> _onFetchLoggedInUserDetailsStarted(FetchLoggedInUserDetailsStarted event , emit)async{
+    try{
+      emit(LoggedInUserDetailsLoading());
+      var loggedInUserData = await _dataRepository.getUserDetails(_authRepository.loggedInUser!.uid);
+      loggedInUser = UserModel.fromJson(loggedInUserData.data() as Map<String , dynamic>);
+      emit(LoggedInUserDetailsLoaded());
+    }catch(e){
+      emit(LoggedInUserError(e.toString()));
+    }
   }
 
   void _onFetchLoggedInUserPosts(FetchLoggedInUserPostsStarted event,

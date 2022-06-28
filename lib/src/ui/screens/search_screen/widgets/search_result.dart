@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagramapp/src/models/searched_user/searched_user.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 
 import '../../../../bloc/searched_user_bloc/searched_user_bloc.dart';

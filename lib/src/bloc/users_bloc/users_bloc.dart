@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
 import 'package:meta/meta.dart';
-import '../../models/searched_user/searched_user.dart';
 import '../../repository/data_repository.dart';
 
 part 'users_event.dart';

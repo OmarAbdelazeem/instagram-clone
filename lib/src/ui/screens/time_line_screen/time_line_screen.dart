@@ -96,16 +96,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
       title: AppLogo(fontSize: 30),
       actions: <Widget>[
         TimelineActionsDropDown(),
-        // SizedBox(
-        //   width: 12,
-        // ),
-        // IconButton(
-        //   onPressed: () {
-        //     NavigationUtils.pushNamed(
-        //         route: AppRoutes.activityScreen, context: context);
-        //   },
-        //   icon: Icon(Icons.favorite_outline),
-        // ),
         IconButton(
           onPressed: () {},
           icon: SvgPicture.asset(

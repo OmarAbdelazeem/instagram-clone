@@ -9,6 +9,10 @@ class SetLoggedInUserStarted extends LoggedInUserEvent {
   SetLoggedInUserStarted(this.user);
 }
 
+class FetchLoggedInUserDetailsStarted extends LoggedInUserEvent{
+
+}
+
 class ListenToLoggedInUserStarted extends LoggedInUserEvent {}
 
 class FetchLoggedInUserPostsStarted extends LoggedInUserEvent{}

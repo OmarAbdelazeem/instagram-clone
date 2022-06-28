@@ -28,5 +28,6 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'followingCount': instance.followingCount,
       'followersCount': instance.followersCount,
       'postsCount': instance.postsCount,
-      'timestamp': instance.timestamp?.toIso8601String(),
+      'timestamp': instance.timestamp,
+      // 'timestamp': instance.timestamp?.toIso8601String(),
     };

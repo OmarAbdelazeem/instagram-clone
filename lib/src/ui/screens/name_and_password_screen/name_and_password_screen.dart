@@ -7,7 +7,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
 
-import '../../common/loading_dialogue.dart';
+import '../../../core/utils/loading_dialogue.dart';
 
 class NameAndPasswordScreen extends StatefulWidget {
   @override

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/core/utils/app_bottom_sheet.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
@@ -48,7 +50,6 @@ class _PostViewState extends State<PostView> {
 
   @override
   void initState() {
-
     postItemBloc = PostItemBloc(
         context.read<DataRepository>(), context.read<LikesBloc>(), widget.post);
     postItemBloc.add(CheckIfPostIsLikedStarted());
@@ -192,8 +193,54 @@ class _PostViewState extends State<PostView> {
             ],
           ),
         ),
-        IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+        IconButton(
+            onPressed: () {
+              showAppBottomSheet(
+                  title: "Test",
+                  context: context,
+                  child: _buildBottomSheetView());
+            },
+            icon: Icon(Icons.more_vert))
       ],
     );
+  }
+
+  Widget _buildBottomSheetView() {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitle(AppStrings.edit),
+          _buildTitle(AppStrings.share),
+          _buildTitle(AppStrings.delete),
+          SizedBox(
+            height: 20,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.all(12),
+      child: SizedBox(
+        width: double.infinity,
+        child: TextButton(
+      
+            onPressed: () {},
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 18,
+                  color: AppColors.black,
+                  fontWeight: FontWeight.normal),
+              textAlign: TextAlign.start,
+
+            )),
+      ),
+    );
+
   }
 }

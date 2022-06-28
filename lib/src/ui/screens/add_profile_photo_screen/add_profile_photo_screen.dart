@@ -8,7 +8,7 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import '../../../../router.dart';
 import '../../../core/utils/image_utils.dart';
-import '../../common/loading_dialogue.dart';
+import '../../../core/utils/loading_dialogue.dart';
 
 
 class AddProfilePhotoScreen extends StatefulWidget {
@@ -21,15 +21,15 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
 
   pickAndSaveProfileImage(ImageSource source) async {
     //Todo fix this as before
-    // Navigator.pop(context);
-    // final imageFile = await ImageUtils.pickImage(source);
-    // if(imageFile!=null)
-    // context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
+    Navigator.pop(context);
+    final imageFile = await ImageUtils.pickImage(source);
+    if(imageFile!=null)
+    context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
   }
 
   onSkipTapped() {
-    NavigationUtils.pushNamed(
-        route: AppRoutes.peopleSuggestionsScreen, context: context);
+    NavigationUtils.pushNamedAndPopUntil(
+        AppRoutes.peopleSuggestionsScreen, context);
   }
 
   @override
