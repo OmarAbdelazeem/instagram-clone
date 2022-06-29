@@ -9,13 +9,13 @@ import '../../../../../router.dart';
 
 enum Menu { itemOne, itemTwo, itemThree, itemFour }
 
-class TimelineActionsDropDown extends StatefulWidget {
+class TimelineActionsDropList extends StatefulWidget {
   @override
-  _TimelineActionsDropDownState createState() =>
-      _TimelineActionsDropDownState();
+  _TimelineActionsDropListState createState() =>
+      _TimelineActionsDropListState();
 }
 
-class _TimelineActionsDropDownState extends State<TimelineActionsDropDown> {
+class _TimelineActionsDropListState extends State<TimelineActionsDropList> {
   XFile? _imageFile;
   String _selectedMenu = '';
 

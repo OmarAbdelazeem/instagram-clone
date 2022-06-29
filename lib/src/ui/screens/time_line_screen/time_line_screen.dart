@@ -43,8 +43,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
     final dataRepository = context.read<DataRepository>();
 
-    timeLineBloc = TimeLineBloc(dataRepository, context.read<LikesBloc>(),
-        loggedInUserBloc.loggedInUser!.id!);
+    timeLineBloc = context.read<TimeLineBloc>();
 
     timeLineBloc.add(FetchTimeLinePostsStarted());
 
@@ -62,9 +61,6 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
       appBar: _buildAppBar(),
       body: MultiBlocProvider(
         providers: [
-          BlocProvider<TimeLineBloc>(
-            create: (context) => timeLineBloc,
-          ),
           BlocProvider<UsersBloc>(
             create: (context) => usersBloc,
           ),
@@ -72,6 +68,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         child: RefreshIndicator(
           onRefresh: () => getTimeLinePosts(),
           child: BlocConsumer<TimeLineBloc, TimeLineState>(
+            bloc: timeLineBloc,
               listener: (BuildContext context, state) {
             if (state is EmptyTimeline) {
               usersBloc.add(FetchRecommendedUsersStarted());
@@ -95,7 +92,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     return AppBar(
       title: AppLogo(fontSize: 30),
       actions: <Widget>[
-        TimelineActionsDropDown(),
+        TimelineActionsDropList(),
         IconButton(
           onPressed: () {},
           icon: SvgPicture.asset(
@@ -109,6 +106,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   }
 
   _buildTimelinePosts(List<PostModel> timelinePosts) {
+    print("timelinePosts is ${timelinePosts.length}");
     return ListView.builder(
       itemBuilder: (context, index) => PostView(
         post: timelinePosts[index],

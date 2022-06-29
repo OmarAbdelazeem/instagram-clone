@@ -24,6 +24,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   }
 
   List<UserModel> recommendedUsers = [];
+  List<UserModel> followingUsers = [];
+  List<UserModel> followersUsers = [];
 
   _onSearchByTermStarted(SearchByTermEventStarted event, emit) async {
     if (event.term.isNotEmpty) {
@@ -52,7 +54,6 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       emit(UsersInitial());
     }
   }
-
 
   _onFetchRecommendedUsersStarted(
       FetchRecommendedUsersStarted event, Emitter<UsersState> state) async {

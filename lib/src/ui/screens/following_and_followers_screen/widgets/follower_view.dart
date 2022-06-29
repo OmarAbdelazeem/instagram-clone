@@ -15,16 +15,16 @@ import '../../../../res/app_colors.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/app_button.dart';
 
-class RecommendedUser extends StatefulWidget {
+class FollowerView extends StatefulWidget {
   final UserModel user;
 
-  RecommendedUser(this.user);
+  FollowerView(this.user);
 
   @override
-  _RecommendedUserState createState() => _RecommendedUserState();
+  _FollowerViewState createState() => _FollowerViewState();
 }
 
-class _RecommendedUserState extends State<RecommendedUser> {
+class _FollowerViewState extends State<FollowerView> {
   late SearchedUserBloc searchedUserBloc;
   late LoggedInUserBloc loggedInUserBloc;
   late FollowingBloc followingBloc;
@@ -55,40 +55,56 @@ class _RecommendedUserState extends State<RecommendedUser> {
                   SearchedUserProfileScreen(searchedUserId: widget.user.id!),
               context: context);
         },
-        child: Card(
-          elevation: 2,
-          child: Padding(
-            padding: EdgeInsets.all(15),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ProfilePhoto(
-                  photoUrl: widget.user.photoUrl,
-                  radius: 24,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  widget.user.userName!,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  widget.user.bio!,
-                  style: TextStyle(color: Colors.grey),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                _buildFollowButton()
-              ],
-            ),
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _buildUserView(),
+              SizedBox(
+                height: 5,
+              ),
+              _buildFollowButton()
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserView() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ProfilePhoto(
+          photoUrl: widget.user.photoUrl,
+          radius: 24,
+        ),
+        SizedBox(
+          width: 15,
+        ),
+        _buildUserDetails()
+      ],
+    );
+  }
+
+  Widget _buildUserDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          widget.user.userName!,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text(
+          widget.user.bio!,
+          style: TextStyle(color: Colors.grey),
+        ),
+      ],
     );
   }
 
@@ -100,12 +116,9 @@ class _RecommendedUserState extends State<RecommendedUser> {
         height: 40,
         color: isFollowing ? AppColors.white : AppColors.blue,
         titleStyle: TextStyle(
-          color:
-          isFollowing ? AppColors.black : AppColors.white,
+          color: isFollowing ? AppColors.black : AppColors.white,
         ),
-        title: isFollowing
-            ? AppStrings.following
-            : AppStrings.follow,
+        title: isFollowing ? AppStrings.following : AppStrings.follow,
         onTap: () {
           if (isFollowing) {
             searchedUserBloc.add(UnFollowUserEventStarted());

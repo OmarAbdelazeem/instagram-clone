@@ -3,6 +3,7 @@ import 'package:instagramapp/src/ui/screens/activity_screen/activity_screen.dart
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import 'package:instagramapp/src/ui/screens/edit_profile_screen/edit_profile_screen.dart';
 import 'package:instagramapp/src/ui/screens/explore_photos_screen/explore_photos_screen.dart';
+import 'package:instagramapp/src/ui/screens/following_and_followers_screen/following_and_followers_screen.dart';
 import 'package:instagramapp/src/ui/screens/new_post_screen/new_post_screen.dart';
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
 import 'package:instagramapp/src/ui/screens/post_details_screen/post_details_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const String profileScreen = "/profileScreen";
   static const String newPostScreen = "/newPostScreen";
   static const String searchScreen = "/searchScreen";
+  static const String followingAndFollowersScreen = "/followingAndFollowersScreen";
 }
 
 class AppRouter {
@@ -61,6 +63,8 @@ class AppRouter {
         return _customMaterialPageRoute(PostDetailsScreen(), settings);
       case AppRoutes.newPostScreen:
         return _customMaterialPageRoute(NewPostScreen(), settings);
+        case AppRoutes.followingAndFollowersScreen:
+        return _customMaterialPageRoute(FollowingAndFollowersScreen(), settings);
       default:
         return _customMaterialPageRoute(UnKnownRouteScreen(), settings);
     }

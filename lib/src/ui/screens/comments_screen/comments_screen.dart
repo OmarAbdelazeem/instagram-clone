@@ -5,6 +5,7 @@ import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/widgets/comment_view.dart';
@@ -181,11 +182,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return AppBar(
       title: Text(
         AppStrings.comments,
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
+        style: AppTextStyles.appBarTitleStyle
       ),
     );
   }

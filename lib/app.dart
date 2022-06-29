@@ -8,6 +8,7 @@ import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.da
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
+import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
             create: (context) => AuthRepository(),
           ),
           RepositoryProvider<DataRepository>(
-            create: (context) => DataRepository(),
+            create: (context) => DataRepository(context.read<AuthRepository>()),
           ),
           RepositoryProvider<StorageRepository>(
             create: (context) => StorageRepository(),
@@ -56,6 +57,15 @@ class MyApp extends StatelessWidget {
                       context.read<AuthRepository>(),
                       context.read<LikesBloc>(),
                     )),
+            BlocProvider<LoggedInUserBloc>(
+                create: (context) => LoggedInUserBloc(
+                      context.read<DataRepository>(),
+                      context.read<AuthRepository>(),
+                      context.read<LikesBloc>(),
+                    )),
+            BlocProvider<TimeLineBloc>(
+                create: (context) => TimeLineBloc(
+                    context.read<DataRepository>(), context.read<LikesBloc>())),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

@@ -34,21 +34,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // getUser();
   }
 
-  // getUser() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   DocumentSnapshot doc = await usersRef.doc(Data.defaultUser.id).get();
-  //   user = UserModel.fromJson(doc);
-  //   displayNameController.text = user.userName;
-  //   bioController.text = user.bio;
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  // }
 
   Column buildDisplayNameField() {
     return Column(
@@ -117,11 +104,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   logout() async {
     context.read<AuthBloc>().add(LogoutStarted());
-    // AuthService authService = AuthService();
-    // await authService.logout();
-    // Navigator.of(context, rootNavigator: true).pushReplacement(
-    //     MaterialPageRoute(builder: (context) => MainAuthPage()));
-//    Navigator.push(context, MaterialPageRoute(builder: (context) => MainAuthPage()));
   }
 
   @override

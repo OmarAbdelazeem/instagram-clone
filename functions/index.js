@@ -48,8 +48,7 @@ exports.onFollowingSomeone = functions.firestore
             await senderTimelineDocRef.collection("timeline").doc(doc.id).set({});
         });
 
-        //5) increase timeline total count of sender user
-        await senderTimelineDocRef.update({ "total": admin.firestore.FieldValue.increment(1) });
+        
 
     });
 
@@ -94,30 +93,9 @@ exports.onUnfollowingSomeone = functions.firestore.document("/usersFollowing/{se
             await senderTimeRef.doc(doc.id).delete();
         });
 
-        //5) decrease timeline total count of sender user
-
-        await senderTimelineDocRef.update({ "total": admin.firestore.FieldValue.increment(-1) });
+   
     })
 
-
-//3) when joining new user
-
-
-exports.onJoiningNewUser = functions.firestore
-    .document("/users/{userId}")
-    .onCreate(async (snapshot, context) => {
-
-        // userId
-        const userId = context.params.userId;
-
-
-        //1) create timeline
-
-        await admin.firestore().collection("timeline").doc(userId).set({ "total": 0 });
-
-
-
-    });
 
 
 
@@ -150,13 +128,14 @@ exports.onCreatingNewPost = functions.firestore
 
         publisherFollowers.docs.forEach(async doc => {
 
-            await timelineCollectionRef.doc(doc.id).collection("timeline").doc(postId).set({});
+            await timelineCollectionRef.doc(doc.id).collection("timeline").doc(postId).set({"timestamp": postData["timestamp"]});
 
         });
 
 
         //3) Add post id to publisher timeline
-        await timelineCollectionRef.doc(postData["publisherId"]).collection("timeline").doc(postId).set({});
+        await timelineCollectionRef.doc(postData["publisherId"])
+        .collection("timeline").doc(postId).set({"timestamp": postData["timestamp"]});
 
 
 
@@ -299,6 +278,7 @@ exports.onDeletingComment = functions.firestore
         const userId = context.params.userId;
 
         var postsRef = admin.firestore().collection("posts");
+
         //1) delete all posts
 
        var usersPosts = await postsRef.where("publisherId","==",userId).get();
@@ -306,5 +286,10 @@ exports.onDeletingComment = functions.firestore
        usersPosts.docs.forEach(async doc=>{
        await postsRef.doc(doc.id).delete();
        });
+
+
+       //2) delete timeline 
+
+       await admin.firestore().collection("timeline").doc(userId).delete();
 
     });

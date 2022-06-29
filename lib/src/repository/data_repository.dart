@@ -2,8 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/models/comment_model/comment_model.dart';
 import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
+import 'package:instagramapp/src/repository/auth_repository.dart';
 
 class DataRepository {
+  final AuthRepository _authRepository;
+
+  DataRepository(this._authRepository);
+
   final DateTime timestamp = DateTime.now();
 
   final timelineRef = FirebaseFirestore.instance.collection('timeline');
@@ -20,6 +25,10 @@ class DataRepository {
       FirebaseFirestore.instance.collection("usersFollowers");
   final usersFollowingRef =
       FirebaseFirestore.instance.collection("usersFollowing");
+
+  String get loggedInUserId {
+    return _authRepository.loggedInUser!.uid;
+  }
 
   Future<DocumentSnapshot> getUserDetails(String userId) async {
     return await usersRef.doc(userId).get();
@@ -51,11 +60,14 @@ class DataRepository {
     return await postsRef.orderBy('timestamp', descending: true).get();
   }
 
-  Future<QuerySnapshot?>? getTimelinePostsIds(
-      String userId) {
-    return timelineRef.doc(userId).collection('timeline').limit(10).get();
+  Future<QuerySnapshot?>? getTimelinePostsIds(String userId) {
+    return timelineRef
+        .doc(userId)
+        .collection('timeline')
+        .orderBy("timestamp", descending: true)
+        .limit(10)
+        .get();
   }
-
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> listenToTimeline(
       String userId) {
@@ -67,9 +79,13 @@ class DataRepository {
     return await postsCommentsRef.doc(postId).collection("postsComments").get();
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getPostDetails(
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getPostDetails(
       {required String postId}) async {
-    return await postsRef.doc(postId).get();
+    final postData = await postsRef.doc(postId).get();
+    if (postData.exists)
+      return postData;
+    else
+      return null;
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> listenToPostDetails(
@@ -158,7 +174,6 @@ class DataRepository {
   ) async {
     /// 1) add post in publisher postsRef
     await postsRef.doc(post.postId).set(post.toJson());
-
   }
 
   addFollower({required String receiverId, required String senderId}) async {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 
 import '../../../models/notification_model/notification_model.dart';
 import 'widgets/notification_item.dart';
@@ -41,9 +42,9 @@ class ActivityScreen extends StatelessWidget {
 
   AppBar _buildAppBar() {
     return AppBar(
-      automaticallyImplyLeading: false,
       title: Text(
         AppStrings.activity,
+        style: AppTextStyles.appBarTitleStyle,
       ),
     );
   }

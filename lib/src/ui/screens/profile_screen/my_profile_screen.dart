@@ -6,6 +6,7 @@ import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/logged_in_user_post_view.dart';
@@ -126,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppBar(
       title: Text(
         context.watch<LoggedInUserBloc>().loggedInUser!.userName!,
-        style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),
+        style: AppTextStyles.appBarTitleStyle,
       ),
       actions: <Widget>[
         IconButton(

@@ -16,6 +16,7 @@ main() async {
 //4) when delete user delete all posts . (done)
 //5) when delete post delete all likes and comments and delete it from Followers timeline (done)
 //6) add delete , edit , share to droplist of post as bottom sheet (done)
-//7) there is a bug after register
+//7) there is a bug after register (done)
+//8) add timestamp field in timeline collection
 
 

@@ -14,7 +14,7 @@ class ProfilePhoto extends StatelessWidget {
     return CircleAvatar(
         radius: radius,
         backgroundColor: Colors.grey,
-        child: photoUrl != null
+        child: photoUrl != null && photoUrl!.isNotEmpty
             ? CircleAvatar(
                 radius: radius, backgroundImage: NetworkImage(photoUrl!))
             : Icon(

@@ -31,7 +31,6 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     email = ModalRoute.of(context)!.settings.arguments as String;
-    print("args is $email");
 
     return Scaffold(
       body: Padding(
@@ -58,7 +57,6 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
                     .pop();
                 NavigationUtils.pushNamed(
                     route: AppRoutes.addProfilePhotoScreen, context: context);
-                // context.read<ProfileBloc>().add(ProfileDataUpdated(state.user));
               } else if (state is Error)
                 Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                     .pop();

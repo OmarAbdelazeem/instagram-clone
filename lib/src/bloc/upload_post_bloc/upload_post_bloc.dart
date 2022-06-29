@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
+import '../time_line_bloc/time_line_bloc.dart';
 
 part 'upload_post_event.dart';
 
@@ -20,8 +21,9 @@ part 'upload_post_state.dart';
 class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
   final StorageRepository _storageRepository;
   final DataRepository _dataRepository;
+  final TimeLineBloc _timeLineBloc;
 
-  UploadPostBloc(this._storageRepository, this._dataRepository)
+  UploadPostBloc(this._storageRepository, this._dataRepository,this._timeLineBloc)
       : super(UploadPostInitial()) {
     on<PostUploadStarted>(_onPostUploadStarted);
   }
@@ -45,6 +47,7 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
           publisherProfilePhotoUrl: event.user.photoUrl!);
 
       await _dataRepository.addPost(post);
+      _timeLineBloc.add(AddNewUploadedPostStarted(post));
       emit(PostUploaded());
     } catch (e) {
       print(e.toString());

@@ -8,6 +8,7 @@ class AppTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final Widget? icon;
   final Color? fillColor;
+  final TextStyle? hintStyle;
   final int maxLines;
   final FocusNode? focusNode;
   final EdgeInsetsGeometry? contentPadding;
@@ -18,6 +19,7 @@ class AppTextField extends StatefulWidget {
       {this.controller,
       this.hintText,
       this.focusNode,
+        this.hintStyle,
       this.fillColor,
       this.maxLines = 1,
       this.contentPadding,
@@ -35,7 +37,6 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: widget.fillColor ?? AppColors.grey.shade200,
@@ -51,6 +52,7 @@ class _AppTextFieldState extends State<AppTextField> {
             border: InputBorder.none,
             contentPadding: widget.contentPadding,
             hintText: widget.hintText,
+            hintStyle: widget.hintStyle,
             suffixIcon: widget.suffixIcon,
             icon: Row(
               mainAxisSize: MainAxisSize.min,

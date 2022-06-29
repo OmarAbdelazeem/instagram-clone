@@ -14,17 +14,17 @@ part 'time_line_state.dart';
 class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   final DataRepository _dataRepository;
   final LikesBloc _likesBloc;
-  final String _userId;
 
-  TimeLineBloc(this._dataRepository, this._likesBloc, this._userId)
+  TimeLineBloc(this._dataRepository, this._likesBloc)
       : super(TimeLineInitial()) {
     on<FetchTimeLinePostsStarted>(_onFetchTimelinePostsStarted);
-    on<ListenToTimelinePostsStarted>(_onListenToTimelinePostsStarted);
+    // on<ListenToTimelinePostsStarted>(_onListenToTimelinePostsStarted);
+    on<AddNewUploadedPostStarted>(_onNewPostUploaded);
   }
 
   List<PostModel> _posts = [];
-   int oldTotal=0;
-   int newTotal=0;
+  int oldTotal = 0;
+  int newTotal = 0;
 
   void _onFetchTimelinePostsStarted(
       FetchTimeLinePostsStarted event, Emitter<TimeLineState> emit) async {
@@ -32,51 +32,64 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
       emit(TimeLineLoading());
 
       // 1) get posts ids
-      QuerySnapshot? timelinePostsQuerySnapshot =
-          (await _dataRepository.getTimelinePostsIds(_userId));
+      QuerySnapshot? timelinePostsQuerySnapshot = (await _dataRepository
+          .getTimelinePostsIds(_dataRepository.loggedInUserId));
 
       // 2) get every post data that related to it's id
-        if(timelinePostsQuerySnapshot !=null && timelinePostsQuerySnapshot.docs.isNotEmpty){
-          for (var doc in timelinePostsQuerySnapshot.docs) {
-            List<PostModel> postsTemp = [];
-            final postData = await _dataRepository.getPostDetails(
-              postId: doc.id,
-            );
+      if (timelinePostsQuerySnapshot != null &&
+          timelinePostsQuerySnapshot.docs.isNotEmpty) {
+        List<PostModel> postsTemp = [];
+        for (var doc in timelinePostsQuerySnapshot.docs) {
+          final postData = await _dataRepository.getPostDetails(
+            postId: doc.id,
+          );
 
+          if (postData != null) {
             PostModel post = PostModel.fromJson(postData.data()!);
             // 3) check if logged in user liked this post
-            bool isLiked =
-            await _dataRepository.checkIfUserLikesPost(_userId, post.postId);
+            bool isLiked = await _dataRepository.checkIfUserLikesPost(
+                _dataRepository.loggedInUserId, post.postId);
             _likesBloc.add(AddPostLikesInfoStarted(
                 id: post.postId, likes: post.likesCount, isLiked: isLiked));
 
             postsTemp.add(post);
-            _posts = postsTemp;
-            emit(_posts.isNotEmpty ? TimeLineLoaded(_posts) : EmptyTimeline());
           }
-          add(ListenToTimelinePostsStarted());
         }
-        else{
-          emit(EmptyTimeline());
-        }
+        _posts = postsTemp;
+        emit(_posts.isNotEmpty ? TimeLineLoaded(_posts) : EmptyTimeline());
+        // add(ListenToTimelinePostsStarted());
+      } else {
+        emit(EmptyTimeline());
+      }
     } on Exception catch (e) {
       emit(TimeLineError(e.toString()));
     }
   }
 
-  void _onListenToTimelinePostsStarted(
-      ListenToTimelinePostsStarted event, Emitter<TimeLineState> emit) async {
-    try {
-      _dataRepository.listenToTimeline(_userId).listen((event) {
-        oldTotal = event.data()!["total"];
-        if (oldTotal != newTotal) {
-          oldTotal = newTotal;
-          // emit(TimeLineChanged());
-        }
-      });
-    } on Exception catch (e) {
-      emit(TimeLineError(e.toString()));
-    }
+  // void _onListenToTimelinePostsStarted(
+  //     ListenToTimelinePostsStarted event, Emitter<TimeLineState> emit) async {
+  //   try {
+  //     _dataRepository
+  //         .listenToTimeline(_dataRepository.loggedInUserId)
+  //         .listen((event) {
+  //       oldTotal = event.data()!["total"];
+  //       if (oldTotal != newTotal) {
+  //         oldTotal = newTotal;
+  //         // emit(TimeLineChanged());
+  //       }
+  //     });
+  //   } on Exception catch (e) {
+  //     emit(TimeLineError(e.toString()));
+  //   }
+  // }
+
+  Future<void> _onNewPostUploaded(
+      AddNewUploadedPostStarted event, Emitter<TimeLineState> emit) async {
+    // _likesBloc.add(AddPostLikesInfoStarted(
+    //     id: event.post.postId, likes: event.post.likesCount, isLiked: false));
+    //
+    // _posts.add(event.post);
+    // emit(NewUploadedPostAdded());
   }
 
   // void _onListenToTimelinePostsStarted(ListenToTimelinePostsStarted event, Emitter<TimeLineState> emit)async{

@@ -8,6 +8,7 @@ import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/searched_user_posts_view.dart';
@@ -105,11 +106,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
           return AppBar(
             title: Text(
               condition ? searchedUserBloc.searchedUser.userName! : "...",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+              style: AppTextStyles.appBarTitleStyle,
             ),
             actions: <Widget>[
               IconButton(

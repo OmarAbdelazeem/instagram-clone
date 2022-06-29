@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 
+import '../../../router.dart';
+import '../../core/utils/navigation_utils.dart';
 import '../../res/app_strings.dart';
-
 
 class ProfileDetails extends StatelessWidget {
   final UserModel user;
   final bool isMyProfile;
-
 
   const ProfileDetails({Key? key, required this.user, this.isMyProfile = false})
       : super(key: key);
@@ -59,8 +59,22 @@ class ProfileDetails extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _buildNumericInfo(user.postsCount!, AppStrings.posts),
-              _buildNumericInfo(user.followersCount!, AppStrings.followers),
-              _buildNumericInfo(user.followingCount!, AppStrings.following),
+              InkWell(
+                  onTap: () {
+                    NavigationUtils.pushNamed(
+                        route: AppRoutes.followingAndFollowersScreen,
+                        context: context);
+                  },
+                  child: _buildNumericInfo(
+                      user.followersCount!, AppStrings.followers)),
+              InkWell(
+                  onTap: () {
+                    NavigationUtils.pushNamed(
+                        route: AppRoutes.followingAndFollowersScreen,
+                        context: context);
+                  },
+                  child: _buildNumericInfo(
+                      user.followingCount!, AppStrings.following)),
             ],
           ),
         ),

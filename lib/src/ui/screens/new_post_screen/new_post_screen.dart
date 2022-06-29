@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
 
 import '../../../../router.dart';
-import '../../../bloc/users_bloc/users_bloc.dart';
 import '../../../core/utils/navigation_utils.dart';
 import '../../../core/utils/loading_dialogue.dart';
 
@@ -26,21 +27,22 @@ class _NewPostScreenState extends State<NewPostScreen> {
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   late UploadPostBloc uploadPostBloc;
   late LoggedInUserBloc loggedInUserBloc;
+  late TimeLineBloc timeLineBloc;
+
   bool loading = false;
   CroppedFile? imageFile;
 
-
   _onShareTapped() async {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
-    uploadPostBloc.add(PostUploadStarted(File(imageFile!.path), captionController.text,
-        loggedInUserBloc.loggedInUser!));
+    uploadPostBloc.add(PostUploadStarted(File(imageFile!.path),
+        captionController.text, loggedInUserBloc.loggedInUser!));
   }
-
 
   @override
   void initState() {
-    uploadPostBloc = UploadPostBloc(
-        context.read<StorageRepository>(), context.read<DataRepository>());
+    uploadPostBloc = UploadPostBloc(context.read<StorageRepository>(),
+        context.read<DataRepository>(), context.read<TimeLineBloc>());
+    timeLineBloc = context.read<TimeLineBloc>();
     // TODO: implement initState
     super.initState();
   }
@@ -48,8 +50,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
   @override
   Widget build(BuildContext context) {
     imageFile = ModalRoute.of(context)!.settings.arguments as CroppedFile;
-
-
 
     return BlocProvider<UploadPostBloc>(
       create: (_) => uploadPostBloc,
@@ -82,17 +82,22 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   Widget _buildAddLocationButton() {
     return TextButton(
-      // onPressed: getUserLocation,
       onPressed: () {},
-      child: Text(AppStrings.addLocation),
+      child: SizedBox(
+        width: double.infinity,
+        child: Text(AppStrings.addLocation,
+            style: AppTextStyles.defaultTextStyleNormal, textAlign: TextAlign.start),
+      ),
     );
   }
 
   Widget _buildTagPeopleButton() {
     return TextButton(
       onPressed: () {},
-      child:
-          Text(AppStrings.tagPeople, style: TextStyle(color: AppColors.black)),
+      child: SizedBox(
+          width: double.infinity,
+          child: Text(AppStrings.tagPeople,
+              style: AppTextStyles.defaultTextStyleNormal)),
     );
   }
 
@@ -101,10 +106,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
       controller: captionController,
       maxLines: 3,
       hintText: AppStrings.writeACaption,
+      hintStyle: AppTextStyles.hintStyle,
+      fillColor: AppColors.scaffoldBackgroundColor,
       icon: Image.file(
         File(imageFile!.path),
-        width: 55,
-        height: 70,
+        // width: 55,
+        height: 60,
         fit: BoxFit.cover,
       ),
     );
@@ -114,7 +121,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     return AppBar(
       title: Text(
         AppStrings.newPost,
-        style: TextStyle(color: Colors.black),
+        style: AppTextStyles.appBarTitleStyle,
       ),
       actions: <Widget>[
         BlocListener<UploadPostBloc, UploadPostState>(
@@ -127,14 +134,19 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 AppRoutes.mainHomeScreen,
                 context,
               );
+
+              // Todo Add uploaded post to timeline posts
             } else if (state is Error)
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                   .pop();
           },
-          child: TextButton(
-            child: Text(AppStrings.share,
-                style: TextStyle(color: AppColors.black)),
+          child: IconButton(
             onPressed: _onShareTapped,
+            icon: Icon(
+              Icons.done,
+              size: 30.0,
+              color: Colors.blue,
+            ),
           ),
         )
       ],

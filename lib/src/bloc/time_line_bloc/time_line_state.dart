@@ -22,3 +22,5 @@ class TimeLineError extends TimeLineState {
 
   TimeLineError(this.error);
 }
+
+class NewUploadedPostAdded extends TimeLineState{}
