@@ -63,7 +63,9 @@ class ProfileDetails extends StatelessWidget {
                   onTap: () {
                     NavigationUtils.pushNamed(
                         route: AppRoutes.followingAndFollowersScreen,
-                        context: context);
+                        context: context,
+                    arguments: 0)
+                    ;
                   },
                   child: _buildNumericInfo(
                       user.followersCount!, AppStrings.followers)),
@@ -71,7 +73,7 @@ class ProfileDetails extends StatelessWidget {
                   onTap: () {
                     NavigationUtils.pushNamed(
                         route: AppRoutes.followingAndFollowersScreen,
-                        context: context);
+                        context: context,arguments: 1);
                   },
                   child: _buildNumericInfo(
                       user.followingCount!, AppStrings.following)),

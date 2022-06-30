@@ -34,7 +34,7 @@ class ExplorePostsBloc extends Bloc<ExplorePostsEvent, ExplorePostsState> {
         PostModel post =
             PostModel.fromJson(item.data() as Map<String, dynamic>);
         bool isLiked =
-            await _dataRepository.checkIfUserLikesPost(userId, post.postId);
+            await _dataRepository.checkIfUserLikesPost(userId);
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         postsTemp.add(post);

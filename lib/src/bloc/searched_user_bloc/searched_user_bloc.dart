@@ -13,14 +13,16 @@ part 'searched_user_event.dart';
 part 'searched_user_state.dart';
 
 class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
-  final DataRepository _dataRepository;
-  final String _loggedInUserId;
-  final String _searchedUserId;
-  final LikesBloc _likesBloc;
-  final FollowingBloc _followingBloc;
+  final DataRepository dataRepository;
+  final String searchedUserId;
+  final LikesBloc likesBloc;
+  final FollowingBloc followingBloc;
 
-  SearchedUserBloc(this._dataRepository, this._likesBloc, this._loggedInUserId,
-      this._searchedUserId, this._followingBloc)
+  SearchedUserBloc(
+      {required this.dataRepository,
+      required this.likesBloc,
+      required this.searchedUserId,
+      required this.followingBloc})
       : super(SearchedUserInitial()) {
     on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     on<FollowUserEventStarted>(_onFollowStarted);
@@ -37,14 +39,13 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   _onListenToSearchedUserStarted(
       ListenToSearchedUserStarted event, Emitter<SearchedUserState> state) {
     try {
-      _dataRepository
-          .listenToUserDetails(_searchedUserId)
+      dataRepository
+          .listenToUserDetails(searchedUserId)
           .listen((streamEvent) {
         if (streamEvent.data() != null) {
           _searchedUser =
               UserModel.fromJson(streamEvent.data() as Map<String, dynamic>);
-          if(!isClosed)
-          emit(SearchedUserLoaded(_searchedUser!));
+          if (!isClosed) emit(SearchedUserLoaded(_searchedUser!));
         }
       });
     } catch (e) {
@@ -56,15 +57,14 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       Emitter<SearchedUserState> emit) async {
     try {
       emit(SearchedUserPostsLoading());
-      final data = (await _dataRepository.getUserPosts(_searchedUserId)).docs;
+      final data = (await dataRepository.getUserPosts(searchedUserId)).docs;
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
         PostModel post =
             PostModel.fromJson(item.data() as Map<String, dynamic>);
 
-        bool isLiked = await _dataRepository.checkIfUserLikesPost(
-            _loggedInUserId, post.postId);
+        bool isLiked = await dataRepository.checkIfUserLikesPost(post.postId);
 
-        _likesBloc.add(AddPostLikesInfoStarted(
+        likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         _posts.add(post);
       });
@@ -81,10 +81,9 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       FollowUserEventStarted event, Emitter<SearchedUserState> state) async {
     try {
       emit(SearchedUserIsFollowed());
-      _followingBloc.add(AddFollowerIdStarted(_searchedUserId));
+      followingBloc.add(AddFollowerIdStarted(searchedUserId));
       _isFollowed = true;
-      await _dataRepository.addFollower(
-          receiverId: _searchedUserId, senderId: _loggedInUserId);
+      await dataRepository.addFollower(receiverId: searchedUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -95,10 +94,10 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       UnFollowUserEventStarted event, Emitter<SearchedUserState> state) async {
     try {
       emit(SearchedUserIsUnFollowed());
-      _followingBloc.add(RemoveFollowerIdStarted(_searchedUserId));
+      followingBloc.add(RemoveFollowerIdStarted(searchedUserId));
       _isFollowed = false;
-      await _dataRepository.removeFollower(
-          receiverId: _searchedUserId, senderId: _loggedInUserId);
+      await dataRepository.removeFollower(
+          receiverId: searchedUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -109,8 +108,8 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       Emitter<SearchedUserState> state) async {
     try {
       emit(SearchedUserLoading());
-      _isFollowed = await _dataRepository.checkIfUserFollowingSearched(
-          receiverId: _searchedUserId, senderId: _loggedInUserId);
+      _isFollowed = await dataRepository.checkIfUserFollowingSearched(
+          receiverId: searchedUserId);
       if (_isFollowed!) {
         emit(SearchedUserIsFollowed());
       } else

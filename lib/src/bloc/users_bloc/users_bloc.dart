@@ -21,6 +21,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     // on<ListenToLoggedInUserStarted>(_onListenToLoggedInUserStarted);
     // on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     on<FetchRecommendedUsersStarted>(_onFetchRecommendedUsersStarted);
+    on<FetchFollowingStarted>(_onFetchFollowingStarted);
+    on<FetchFollowersStarted>(_onFetchFollowersStarted);
   }
 
   List<UserModel> recommendedUsers = [];
@@ -58,14 +60,52 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   _onFetchRecommendedUsersStarted(
       FetchRecommendedUsersStarted event, Emitter<UsersState> state) async {
     try {
-      final recommendedUsersData =
-          await _dataRepository.getRecommendedUsers(_loggedInUserId);
+      final recommendedUsersData = await _dataRepository.getRecommendedUsers();
       if (recommendedUsersData.isNotEmpty) {
         recommendedUsers = List<UserModel>.generate(
             recommendedUsersData.length,
             (index) => UserModel.fromJson(
                 recommendedUsersData[index].data() as Map<String, dynamic>));
         emit(RecommendedUsersLoaded());
+      } else {
+        emit(EmptyUsers());
+      }
+    } catch (e) {
+      print(e.toString());
+      emit(UsersError(e.toString()));
+    }
+  }
+
+  _onFetchFollowersStarted(
+      FetchFollowersStarted event, Emitter<UsersState> state) async {
+    try {
+      final followersData = await _dataRepository.getFollowers();
+      if (followersData.isNotEmpty) {
+        followersUsers = List<UserModel>.generate(
+            followersData.length,
+            (index) => UserModel.fromJson(
+                followersData[index].data() as Map<String, dynamic>));
+        emit(RecommendedUsersLoaded());
+      } else {
+        emit(EmptyUsers());
+      }
+    } catch (e) {
+      print(e.toString());
+      emit(UsersError(e.toString()));
+    }
+  }
+
+  _onFetchFollowingStarted(
+      FetchFollowingStarted event, Emitter<UsersState> state) async {
+    try {
+      emit(FollowingLoading());
+      final followingData = await _dataRepository.getFollowing();
+      if (followingData.isNotEmpty) {
+        followingUsers = List<UserModel>.generate(
+            followingData.length,
+            (index) => UserModel.fromJson(
+                followingData[index].data() as Map<String, dynamic>));
+        emit(FollowingLoaded());
       } else {
         emit(EmptyUsers());
       }

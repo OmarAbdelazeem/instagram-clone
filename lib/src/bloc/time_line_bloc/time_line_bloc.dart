@@ -47,8 +47,7 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
           if (postData != null) {
             PostModel post = PostModel.fromJson(postData.data()!);
             // 3) check if logged in user liked this post
-            bool isLiked = await _dataRepository.checkIfUserLikesPost(
-                _dataRepository.loggedInUserId, post.postId);
+            bool isLiked = await _dataRepository.checkIfUserLikesPost(post.postId);
             _likesBloc.add(AddPostLikesInfoStarted(
                 id: post.postId, likes: post.likesCount, isLiked: isLiked));
 

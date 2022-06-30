@@ -22,6 +22,7 @@ class _FollowingAndFollowersScreenState
     extends State<FollowingAndFollowersScreen> {
   late LoggedInUserBloc loggedInUserBloc;
   late UsersBloc usersBloc;
+  int? initialIndex;
 
   @override
   void initState() {
@@ -33,8 +34,10 @@ class _FollowingAndFollowersScreenState
 
   @override
   Widget build(BuildContext context) {
+    initialIndex = ModalRoute.of(context)!.settings.arguments as int;
     return DefaultTabController(
       length: 2,
+      initialIndex: initialIndex!,
       child: Scaffold(
         appBar: _buildAppBar(),
         body: BlocProvider<UsersBloc>(

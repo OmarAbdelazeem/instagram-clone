@@ -21,6 +21,12 @@ class LoggedInUserLoaded extends UsersState {
 
 class RecommendedUsersLoaded extends UsersState {}
 
+class FollowersLoaded extends UsersState {}
+
+class FollowingLoaded extends UsersState {}
+class FollowingLoading extends UsersState {}
+class FollowersLoading extends UsersState {}
+
 class EmptyUsers extends UsersState {}
 
 class SearchedUserLoaded extends UsersState {

@@ -19,6 +19,10 @@ class SearchByIdEventStarted extends UsersEvent {
 
 class FetchRecommendedUsersStarted extends UsersEvent {}
 
+class FetchFollowersStarted extends UsersEvent {}
+
+class FetchFollowingStarted extends UsersEvent {}
+
 class SetLoggedInUserStarted extends UsersEvent {
   final UserModel user;
 

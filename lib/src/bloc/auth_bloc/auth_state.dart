@@ -7,6 +7,8 @@ class AuthInitial extends AuthState {}
 
 class Loading extends AuthState {}
 
+class LoggingOut extends AuthState{}
+
 class AuthSuccess extends AuthState {
   final UserModel user;
 

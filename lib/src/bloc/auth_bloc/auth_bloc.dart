@@ -51,18 +51,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onLogoutStarted(LogoutStarted event, Emitter<AuthState> emit) async{
-    _authRepository.logout();
+  void _onLogoutStarted(LogoutStarted event, Emitter<AuthState> emit) async {
+    try {
+      emit(LoggingOut());
+      await _authRepository.logout();
+      emit(UserLoggedOut());
+    } catch (e) {
+      print(e.toString());
+      emit(Error(e.toString()));
+    }
   }
 
-  void _onAutoLoginStarted(AutoLoginStarted autoLoginStarted , Emitter<AuthState>emit) async{
+  void _onAutoLoginStarted(
+      AutoLoginStarted autoLoginStarted, Emitter<AuthState> emit) async {
     User? loggedInUser;
     try {
-      loggedInUser =
-       _authRepository.getCurrentUser();
+      loggedInUser = _authRepository.getCurrentUser();
       if (loggedInUser != null) {
         final userJson =
-        (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
+            (await _dataRepository.getUserDetails(loggedInUser.uid)).data();
         _user = UserModel.fromJson(userJson as Map<String, dynamic>);
         emit(AuthSuccess(_user!));
       } else {
@@ -91,7 +98,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             postsCount: 0,
             followersCount: 0,
             followingCount: 0,
-             timestamp: (Timestamp.now()).toDate());
+            timestamp: (Timestamp.now()).toDate());
         await _dataRepository.createUserDetails(tempUser);
         _user = tempUser;
         emit(AuthSuccess(_user!));
@@ -108,7 +115,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Loading());
     try {
       final photoUrl = await _storageRepository.uploadProfilePhoto(
-          selectedFile: File(event.imageFile.path), userId: _user!.id!,imageId: _user!.id!);
+          selectedFile: File(event.imageFile.path),
+          userId: _user!.id!,
+          imageId: _user!.id!);
       await _dataRepository.addProfilePhoto(_user!.id!, photoUrl);
       emit(ProfilePhotoUploaded(photoUrl));
     } catch (e) {

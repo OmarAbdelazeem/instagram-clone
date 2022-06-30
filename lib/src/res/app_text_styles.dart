@@ -14,8 +14,8 @@ class AppTextStyles {
   static TextStyle hintStyle = TextStyle(fontSize: 17, color: AppColors.grey);
 
   static TextStyle defaultTextStyleNormal = TextStyle(
-      fontSize: 17, color: AppColors.black, fontWeight: FontWeight.normal);
+      fontSize: 18, color: AppColors.black, fontWeight: FontWeight.normal);
 
   static TextStyle defaultTextStyleBold = TextStyle(
-      fontSize: 17, color: AppColors.black, fontWeight: FontWeight.bold);
+      fontSize: 18, color: AppColors.black, fontWeight: FontWeight.bold);
 }

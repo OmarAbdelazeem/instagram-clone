@@ -18,8 +18,7 @@ import '../../common/profile_details.dart';
 class SearchedUserProfileScreen extends StatefulWidget {
   final String searchedUserId;
 
-  SearchedUserProfileScreen(
-      {required this.searchedUserId});
+  SearchedUserProfileScreen({required this.searchedUserId});
 
   @override
   _SearchedUserProfileScreenState createState() =>
@@ -29,7 +28,6 @@ class SearchedUserProfileScreen extends StatefulWidget {
 class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   int selectedIndex = 0;
   late SearchedUserBloc searchedUserBloc;
-  late LoggedInUserBloc loggedInUserBloc;
 
   List<AppTabItemModel> tabsItems = [
     AppTabItemModel(
@@ -66,13 +64,11 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
   }
 
   void setUpProfile() {
-    loggedInUserBloc = context.read<LoggedInUserBloc>();
     searchedUserBloc = SearchedUserBloc(
-        context.read<DataRepository>(),
-        context.read<LikesBloc>(),
-        loggedInUserBloc.loggedInUser!.id!,
-        widget.searchedUserId,
-        context.read<FollowingBloc>()
+      dataRepository: context.read<DataRepository>(),
+      likesBloc: context.read<LikesBloc>(),
+      followingBloc: context.read<FollowingBloc>(),
+      searchedUserId: widget.searchedUserId,
     );
 
     searchedUserBloc.add(CheckIfUserIsFollowedStarted());

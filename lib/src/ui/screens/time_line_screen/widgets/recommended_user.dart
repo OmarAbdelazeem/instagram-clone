@@ -26,19 +26,16 @@ class RecommendedUser extends StatefulWidget {
 
 class _RecommendedUserState extends State<RecommendedUser> {
   late SearchedUserBloc searchedUserBloc;
-  late LoggedInUserBloc loggedInUserBloc;
   late FollowingBloc followingBloc;
 
   @override
   void didChangeDependencies() {
-    loggedInUserBloc = context.read<LoggedInUserBloc>();
     followingBloc = context.read<FollowingBloc>();
     searchedUserBloc = SearchedUserBloc(
-        context.read<DataRepository>(),
-        context.read<LikesBloc>(),
-        loggedInUserBloc.loggedInUser!.id!,
-        widget.user.id!,
-        followingBloc);
+        dataRepository: context.read<DataRepository>(),
+        likesBloc: context.read<LikesBloc>(),
+        searchedUserId: widget.user.id!,
+        followingBloc: followingBloc);
     searchedUserBloc.setFollowInitialValue(false);
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
@@ -100,12 +97,9 @@ class _RecommendedUserState extends State<RecommendedUser> {
         height: 40,
         color: isFollowing ? AppColors.white : AppColors.blue,
         titleStyle: TextStyle(
-          color:
-          isFollowing ? AppColors.black : AppColors.white,
+          color: isFollowing ? AppColors.black : AppColors.white,
         ),
-        title: isFollowing
-            ? AppStrings.following
-            : AppStrings.follow,
+        title: isFollowing ? AppStrings.following : AppStrings.follow,
         onTap: () {
           if (isFollowing) {
             searchedUserBloc.add(UnFollowUserEventStarted());

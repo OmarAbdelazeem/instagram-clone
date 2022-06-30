@@ -1,5 +1,6 @@
 class AppStrings {
   AppStrings._();
+
   static const instagram = "Instagram";
   static const forgotYourLoginDetails = "Forgot your login details?";
   static const getHelpSigningIn = "Get help signing in";
@@ -14,7 +15,8 @@ class AppStrings {
   static const dontHaveAnAccount = 'Don\'t have an account? ';
   static const or = 'Or';
   static const welcomeToInstagram = 'Welcome To Instagram';
-  static const followPeopleToStartSeeingPhotos = 'Follow people to start seeing the photos and videos they share.';
+  static const followPeopleToStartSeeingPhotos =
+      'Follow people to start seeing the photos and videos they share.';
   static const posts = 'Posts';
   static const post = 'Post';
   static const followers = 'Followers';
@@ -37,21 +39,25 @@ class AppStrings {
   static const takePhoto = 'Take Photo';
   static const chooseFromLibrary = 'Choose from Library';
   static const addProfilePhoto = 'Add Profile Photo';
-  static const addProfilePhotoSoYourFriends = 'Add a profile photo so your friends know it\'s you';
+  static const addProfilePhotoSoYourFriends =
+      'Add a profile photo so your friends know it\'s you';
   static const addAPhoto = 'Add a photo';
   static const skip = 'Skip';
   static const comments = 'Comments';
   static const addAComment = 'Add a comment';
   static const profile = 'Profile';
-  static const whenYouSharePhotosAndVideosTheyWillAppear = 'When you share photos and videos,they will appear on your profile';
+  static const whenYouSharePhotosAndVideosTheyWillAppear =
+      'When you share photos and videos,they will appear on your profile';
   static const shareYourFirstPhotoOrVideo = 'Share your first photo or video';
   static const photosAndVideosOfYou = 'Photos and Videos of You';
-  static const whenPeopleTagYouIn = 'When people tag you in photos and videos,they\'ll appear here';
+  static const whenPeopleTagYouIn =
+      'When people tag you in photos and videos,they\'ll appear here';
   static const pleaseEnterAValidEmail = "Please enter a valid email";
   static const profilePhotoAdded = "Profile Photo Added";
   static const changePhoto = "Change photo";
   static const alsoShareThisPhotoAsAPost = "Also share this photo as a post";
-  static const makeThisPhotoYourFirstPostSo = "Make this photo your first post so people can like and comment on it";
+  static const makeThisPhotoYourFirstPostSo =
+      "Make this photo your first post so people can like and comment on it";
   static const somethingWrongHappened = "SomeThing wrong happened";
   static const likes = "Likes";
   static const writeACaption = "Write a caption...";
@@ -65,7 +71,10 @@ class AppStrings {
   static const message = "Message";
   static const noCommentsYet = "No comments yet";
   static const startTheConversation = "Start the conversation";
-   static const edit = "Edit";
-     static const delete = "Delete";
-     static const peopleSuggestions = "'People Suggestions'";
+  static const edit = "Edit";
+  static const delete = "Delete";
+  static const peopleSuggestions = "'People Suggestions'";
+  static const bio = "Bio";
+  static const updateName = "Update name";
+  static const logout = "Logout";
 }

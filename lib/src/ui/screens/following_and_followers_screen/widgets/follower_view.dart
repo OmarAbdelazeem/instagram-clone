@@ -26,20 +26,17 @@ class FollowerView extends StatefulWidget {
 
 class _FollowerViewState extends State<FollowerView> {
   late SearchedUserBloc searchedUserBloc;
-  late LoggedInUserBloc loggedInUserBloc;
   late FollowingBloc followingBloc;
 
   @override
   void didChangeDependencies() {
-    loggedInUserBloc = context.read<LoggedInUserBloc>();
     followingBloc = context.read<FollowingBloc>();
     searchedUserBloc = SearchedUserBloc(
-        context.read<DataRepository>(),
-        context.read<LikesBloc>(),
-        loggedInUserBloc.loggedInUser!.id!,
-        widget.user.id!,
-        followingBloc);
-    searchedUserBloc.setFollowInitialValue(false);
+        dataRepository: context.read<DataRepository>(),
+        likesBloc: context.read<LikesBloc>(),
+        searchedUserId: widget.user.id!,
+        followingBloc: followingBloc);
+    searchedUserBloc.setFollowInitialValue(true);
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }
@@ -109,24 +106,74 @@ class _FollowerViewState extends State<FollowerView> {
   }
 
   Widget _buildFollowButton() {
-    return BlocBuilder<FollowingBloc, FollowingState>(
+    return BlocProvider<SearchedUserBloc>(
+      create: (_) => searchedUserBloc,
+      child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
         builder: (context, state) {
-      bool isFollowing = followingBloc.getFollowerId(widget.user.id!) != null;
-      return AppButton(
-        height: 40,
-        color: isFollowing ? AppColors.white : AppColors.blue,
-        titleStyle: TextStyle(
-          color: isFollowing ? AppColors.black : AppColors.white,
-        ),
-        title: isFollowing ? AppStrings.following : AppStrings.follow,
-        onTap: () {
-          if (isFollowing) {
-            searchedUserBloc.add(UnFollowUserEventStarted());
-          } else {
-            searchedUserBloc.add(FollowUserEventStarted());
-          }
+          return AppButton(
+            height: 40,
+            color:
+            searchedUserBloc.isFollowed ? AppColors.white : AppColors.blue,
+            titleStyle: TextStyle(
+              color: searchedUserBloc.isFollowed
+                  ? AppColors.black
+                  : AppColors.white,
+            ),
+            title: searchedUserBloc.isFollowed
+                ? AppStrings.following
+                : AppStrings.follow,
+            onTap: () {
+              if (searchedUserBloc.isFollowed) {
+                searchedUserBloc.add(UnFollowUserEventStarted());
+              } else {
+                searchedUserBloc.add(FollowUserEventStarted());
+              }
+            },
+          );
         },
-      );
-    });
+      ),
+    );
   }
+
+  // Widget _buildFollowButton() {
+  //   return AppButton(
+  //     height: 40,
+  //     color: searchedUserBloc.isFollowed ? AppColors.white : AppColors.blue,
+  //     titleStyle: TextStyle(
+  //       color: searchedUserBloc.isFollowed ? AppColors.black : AppColors.white,
+  //     ),
+  //     title: searchedUserBloc.isFollowed
+  //         ? AppStrings.following
+  //         : AppStrings.follow,
+  //     onTap: () {
+  //       if (searchedUserBloc.isFollowed) {
+  //         searchedUserBloc.add(UnFollowUserEventStarted());
+  //       } else {
+  //         searchedUserBloc.add(FollowUserEventStarted());
+  //       }
+  //     },
+  //   );
+  // }
+
+  // Widget _buildFollowButton() {
+  //   return BlocBuilder<FollowingBloc, FollowingState>(
+  //       builder: (context, state) {
+  //     bool isFollowing = followingBloc.getFollowerId(widget.user.id!) != null;
+  //     return AppButton(
+  //       height: 40,
+  //       color: isFollowing ? AppColors.white : AppColors.blue,
+  //       titleStyle: TextStyle(
+  //         color: isFollowing ? AppColors.black : AppColors.white,
+  //       ),
+  //       title: isFollowing ? AppStrings.following : AppStrings.follow,
+  //       onTap: () {
+  //         if (isFollowing) {
+  //           searchedUserBloc.add(UnFollowUserEventStarted());
+  //         } else {
+  //           searchedUserBloc.add(FollowUserEventStarted());
+  //         }
+  //       },
+  //     );
+  //   });
+  // }
 }

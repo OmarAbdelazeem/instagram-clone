@@ -71,7 +71,7 @@ class LoggedInUserBloc extends Bloc<LoggedInUserEvent, LoggedInUserState> {
         PostModel post =
             PostModel.fromJson(item.data() as Map<String, dynamic>);
         bool isLiked = await _dataRepository.checkIfUserLikesPost(
-            loggedInUser!.id!, post.postId);
+            post.postId);
         _likesBloc.add(AddPostLikesInfoStarted(
             id: post.postId, likes: post.likesCount, isLiked: isLiked));
         tempPosts.add(post);

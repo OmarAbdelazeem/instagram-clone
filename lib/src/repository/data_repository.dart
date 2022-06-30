@@ -93,11 +93,11 @@ class DataRepository {
     return postsRef.doc(postId).get().asStream();
   }
 
-  Future<bool> checkIfUserLikesPost(String userId, String postId) async {
+  Future<bool> checkIfUserLikesPost( String postId) async {
     return (await postsLikesRef
             .doc(postId)
             .collection("postsLikes")
-            .doc(userId)
+            .doc(loggedInUserId)
             .get())
         .exists;
   }
@@ -176,12 +176,12 @@ class DataRepository {
     await postsRef.doc(post.postId).set(post.toJson());
   }
 
-  addFollower({required String receiverId, required String senderId}) async {
+  addFollower({required String receiverId}) async {
     //Todo try to implement this behaviour by cloud functions
 
     ///1) add receiver id to sender usersFollowing collection
     await usersFollowingRef
-        .doc(senderId)
+        .doc(loggedInUserId)
         .collection("usersFollowing")
         .doc(receiverId)
         .set({});
@@ -221,50 +221,50 @@ class DataRepository {
     // });
   }
 
-  removeFollower({required String receiverId, required String senderId}) async {
+  removeFollower({required String receiverId}) async {
     ///1) remove receiver id from sender usersFollowing collection
     await usersFollowingRef
-        .doc(senderId)
+        .doc(loggedInUserId)
         .collection("usersFollowing")
         .doc(receiverId)
         .delete();
 
-    /// 2) decrement following count to sender
-
-    await usersRef
-        .doc(senderId)
-        .update({"followingCount": FieldValue.increment(-1)});
-
-    ///3) remove senderId from receiver usersFollowers receiver
-
-    await usersFollowersRef
-        .doc(receiverId)
-        .collection("usersFollowers")
-        .doc(senderId)
-        .delete();
-
-    ///4) decrement followers count to receiver
-
-    await usersRef
-        .doc(receiverId)
-        .update({"followersCount": FieldValue.increment(-1)});
-
-    ///5) delete receiver posts from sender timeline
-
-    var senderTimelineRef = timelineRef.doc(senderId).collection("timeline");
-    var timelineQueries = await senderTimelineRef
-        .where("publisherId", isEqualTo: receiverId)
-        .get();
-
-    timelineQueries.docs.forEach((doc) async {
-      await senderTimelineRef.doc(doc.id).delete();
-    });
+    // /// 2) decrement following count to sender
+    //
+    // await usersRef
+    //     .doc(loggedInUserId)
+    //     .update({"followingCount": FieldValue.increment(-1)});
+    //
+    // ///3) remove senderId from receiver usersFollowers receiver
+    //
+    // await usersFollowersRef
+    //     .doc(receiverId)
+    //     .collection("usersFollowers")
+    //     .doc(loggedInUserId)
+    //     .delete();
+    //
+    // ///4) decrement followers count to receiver
+    //
+    // await usersRef
+    //     .doc(receiverId)
+    //     .update({"followersCount": FieldValue.increment(-1)});
+    //
+    // ///5) delete receiver posts from sender timeline
+    //
+    // var senderTimelineRef = timelineRef.doc(senderId).collection("timeline");
+    // var timelineQueries = await senderTimelineRef
+    //     .where("publisherId", isEqualTo: receiverId)
+    //     .get();
+    //
+    // timelineQueries.docs.forEach((doc) async {
+    //   await senderTimelineRef.doc(doc.id).delete();
+    // });
   }
 
   Future<bool> checkIfUserFollowingSearched(
-      {required String senderId, required String receiverId}) async {
+      {required String receiverId}) async {
     return (await usersFollowingRef
-            .doc(senderId)
+            .doc(loggedInUserId)
             .collection("usersFollowing")
             .doc(receiverId)
             .get())
@@ -272,8 +272,7 @@ class DataRepository {
   }
 
 //Todo implement this function to fetch all recommended users
-  Future<List<QueryDocumentSnapshot>> getRecommendedUsers(
-      String loggedInUserId) async {
+  Future<List<QueryDocumentSnapshot>> getRecommendedUsers() async {
     List<QueryDocumentSnapshot> queryDocumentSnapshots = [];
 
     await for (var snapshot in usersRef.snapshots()) {
@@ -290,6 +289,40 @@ class DataRepository {
         if (!userIsFollowed) queryDocumentSnapshots.add(snapshotDoc);
       }
       return queryDocumentSnapshots;
+    }
+
+    return [];
+  }
+
+  Future<List<DocumentSnapshot>> getFollowers() async {
+    List<DocumentSnapshot> followersDocumentSnapshots = [];
+
+    final loggedInUserFollowersRef =
+        usersFollowersRef.doc(loggedInUserId).collection("usersFollowers");
+    await for (var snapshot in loggedInUserFollowersRef.snapshots()) {
+      for (var snapshotDoc in snapshot.docs) {
+        final followerData = await usersRef.doc(snapshotDoc.id).get();
+
+        followersDocumentSnapshots.add(followerData);
+      }
+      return followersDocumentSnapshots;
+    }
+
+    return [];
+  }
+
+  Future<List<DocumentSnapshot>> getFollowing() async {
+    List<DocumentSnapshot> followingDocumentSnapshots = [];
+
+    final loggedInUserFollowingRef =
+        usersFollowingRef.doc(loggedInUserId).collection("usersFollowing");
+    await for (var snapshot in loggedInUserFollowingRef.snapshots()) {
+      for (var snapshotDoc in snapshot.docs) {
+        final followerData = await usersRef.doc(snapshotDoc.id).get();
+
+        followingDocumentSnapshots.add(followerData);
+      }
+      return followingDocumentSnapshots;
     }
 
     return [];

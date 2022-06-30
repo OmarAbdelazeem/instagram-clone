@@ -16,37 +16,30 @@ class FollowersScreen extends StatefulWidget {
 }
 
 class _FollowersScreenState extends State<FollowersScreen> {
-  UserModel user = UserModel(
-      photoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-      userName: "Omar Abdelazeem",
-      bio: "this is a bio",
-      id: "123",
-      email: "omar@email.com",
-      postsCount: 1,
-      followersCount: 3,
-      followingCount: 5,
-      timestamp: (Timestamp.now()).toDate());
-
 
   @override
   void initState() {
-    widget.usersBloc.add(event)
+    widget.usersBloc.add(FetchFollowersStarted());
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UsersBloc, UsersState>(
-        bloc: widget.usersBloc,
-        builder: (context, state) {
-          return Column(
-            children: [
-              FollowerView(user),
-              FollowerView(user),
-              FollowerView(user),
-            ],
-          );
-        });
+    return _buildFollowers();
   }
+
+  _buildFollowers() {
+    return BlocBuilder<UsersBloc, UsersState>(
+      builder: (BuildContext context, state) {
+       return ListView.builder(
+         itemBuilder: (context, index) {
+           return FollowerView(widget.usersBloc.followersUsers[index]);
+         },
+         itemCount: widget.usersBloc.followersUsers.length,
+       );
+      },
+    );
+  }
+
 }

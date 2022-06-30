@@ -14,6 +14,7 @@ class AppTextField extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
   final String? Function(String?)? validator;
   final bool obscureText;
+  final String? labelText;
 
   AppTextField(
       {this.controller,
@@ -27,6 +28,7 @@ class AppTextField extends StatefulWidget {
       this.obscureText = false,
       this.keyBoardType,
       this.icon,
+        this.labelText,
       this.suffixIcon});
 
   @override
@@ -49,6 +51,7 @@ class _AppTextFieldState extends State<AppTextField> {
         maxLines: widget.maxLines,
         obscureText: widget.obscureText,
         decoration: InputDecoration(
+          labelText: widget.labelText,
             border: InputBorder.none,
             contentPadding: widget.contentPadding,
             hintText: widget.hintText,
