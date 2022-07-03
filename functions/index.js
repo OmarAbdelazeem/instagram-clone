@@ -6,6 +6,8 @@ admin.initializeApp();
 
 const storage = admin.storage();
 
+const fcm = admin.messaging();
+
 //1) when following someone
 
 exports.onFollowingSomeone = functions.firestore
@@ -16,6 +18,18 @@ exports.onFollowingSomeone = functions.firestore
         const senderId = context.params.senderId;
         // receiverId
         const receiverId = context.params.receiverId;
+
+        //sender data
+        var senderData = (await admin
+            .firestore()
+            .collection("users")
+            .doc(senderId).get()).data();
+
+        //reciever data
+        var recieverData = (await admin
+            .firestore()
+            .collection("users")
+            .doc(receiverId).get()).data();
 
 
         //1) increase sender following count
@@ -48,7 +62,32 @@ exports.onFollowingSomeone = functions.firestore
             await senderTimelineDocRef.collection("timeline").doc(doc.id).set({});
         });
 
-        
+
+
+        //7) send notification
+
+        admin.firestore().collection("notifications").doc(receiverId)
+        .collection("notifications").doc().set({
+            'userId': senderId,
+            'type': "1",
+            "postId": null
+
+        });
+
+        payload = {
+            notification: {
+                'title': '',
+                'body': senderData["userName"] + " Started following you ."
+            },
+            data: {
+                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                'id': senderData["id"],
+                'type': "1",
+                'postId': null
+            }
+        }
+
+        fcm.sendToDevice(recieverData["token"], payload)
 
     });
 
@@ -80,20 +119,20 @@ exports.onUnfollowingSomeone = functions.firestore.document("/usersFollowing/{se
         //3) Remove senderId from receiver followers collection
 
         admin.firestore().collection("usersFollowers").doc(receiverId).collection("usersFollowers")
-            .doc(receiverId).delete();
+            .doc(senderId).delete();
 
         //4) Delete posts ids of receiver from sender timeline
 
         var senderTimelineDocRef = admin.firestore().collection("timeline").doc(senderId);
 
-        var receiverPosts =await senderTimelineDocRef.collection("timeline").where("publisherId", "==", receiverId).get();
+        var receiverPosts = await senderTimelineDocRef.collection("timeline").where("publisherId", "==", receiverId).get();
 
 
         receiverPosts.docs.forEach(async doc => {
             await senderTimeRef.doc(doc.id).delete();
         });
 
-   
+
     })
 
 
@@ -128,14 +167,14 @@ exports.onCreatingNewPost = functions.firestore
 
         publisherFollowers.docs.forEach(async doc => {
 
-            await timelineCollectionRef.doc(doc.id).collection("timeline").doc(postId).set({"timestamp": postData["timestamp"]});
+            await timelineCollectionRef.doc(doc.id).collection("timeline").doc(postId).set({ "timestamp": postData["timestamp"] });
 
         });
 
 
         //3) Add post id to publisher timeline
         await timelineCollectionRef.doc(postData["publisherId"])
-        .collection("timeline").doc(postId).set({"timestamp": postData["timestamp"]});
+            .collection("timeline").doc(postId).set({ "timestamp": postData["timestamp"] });
 
 
 
@@ -196,16 +235,56 @@ exports.onDeletingPost = functions.firestore
 //6) when liking post
 
 exports.onLikingPost = functions.firestore
-    .document("/postsLikes/{postId}/postsLikes/{publisherId}")
+    .document("/postsLikes/{postId}/postsLikes/{likeOwnerId}")
     .onCreate(async (snapshot, context) => {
 
         // postId
         const postId = context.params.postId;
 
+        // likeOwnerId
+        const likeOwnerId = context.params.likeOwnerId;
+
+        var likeOwnerData = (await admin.firestore().collection("users").doc(likeOwnerId).get()).data();
+
+        // postData
+        var postData = (await admin.firestore().collection("posts").doc(postId).get()).data();
+
+        // recieverData
+        var recieverData = (await admin.firestore().collection("users").doc(postData["publisherId"]).get()).data();
+
+
         //1) increase likes count
 
         await admin.firestore().collection("posts").doc(postId)
             .update({ "likesCount": admin.firestore.FieldValue.increment(1) });
+
+
+
+
+        //2) send notification
+
+        admin.firestore().collection("notifications").doc(recieverData["id"])
+            .collection("notifications").doc().set({
+                'userId': likeOwnerId,
+                'type': "2",
+                "postId": postId
+
+            });
+
+        payload = {
+            notification: {
+                'title': '',
+                'body': likeOwnerData["userName"] + " Likes your post"
+            },
+            data: {
+                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                'id': likeOwnerData["id"],
+                'type': "2",
+                "postId": postId
+            }
+        }
+
+        fcm.sendToDevice(recieverData["token"], payload)
 
 
 
@@ -240,11 +319,51 @@ exports.onAddingComment = functions.firestore
         // postId
         const postId = context.params.postId;
 
+        //comment Data
+        var commentData = snapshot.data();
+
+        // comment Owner Data
+        var commentOwnerData = (await admin
+            .firestore()
+            .collection("users")
+            .doc(commentData["publisherId"]).get()).data();
+
+
+        var recieverData = (await admin.firestore().collection("users")
+            .doc(commentData["postPublisherId"]).get()).data();
+
+
         //1) increase comments count
 
         await admin.firestore().collection("posts").doc(postId)
             .update({ "commentsCount": admin.firestore.FieldValue.increment(1) });
 
+
+
+        //5) send notification
+
+        admin.firestore().collection("notifications").doc(recieverData["id"])
+            .collection("notifications").doc().set({
+                'userId': commentData["publisherId"],
+                'type': "3",
+                "postId": postId
+
+            });
+
+        payload = {
+            notification: {
+                'title': '',
+                'body': commentOwnerData["userName"] + " Likes your post"
+            },
+            data: {
+                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                'id': commentOwnerData["id"],
+                'type': "3",
+                "postId": postId
+            }
+        }
+
+        fcm.sendToDevice(recieverData["token"], payload)
 
 
     });
@@ -268,9 +387,9 @@ exports.onDeletingComment = functions.firestore
 
     });
 
-    //10) when delete user 
+//10) when delete user 
 
-    exports.onDeleteUser = functions.firestore
+exports.onDeleteUser = functions.firestore
     .document("/users/{userId}")
     .onDelete(async (snapshot, context) => {
 
@@ -281,15 +400,15 @@ exports.onDeletingComment = functions.firestore
 
         //1) delete all posts
 
-       var usersPosts = await postsRef.where("publisherId","==",userId).get();
+        var usersPosts = await postsRef.where("publisherId", "==", userId).get();
 
-       usersPosts.docs.forEach(async doc=>{
-       await postsRef.doc(doc.id).delete();
-       });
+        usersPosts.docs.forEach(async doc => {
+            await postsRef.doc(doc.id).delete();
+        });
 
 
-       //2) delete timeline 
+        //2) delete timeline 
 
-       await admin.firestore().collection("timeline").doc(userId).delete();
+        await admin.firestore().collection("timeline").doc(userId).delete();
 
     });

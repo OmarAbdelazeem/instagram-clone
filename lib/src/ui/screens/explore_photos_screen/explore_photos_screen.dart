@@ -22,18 +22,18 @@ class ExplorePhotosScreen extends StatefulWidget {
 class _ExplorePhotosScreenState extends State<ExplorePhotosScreen> {
   late ExplorePostsBloc explorePostsBloc;
 
+  Future fetchExplorePosts() async {
+    explorePostsBloc.add(FetchExplorePostsStarted());
+  }
+
   @override
-  void didChangeDependencies() {
+  void initState() {
     final userId = context.read<LoggedInUserBloc>().loggedInUser!.id!;
     final likesBloc = context.read<LikesBloc>();
     final dataRepository = context.read<DataRepository>();
     explorePostsBloc = ExplorePostsBloc(userId, likesBloc, dataRepository);
-
-    super.didChangeDependencies();
-  }
-
-  Future fetchExplorePosts() async {
-    explorePostsBloc.add(FetchExplorePostsStarted());
+    fetchExplorePosts();
+    super.initState();
   }
 
   @override

@@ -77,4 +77,6 @@ class AppStrings {
   static const bio = "Bio";
   static const updateName = "Update name";
   static const logout = "Logout";
+  static const pleaseWait = "Please Wait....";
+  static const noPostsYet = "No posts yet";
 }

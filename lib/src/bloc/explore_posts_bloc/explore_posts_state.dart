@@ -10,7 +10,7 @@ class ExplorePostsLoading extends ExplorePostsState {}
 class ExplorePostsEmpty extends ExplorePostsState {}
 
 class ExplorePostsLoaded extends ExplorePostsState {
-  final List<PostModel> posts;
+  final List<PostModelResponse> posts;
 
   ExplorePostsLoaded(this.posts);
 }

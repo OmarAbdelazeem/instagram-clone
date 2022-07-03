@@ -13,10 +13,11 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       id: json['id'] as String?,
       email: json['email'] as String?,
       postsCount: json['postsCount'] as int?,
+      token: json['token'] as String?,
       followersCount: json['followersCount'] as int?,
       followingCount: json['followingCount'] as int?,
       timestamp:
-      const TimestampConverter().fromJson(json['timestamp'] as Timestamp),
+          const TimestampConverter().fromJson(json['timestamp'] as Timestamp),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -28,6 +29,6 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'followingCount': instance.followingCount,
       'followersCount': instance.followersCount,
       'postsCount': instance.postsCount,
-      'timestamp': instance.timestamp,
-      // 'timestamp': instance.timestamp?.toIso8601String(),
+      'token': instance.token,
+      'timestamp': const TimestampConverter().toJson(instance.timestamp),
     };

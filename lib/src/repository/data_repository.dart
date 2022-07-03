@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_request/comment_model_request.dart';
+import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
 
@@ -41,6 +41,7 @@ class DataRepository {
 
   Future createUserDetails(UserModel user) async {
     await usersRef.doc(user.id).set(user.toJson());
+
   }
 
   Future<QuerySnapshot> searchForUser(String term) {
@@ -65,13 +66,12 @@ class DataRepository {
         .doc(userId)
         .collection('timeline')
         .orderBy("timestamp", descending: true)
-        .limit(10)
+        // .limit(10)
         .get();
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> listenToTimeline(
-      String userId) {
-    return timelineRef.doc(userId).get().asStream();
+  Stream<QuerySnapshot> listenToTimeline(String userId) {
+    return timelineRef.doc(userId).collection("timeline").snapshots();
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getPostComments(
@@ -93,7 +93,7 @@ class DataRepository {
     return postsRef.doc(postId).get().asStream();
   }
 
-  Future<bool> checkIfUserLikesPost( String postId) async {
+  Future<bool> checkIfUserLikesPost(String postId) async {
     return (await postsLikesRef
             .doc(postId)
             .collection("postsLikes")
@@ -131,14 +131,14 @@ class DataRepository {
     // postsRef.doc(postId).update({"likesCount": FieldValue.increment(-1)});
   }
 
-  Future addComment(CommentModel comment) async {
+  Future addComment(CommentModelRequest commentRequest) async {
     /// 1) add comment to postsComments collection of post
 
     await postsCommentsRef
-        .doc(comment.postId)
+        .doc(commentRequest.postId)
         .collection('postsComments')
-        .doc(comment.commentId)
-        .set(comment.toJson());
+        .doc(commentRequest.commentId)
+        .set(commentRequest.toJson());
 
     // /// 2) increment commentsCount of post
 
@@ -147,11 +147,11 @@ class DataRepository {
     //     .update({"commentsCount": FieldValue.increment(1)});
   }
 
-  Future removeComment(CommentModel comment) async {
+  Future removeComment(CommentModelRequest comment) async {
     /// 1) remove comment from postsComments collection of post
 
     await postsCommentsRef
-        .doc(comment.publisherId)
+        .doc(comment.postId)
         .collection('postsComments')
         .doc(comment.commentId)
         .delete();
@@ -170,7 +170,7 @@ class DataRepository {
   }
 
   Future addPost(
-    PostModel post,
+    PostModelRequest post,
   ) async {
     /// 1) add post in publisher postsRef
     await postsRef.doc(post.postId).set(post.toJson());
@@ -327,4 +327,10 @@ class DataRepository {
 
     return [];
   }
+
+  Future<void> updateUserData(Map<String, dynamic> data) async {
+    await usersRef.doc(loggedInUserId).update(data);
+  }
+
+
 }

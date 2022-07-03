@@ -22,7 +22,17 @@ class LoggedInUserError extends LoggedInUserState {
 class LoggedInUserPostsLoading extends LoggedInUserState {}
 
 class LoggedInUserPostsLoaded extends LoggedInUserState {
-  final List<PostModel> posts;
+  final List<PostModelResponse> posts;
 
   LoggedInUserPostsLoaded(this.posts);
+}
+
+class UpdatingUserData extends LoggedInUserState {}
+
+class UpdatedUserData extends LoggedInUserState {}
+
+class UpdateUserDataError extends LoggedInUserState {
+  final String error;
+
+  UpdateUserDataError(this.error);
 }

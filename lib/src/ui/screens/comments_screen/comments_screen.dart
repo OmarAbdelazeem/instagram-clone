@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_request/comment_model_request.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_response/comment_model_response.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
@@ -13,12 +14,13 @@ import 'package:instagramapp/src/ui/screens/comments_screen/widgets/no_comments_
 import 'package:uuid/uuid.dart';
 
 import '../../../core/utils/navigation_utils.dart';
+import '../../../models/post_model/post_model_response/post_model_response.dart';
 import '../../../res/app_strings.dart';
 import '../../common/timestamp_view.dart';
 import '../profile_screen/searched_user_profile_screen.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final PostModel post;
+  final PostModelResponse post;
   final PostItemBloc postItemBloc;
 
   CommentsScreen(this.post, this.postItemBloc);
@@ -29,18 +31,20 @@ class CommentsScreen extends StatefulWidget {
 
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
+  late LoggedInUserBloc loggedInUserBloc;
 
   void onPostButtonTapped() {
     if (commentController.text.isNotEmpty) {
-      final CommentModel comment = CommentModel(
+      final CommentModelResponse comment = CommentModelResponse(
           commentId: Uuid().v4(),
+          postPublisherId: widget.post.publisherId,
           comment: commentController.text,
-          publisherId: widget.post.publisherId,
-          publisherName: widget.post.publisherName,
+          publisherId: loggedInUserBloc.loggedInUser!.id!,
           postId: widget.post.postId,
           postUrl: widget.post.photoUrl,
           timestamp: Timestamp.now().toDate(),
-          publisherPhotoUrl: widget.post.publisherProfilePhotoUrl);
+          publisherName: loggedInUserBloc.loggedInUser!.userName!,
+          publisherPhotoUrl: loggedInUserBloc.loggedInUser!.photoUrl!);
       widget.postItemBloc.add(AddCommentStarted(comment: comment));
       commentController.clear();
     }
@@ -49,7 +53,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   @override
   void initState() {
     widget.postItemBloc.add(LoadCommentsStarted(widget.post.postId));
-
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
     // TODO: implement initState
     super.initState();
   }
@@ -154,7 +158,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   Widget _buildComments(PostItemState state) {
     return ListView.builder(
       itemBuilder: (_, index) => CommentView(
-          comment: widget.postItemBloc.comments[index],
+          commentResponse: widget.postItemBloc.comments[index],
           isUploaded: state is AddingComment &&
               state.commentId == widget.postItemBloc.comments[index].commentId),
       itemCount: widget.postItemBloc.comments.length,
@@ -171,7 +175,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
             controller: commentController,
             icon: ProfilePhoto(radius: 20),
             suffixIcon: TextButton(
-              child: Text(AppStrings.post, style: TextStyle(color: AppColors.blue)),
+              child: Text(AppStrings.post,
+                  style: TextStyle(color: AppColors.blue)),
               onPressed: onPostButtonTapped,
             ))
       ],
@@ -180,10 +185,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text(
-        AppStrings.comments,
-        style: AppTextStyles.appBarTitleStyle
-      ),
+      title: Text(AppStrings.comments, style: AppTextStyles.appBarTitleStyle),
     );
   }
 }

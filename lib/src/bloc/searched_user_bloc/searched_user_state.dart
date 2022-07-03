@@ -16,7 +16,7 @@ class SearchedUserLoaded extends SearchedUserState {
 }
 
 class SearchedUserPostsLoaded extends SearchedUserState {
-  final List<PostModel> posts;
+  final List<PostModelResponse> posts;
 
   SearchedUserPostsLoaded(this.posts);
 }

@@ -5,6 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
+import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
@@ -86,7 +87,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
       child: SizedBox(
         width: double.infinity,
         child: Text(AppStrings.addLocation,
-            style: AppTextStyles.defaultTextStyleNormal, textAlign: TextAlign.start),
+            style: AppTextStyles.defaultTextStyleNormal,
+            textAlign: TextAlign.start),
       ),
     );
   }
@@ -128,13 +130,17 @@ class _NewPostScreenState extends State<NewPostScreen> {
           listener: (context, state) {
             if (state is UpLoadingPost) showLoadingDialog(context, _keyLoader);
             if (state is PostUploaded) {
+              print(
+                  "_keyLoader.currentContext! is ${_keyLoader.currentContext!}");
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)
                   .pop();
               NavigationUtils.pushNamedAndPopUntil(
                 AppRoutes.mainHomeScreen,
                 context,
               );
-
+              timeLineBloc.addUploadedPost(
+                  PostModelResponse.getDataFromPostRequestAndUser(
+                      state.postRequest, loggedInUserBloc.loggedInUser!));
               // Todo Add uploaded post to timeline posts
             } else if (state is Error)
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)

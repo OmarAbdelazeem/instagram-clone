@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
 
 import '../../../../../router.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
 
 class SmallPostView extends StatelessWidget {
-  PostModel post;
+  PostModelResponse post;
 
   SmallPostView({Key? key, required this.post}) : super(key: key);
 

@@ -5,6 +5,7 @@ class AppTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? hintText;
   final TextInputType? keyBoardType;
+  final bool? autoFocus;
   final Widget? suffixIcon;
   final Widget? icon;
   final Color? fillColor;
@@ -12,6 +13,7 @@ class AppTextField extends StatefulWidget {
   final int maxLines;
   final FocusNode? focusNode;
   final EdgeInsetsGeometry? contentPadding;
+  final InputBorder? border;
   final String? Function(String?)? validator;
   final bool obscureText;
   final String? labelText;
@@ -20,15 +22,17 @@ class AppTextField extends StatefulWidget {
       {this.controller,
       this.hintText,
       this.focusNode,
-        this.hintStyle,
+      this.hintStyle,
       this.fillColor,
+        this.autoFocus,
+      this.border,
       this.maxLines = 1,
       this.contentPadding,
       this.validator,
       this.obscureText = false,
       this.keyBoardType,
       this.icon,
-        this.labelText,
+      this.labelText,
       this.suffixIcon});
 
   @override
@@ -44,6 +48,7 @@ class _AppTextFieldState extends State<AppTextField> {
         color: widget.fillColor ?? AppColors.grey.shade200,
       ),
       child: TextFormField(
+        autofocus: widget.autoFocus ?? false,
         focusNode: widget.focusNode,
         keyboardType: widget.keyBoardType,
         controller: widget.controller,
@@ -51,8 +56,8 @@ class _AppTextFieldState extends State<AppTextField> {
         maxLines: widget.maxLines,
         obscureText: widget.obscureText,
         decoration: InputDecoration(
-          labelText: widget.labelText,
-            border: InputBorder.none,
+            labelText: widget.labelText,
+            border: widget.border ?? InputBorder.none,
             contentPadding: widget.contentPadding,
             hintText: widget.hintText,
             hintStyle: widget.hintStyle,
@@ -60,7 +65,9 @@ class _AppTextFieldState extends State<AppTextField> {
             icon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 widget.icon ?? Container()
               ],
             )),

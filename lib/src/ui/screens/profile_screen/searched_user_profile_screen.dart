@@ -10,8 +10,8 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
-import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/searched_user_posts_view.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/widgets/searched_user_mentioned_posts.dart';
 import '../../common/app_tabs.dart';
 import '../../common/profile_details.dart';
 
@@ -77,7 +77,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
     _views = [
       SearchedUserPostsView(),
-      UserMentionedPostsView(userId: widget.searchedUserId)
+      SearchedUserMentionedPostsView(userId: widget.searchedUserId)
     ];
   }
 
@@ -124,6 +124,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
       },
       child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
           builder: (BuildContext _, state) {
+            print("state is $state");
         if (searchedUserBloc.searchedUser != null &&
             searchedUserBloc.isFollowed != null) {
           return Column(

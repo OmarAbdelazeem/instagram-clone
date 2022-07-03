@@ -1,7 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
@@ -10,6 +9,9 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
+import 'package:instagramapp/src/ui/screens/update_field_screen/update_field_screen.dart';
+import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import '../../../core/utils/image_utils.dart';
 import '../../../core/utils/loading_dialogue.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../common/app_text_field.dart';
@@ -20,51 +22,70 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController nameController;
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   late TextEditingController bioController;
+  LoggedInUserBloc? loggedInUserBloc;
   late AuthBloc authBloc;
-
-  UserModel user = UserModel(
-      photoUrl:
-          "https://media.wired.com/photos/5fb70f2ce7b75db783b7012c/master/pass/Gear-Photos-597589287.jpg",
-      userName: "Omar Abdelazeem",
-      bio: "this is a bio",
-      id: "123",
-      email: "omar@email.com",
-      postsCount: 1,
-      followersCount: 3,
-      followingCount: 5,
-      //Todo fix this
-      timestamp: (Timestamp.now()).toDate());
 
   @override
   void initState() {
-    nameController = TextEditingController(text: user.userName);
-    bioController = TextEditingController(text: user.bio);
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
+
+    nameController =
+        TextEditingController(text: loggedInUserBloc!.loggedInUser!.userName!);
+    bioController =
+        TextEditingController(text: loggedInUserBloc!.loggedInUser!.bio!);
     authBloc = context.read<AuthBloc>();
     super.initState();
   }
 
   Widget _buildNameField() {
-    return IgnorePointer(
-      child: AppTextField(
-        controller: nameController,
-        fillColor: AppColors.scaffoldBackgroundColor,
-        // hintText: AppStrings.updateName,
-        labelText: AppStrings.name,
+    return InkWell(
+      onTap: () async {
+        final name = await NavigationUtils.pushScreen(
+            screen: UpdateFieldScreen(
+                title: AppStrings.name,
+                value: loggedInUserBloc!.loggedInUser!.userName!),
+            context: context);
+        if (name != null) {
+          setState(() {
+            nameController = TextEditingController(text: name);
+          });
+        }
+      },
+      child: IgnorePointer(
+        child: AppTextField(
+          controller: nameController,
+          fillColor: AppColors.scaffoldBackgroundColor,
+          // hintText: AppStrings.updateName,
+          labelText: AppStrings.name,
+        ),
       ),
     );
   }
 
   Widget buildBioField() {
-    return IgnorePointer(
-      child: AppTextField(
-        controller: bioController,
-        fillColor: AppColors.scaffoldBackgroundColor,
-        // hintText: AppStrings.bio,
-        labelText: AppStrings.bio,
+    return InkWell(
+      onTap: () async {
+        final bio = await NavigationUtils.pushScreen(
+            screen: UpdateFieldScreen(
+                title: AppStrings.bio,
+                value: loggedInUserBloc!.loggedInUser!.bio!),
+            context: context);
+        if(bio!=null){
+          setState((){
+            bioController = TextEditingController(text: bio);
+
+          });
+        }
+      },
+      child: IgnorePointer(
+        child: AppTextField(
+          controller: bioController,
+          fillColor: AppColors.scaffoldBackgroundColor,
+          labelText: AppStrings.bio,
+        ),
       ),
     );
   }
@@ -99,7 +120,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: _buildAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12),
@@ -108,12 +128,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             SizedBox(
               height: 10,
             ),
-            ProfilePhoto(radius: 34),
+            BlocConsumer<AuthBloc, AuthState>(
+                bloc: authBloc,
+                listener: (context, state) {
+                  if (state is Loading) showLoadingDialog(context, _keyLoader);
+                  if (state is ProfilePhotoUploaded) {
+                    Navigator.of(_keyLoader.currentContext!).pop();
+                    Navigator.pop(context);
+                  } else if (state is Error)
+                    Navigator.of(_keyLoader.currentContext!).pop();
+                },
+                builder: (context, state) {
+                  return ProfilePhoto(
+                    radius: 34,
+                    photoUrl: loggedInUserBloc!.loggedInUser!.photoUrl!,
+                  );
+                }),
             TextButton(
               child: Text(AppStrings.changeProfilePhoto,
                   style: AppTextStyles.defaultTextStyleNormal.copyWith(
                       color: AppColors.blue, fontWeight: FontWeight.w500)),
-              onPressed: () {},
+              onPressed: () => _pickAndSaveProfileImage(ImageSource.gallery),
             ),
             SizedBox(
               height: 12,
@@ -163,18 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildLogoutButton() {
     return BlocConsumer<AuthBloc, AuthState>(
         bloc: authBloc,
-        listener: (context, state) {
-          if (state is LoggingOut)
-            showLoadingDialog(context, _keyLoader);
-          else if (state is UserLoggedOut) {
-            print("_keyLoader.currentContext! is ${_keyLoader.currentContext!}");
-            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-            // NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);
-          } else if (state is Error) {
-            //Todo show alert here
-            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-          }
-        },
+        listener: _logoutListener,
         builder: (context, state) {
           return AppButton(
             title: AppStrings.logout,
@@ -187,5 +211,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             },
           );
         });
+  }
+
+  void _logoutListener(BuildContext context, state) async {
+    if (state is LoggingOut)
+      showLoadingDialog(context, _keyLoader);
+    else if (state is UserLoggedOut) {
+      await Future.delayed(Duration(milliseconds: 10));
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);
+    } else if (state is Error) {
+      //Todo show alert here
+      await Future.delayed(Duration(milliseconds: 10));
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
+  }
+
+  _pickAndSaveProfileImage(ImageSource source) async {
+    //Todo fix this as before
+    Navigator.pop(context);
+    final imageFile = await ImageUtils.pickImage(source);
+    if (imageFile != null) authBloc.add(ProfilePhotoPicked(imageFile));
   }
 }

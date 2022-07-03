@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
+import 'package:instagramapp/src/res/app_text_styles.dart';
 import '../../../../bloc/auth_bloc/auth_bloc.dart' as auth_bloc;
-import '../../../../models/post_model/post_model.dart';
 import '../../../common/small_post_view.dart';
 import '../../../common/small_posts_grid_view.dart';
+import '../widgets/searched_user_empty_posts.dart';
 
 class SearchedUserPostsView extends StatefulWidget {
   SearchedUserPostsView({
@@ -37,46 +38,13 @@ class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
         return Center(
           child: CircularProgressIndicator(),
         );
-      } else if (state is SearchedUserEmptyPosts)
-        return _buildEmptyOwnPosts();
-      else {
-        return SmallPostsGridView(_searchedUserBloc.posts);
+      } else {
+        if (_searchedUserBloc.posts.isNotEmpty) {
+          return SmallPostsGridView(_searchedUserBloc.posts);
+        } else {
+          return Center(child: SearchedUserEmptyPostsView());
+        }
       }
     });
   }
-
-  Widget _buildEmptyOwnPosts() {
-    return Column(
-      children: <Widget>[
-        Text(
-          AppStrings.profile,
-          style: TextStyle(fontSize: 30),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        Text(
-          AppStrings.whenYouSharePhotosAndVideosTheyWillAppear,
-          style: TextStyle(fontSize: 16),
-          overflow: TextOverflow.clip,
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        GestureDetector(
-          onTap: () {},
-          child: Text(
-            AppStrings.shareYourFirstPhotoOrVideo,
-            style: TextStyle(
-                fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
-            overflow: TextOverflow.clip,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
-  }
-
-
 }

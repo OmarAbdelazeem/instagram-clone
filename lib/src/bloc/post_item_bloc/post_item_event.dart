@@ -24,7 +24,7 @@ class LoadCommentsStarted extends PostItemEvent {
 }
 
 class AddCommentStarted extends PostItemEvent {
-  final CommentModel comment;
+  final CommentModelResponse comment;
 
   AddCommentStarted({required this.comment});
 }

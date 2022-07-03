@@ -7,7 +7,11 @@ class UploadPostInitial extends UploadPostState {}
 
 class UpLoadingPost extends UploadPostState {}
 
-class PostUploaded extends UploadPostState {}
+class PostUploaded extends UploadPostState {
+  final PostModelRequest postRequest;
+
+  PostUploaded(this.postRequest);
+}
 
 class Error extends UploadPostState {
   final String error;

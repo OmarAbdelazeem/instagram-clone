@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ProfilePhoto extends StatelessWidget {
@@ -14,13 +16,19 @@ class ProfilePhoto extends StatelessWidget {
     return CircleAvatar(
         radius: radius,
         backgroundColor: Colors.grey,
-        child: photoUrl != null && photoUrl!.isNotEmpty
-            ? CircleAvatar(
-                radius: radius, backgroundImage: NetworkImage(photoUrl!))
-            : Icon(
+        child: photoUrl == null || photoUrl!.isEmpty
+            ? Icon(
                 Icons.person_outline,
                 size: radius,
                 color: Colors.white,
-              ));
+              )
+            : CircleAvatar(
+                radius: radius,
+                backgroundImage: _buildNetworkImage()));
+  }
+
+
+  ImageProvider _buildNetworkImage() {
+    return NetworkImage(photoUrl!);
   }
 }

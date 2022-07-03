@@ -4,7 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 
-import '../../models/post_model/post_model.dart';
+import '../../models/post_model/post_model_request/post_model_request.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
+import '../../models/user_model/user_model.dart';
 import '../../repository/data_repository.dart';
 import '../likes_bloc/likes_bloc.dart';
 
@@ -22,22 +24,32 @@ class ExplorePostsBloc extends Bloc<ExplorePostsEvent, ExplorePostsState> {
     on<FetchExplorePostsStarted>(_onFetchExplorePostsPostsStarted);
   }
 
-  List<PostModel> _posts = [];
+  List<PostModelResponse> _posts = [];
 
   void _onFetchExplorePostsPostsStarted(
       FetchExplorePostsStarted event, Emitter<ExplorePostsState> emit) async {
     try {
       emit(ExplorePostsLoading());
       final data = (await _dataRepository.getExplorePosts(userId)).docs;
-      List<PostModel> postsTemp = [];
+      List<PostModelResponse> postsTemp = [];
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
-        PostModel post =
-            PostModel.fromJson(item.data() as Map<String, dynamic>);
-        bool isLiked =
-            await _dataRepository.checkIfUserLikesPost(userId);
+        PostModelRequest postRequest =
+            PostModelRequest.fromJson(item.data() as Map<String, dynamic>);
+        // get user data to add profile photo and username
+        final userData =
+            await _dataRepository.getUserDetails(postRequest.publisherId);
+        UserModel user =
+            UserModel.fromJson(userData.data() as Map<String, dynamic>);
+
+        PostModelResponse postResponse =
+            PostModelResponse.getDataFromPostRequestAndUser(postRequest, user);
+
+        bool isLiked = await _dataRepository.checkIfUserLikesPost(userId);
         _likesBloc.add(AddPostLikesInfoStarted(
-            id: post.postId, likes: post.likesCount, isLiked: isLiked));
-        postsTemp.add(post);
+            id: postResponse.postId,
+            likes: postResponse.likesCount,
+            isLiked: isLiked));
+        postsTemp.add(postResponse);
       });
       _posts = postsTemp;
       emit(
@@ -47,5 +59,5 @@ class ExplorePostsBloc extends Bloc<ExplorePostsEvent, ExplorePostsState> {
     }
   }
 
-  List<PostModel> get posts => _posts;
+  List<PostModelResponse> get posts => _posts;
 }

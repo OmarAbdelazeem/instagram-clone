@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
 import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/bloc/notifications_bloc/notifications_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
 import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
@@ -66,6 +68,11 @@ class MyApp extends StatelessWidget {
             BlocProvider<TimeLineBloc>(
                 create: (context) => TimeLineBloc(
                     context.read<DataRepository>(), context.read<LikesBloc>())),
+            BlocProvider<BottomNavigationBarCubit>(
+                create: (context) => BottomNavigationBarCubit()),
+            BlocProvider<NotificationsBloc>(
+                create: (context) =>
+                    NotificationsBloc(context.read<DataRepository>())),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

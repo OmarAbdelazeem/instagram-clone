@@ -5,12 +5,13 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
+import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
 import '../time_line_bloc/time_line_bloc.dart';
 
@@ -35,20 +36,17 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
       final String postId = Uuid().v4();
       final photoUrl = await _storageRepository.uploadPost(
           selectedFile: event.imageFile, userId: event.user.id! ,imageId: postId);
-      final post = PostModel(
-          publisherName: event.user.userName!,
+      final post = PostModelRequest(
           caption: event.caption,
           photoUrl: photoUrl,
           postId: postId,
           publisherId: event.user.id!,
           timestamp: Timestamp.now().toDate(),
           likesCount: 0,
-          commentsCount: 0,
-          publisherProfilePhotoUrl: event.user.photoUrl!);
+          commentsCount: 0,);
 
       await _dataRepository.addPost(post);
-      _timeLineBloc.add(AddNewUploadedPostStarted(post));
-      emit(PostUploaded());
+      emit(PostUploaded(post));
     } catch (e) {
       print(e.toString());
       emit(Error(e.toString()));

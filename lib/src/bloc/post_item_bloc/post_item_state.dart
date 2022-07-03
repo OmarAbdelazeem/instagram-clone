@@ -20,7 +20,7 @@ class PostIsUnLiked extends PostItemState {}
 class CommentsLoading extends PostItemState {}
 
 class CommentsLoaded extends PostItemState {
-  final List<CommentModel> comments;
+  final List<CommentModelResponse> comments;
 
   CommentsLoaded(this.comments);
 }
@@ -28,7 +28,7 @@ class CommentsLoaded extends PostItemState {
 class PostLoading extends PostItemState {}
 
 class PostLoaded extends PostItemState {
-  final PostModel post;
+  final PostModelResponse post;
 
   PostLoaded(this.post);
 }

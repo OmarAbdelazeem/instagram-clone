@@ -22,4 +22,9 @@ class NavigationUtils {
   }) {
     return Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
+
+
+  // static void popUntil(BuildContext context){
+  //    Navigator.popUntil(context, (route) => false);
+  // }
 }

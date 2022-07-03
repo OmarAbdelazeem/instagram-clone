@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:meta/meta.dart';
-import '../../core/saved_posts_likes.dart';
+import '../../models/post_model/post_model_request/post_model_request.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
 import '../../repository/data_repository.dart';
 import '../likes_bloc/likes_bloc.dart';
 
@@ -31,7 +31,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
     on<FetchSearchedUserPostsStarted>(_onFetchSearchedUserPostsStarted);
   }
 
-  List<PostModel> _posts = [];
+  List<PostModelResponse> _posts = [];
   UserModel? _searchedUser;
   bool? _isFollowed;
   Map<String, dynamic> userData = {};
@@ -59,14 +59,20 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       emit(SearchedUserPostsLoading());
       final data = (await dataRepository.getUserPosts(searchedUserId)).docs;
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
-        PostModel post =
-            PostModel.fromJson(item.data() as Map<String, dynamic>);
-
-        bool isLiked = await dataRepository.checkIfUserLikesPost(post.postId);
+        PostModelRequest postRequest =
+        PostModelRequest.fromJson(item.data() as Map<String, dynamic>);
+        // get user data to add profile photo and username
+        final userData =
+        await dataRepository.getUserDetails(postRequest.publisherId);
+        UserModel user =
+        UserModel.fromJson(userData.data() as Map<String, dynamic>);
+        PostModelResponse postResponse = PostModelResponse
+            .getDataFromPostRequestAndUser(postRequest, user);
+        bool isLiked = await dataRepository.checkIfUserLikesPost(postResponse.postId);
 
         likesBloc.add(AddPostLikesInfoStarted(
-            id: post.postId, likes: post.likesCount, isLiked: isLiked));
-        _posts.add(post);
+            id: postResponse.postId, likes: postResponse.likesCount, isLiked: isLiked));
+        _posts.add(postResponse);
       });
 
       emit(_posts.isNotEmpty
@@ -127,5 +133,5 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
 
   get searchedUser => _searchedUser;
 
-  List<PostModel> get posts => _posts;
+  List<PostModelResponse> get posts => _posts;
 }

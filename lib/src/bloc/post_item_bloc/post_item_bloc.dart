@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_request/comment_model_request.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_response/comment_model_response.dart';
 import 'package:instagramapp/src/models/likes_info_model/likes_info_model.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:meta/meta.dart';
 import '../../core/saved_posts_likes.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
+import '../../models/user_model/user_model.dart';
 
 part 'post_item_event.dart';
 
@@ -16,7 +18,7 @@ part 'post_item_state.dart';
 class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
   final DataRepository _dataRepository;
   final LikesBloc _likesBloc;
-  final PostModel _currentPost;
+  final PostModelResponse _currentPost;
 
   PostItemBloc(this._dataRepository, this._likesBloc, this._currentPost)
       : super(PostItemInitial()) {
@@ -27,7 +29,7 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     on<CheckIfPostIsLikedStarted>(_onCheckIfPostIsLikedStarted);
   }
 
-  List<CommentModel> comments = [];
+  List<CommentModelResponse> comments = [];
   bool _isLiked = false;
 
   FutureOr<void> _onAddLikeStarted(
@@ -71,9 +73,21 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     try {
       emit(CommentsLoading());
       final commentsData = await _dataRepository.getPostComments(event.postId);
-      comments = commentsData.docs
-          .map((e) => CommentModel.fromJson(e.data()))
-          .toList();
+
+      List<CommentModelResponse> commentsTemp = [];
+      for (var commentRequestData in commentsData.docs) {
+        CommentModelRequest commentRequest =
+            CommentModelRequest.fromJson(commentRequestData.data());
+        final userData =
+            await _dataRepository.getUserDetails(commentRequest.publisherId);
+        UserModel user =
+            UserModel.fromJson(userData.data() as Map<String, dynamic>);
+        CommentModelResponse commentResponse =
+            CommentModelResponse.getDataFromCommentRequestAndUser(
+                commentRequest, user);
+        commentsTemp.add(commentResponse);
+      }
+      comments = commentsTemp;
       emit(CommentsLoaded(comments));
     } catch (e) {}
   }
@@ -83,7 +97,8 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     try {
       emit(AddingComment(event.comment.commentId!));
       comments.add(event.comment);
-      await _dataRepository.addComment(event.comment);
+      await _dataRepository
+          .addComment(CommentModelRequest.fromCommentResponse(event.comment));
       emit(CommentAdded());
     } catch (e) {
       print(e.toString());
@@ -125,5 +140,5 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
 
   bool get isLiked => _isLiked;
 
-  PostModel get currentPost => _currentPost;
+  PostModelResponse get currentPost => _currentPost;
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model.dart';
+import 'package:instagramapp/src/models/comment_model/comment_model_response/comment_model_response.dart';
 
 import '../../../common/profile_photo.dart';
 import '../../../common/timestamp_view.dart';
 
 class CommentView extends StatelessWidget {
-  final CommentModel comment;
+  final CommentModelResponse commentResponse;
   final bool isUploaded;
 
-  CommentView({required this.comment, this.isUploaded = true});
+  CommentView({required this.commentResponse, this.isUploaded = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class CommentView extends StatelessWidget {
           SizedBox(
             height: 5,
           ),
-          !isUploaded ? TimeStampView(comment.timestamp) : Text("Posting"),
+          !isUploaded ? TimeStampView(commentResponse.timestamp) : Text("Posting"),
           SizedBox(
             height: 12,
           ),
@@ -34,19 +34,19 @@ class CommentView extends StatelessWidget {
   Row _buildUpperPartView() {
     return Row(
       children: <Widget>[
-        ProfilePhoto(photoUrl: comment.publisherPhotoUrl, radius: 20),
+        ProfilePhoto(photoUrl: commentResponse.publisherPhotoUrl, radius: 20),
         SizedBox(
           width: 10,
         ),
         Text(
-          comment.publisherName,
+          commentResponse.publisherName,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(
           width: 10,
         ),
         Text(
-          comment.comment,
+          commentResponse.comment,
         )
       ],
     );

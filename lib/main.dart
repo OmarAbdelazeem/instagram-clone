@@ -1,22 +1,40 @@
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/app.dart';
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('A bg message just showed up :  ${message.messageId}');
+}
+
+// RemoteMessage? initialMessage;
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+
   runApp(MyApp());
 }
 
 
-//1) handle if user tap on it's profile from timeline
-//2) handle when user follow someone in his profile posts take unexpected behaviour
-//3) make droplist in post view has more actions (done)
-//4) when delete user delete all posts . (done)
-//5) when delete post delete all likes and comments and delete it from Followers timeline (done)
-//6) add delete , edit , share to droplist of post as bottom sheet (done)
-//7) there is a bug after register (done)
-//8) add timestamp field in timeline collection
+
+//1) handle if user tap on it's profile from timeline (done)
+//2) handle when user follow someone in his profile posts take unexpected behaviour (done)
+//3) listen to timeline if new post id is equal to uploaded post id then add it to time line
+//4) make edit bio and username is active
+//5) make delete ,edit and share post active
+//6) make notification
+//7) reverse list of comments to show the last comment as first seen
+//8) make unavailable features open screen of coming soon 
+//9) make paginagation
+//10) make share your first post active (done)
+//11) when following someone increase followers and following count not by stream and vise versa in unfollowing
+//12) add post publisher id to comment model
+
+
+
 
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/ui/common/small_post_view.dart';
-
-import '../../models/post_model/post_model.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
 
 class SmallPostsGridView extends StatelessWidget {
-  final List<PostModel> posts;
+  final List<PostModelResponse> posts;
   SmallPostsGridView(this.posts);
   @override
   Widget build(BuildContext context) {

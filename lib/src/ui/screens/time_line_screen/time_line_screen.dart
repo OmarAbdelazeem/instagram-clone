@@ -7,7 +7,6 @@ import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
-import 'package:instagramapp/src/models/post_model/post_model.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_images.dart';
@@ -16,6 +15,7 @@ import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/time_line_a
 import '../../../../router.dart';
 import '../../../bloc/likes_bloc/likes_bloc.dart';
 import '../../../bloc/posts_bloc/posts_bloc.dart';
+import '../../../models/post_model/post_model_response/post_model_response.dart';
 import '../../../models/user_model/user_model.dart';
 import '../../../models/viewed_post_model/viewed_post_model.dart';
 import '../../../repository/auth_repository.dart';
@@ -47,7 +47,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
 
     timeLineBloc.add(FetchTimeLinePostsStarted());
 
-    // timeLineBloc.add(ListenToTimelinePostsStarted());
+    timeLineBloc.add(ListenToTimelinePostsStarted());
 
     usersBloc = UsersBloc(dataRepository, loggedInUserBloc.loggedInUser!.id!);
     // TODO: implement initState
@@ -81,7 +81,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
             else if (state is TimeLineError)
               return Text(state.error);
             else
-              return _buildTimelinePosts(timeLineBloc.posts);
+              return _buildTimelinePosts();
           }),
         ),
       ),
@@ -105,13 +105,12 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     );
   }
 
-  _buildTimelinePosts(List<PostModel> timelinePosts) {
-    print("timelinePosts is ${timelinePosts.length}");
+  _buildTimelinePosts() {
     return ListView.builder(
       itemBuilder: (context, index) => PostView(
-        post: timelinePosts[index],
+        post: timeLineBloc.posts[index],
       ),
-      itemCount: timelinePosts.length,
+      itemCount: timeLineBloc.posts.length,
     );
   }
 

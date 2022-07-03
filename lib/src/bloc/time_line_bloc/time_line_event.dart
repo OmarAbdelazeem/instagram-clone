@@ -8,7 +8,7 @@ class FetchTimeLinePostsStarted extends TimeLineEvent {}
 class ListenToTimelinePostsStarted extends TimeLineEvent {}
 
 class AddNewUploadedPostStarted extends TimeLineEvent {
-  final PostModel post;
+  final PostModelResponse post;
 
   AddNewUploadedPostStarted(this.post);
 }

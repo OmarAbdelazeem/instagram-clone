@@ -50,10 +50,13 @@ class _SignUpViewState extends State<SignUpView> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        setState(() {
-          isSignUpWithEmailOrPhone = false;
-        });
-        return false;
+        if(isSignUpWithEmailOrPhone){
+          setState(() {
+            isSignUpWithEmailOrPhone = false;
+          });
+          return false;
+        }
+        return true;
       },
       child: _buildContent(),
     );

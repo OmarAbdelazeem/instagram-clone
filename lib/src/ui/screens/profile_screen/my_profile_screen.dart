@@ -8,8 +8,8 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
-import 'package:instagramapp/src/ui/common/user_mentioned_posts_view.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/views/logged_in_user_post_view.dart';
+import 'package:instagramapp/src/ui/screens/profile_screen/widgets/logged_in_user_mentioned_posts.dart';
 import '../../../../router.dart';
 import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import '../../common/app_tabs.dart';
@@ -58,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loggedInUserBloc!.add(ListenToLoggedInUserStarted());
     _views = [
       LoggedInUserPostsView(),
-      UserMentionedPostsView(userId: loggedInUserBloc!.loggedInUser!.id!)
+      LoggedInUserMentionedPostsView(userId: loggedInUserBloc!.loggedInUser!.id!)
     ];
     super.initState();
   }

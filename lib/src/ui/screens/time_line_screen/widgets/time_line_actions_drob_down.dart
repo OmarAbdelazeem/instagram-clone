@@ -7,8 +7,6 @@ import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import '../../../../../router.dart';
 
-enum Menu { itemOne, itemTwo, itemThree, itemFour }
-
 class TimelineActionsDropList extends StatefulWidget {
   @override
   _TimelineActionsDropListState createState() =>

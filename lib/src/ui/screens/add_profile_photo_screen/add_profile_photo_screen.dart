@@ -39,13 +39,13 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
         listener: (BuildContext context, AuthState state) {
           if (state is Loading) showLoadingDialog(context, _keyLoader);
           if (state is ProfilePhotoUploaded) {
-            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+            Navigator.of(_keyLoader.currentContext!).pop();
             NavigationUtils.pushNamed(
                 route: AppRoutes.profilePhotoAddedScreen,
                 context: context,
                 arguments: state.imageUrl);
           } else if (state is Error)
-            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+            Navigator.of(_keyLoader.currentContext!).pop();
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),

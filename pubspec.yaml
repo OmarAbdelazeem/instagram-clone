@@ -49,6 +49,7 @@ dependencies:
   video_player:
   image_pixels:
   video_editor:
+  flutter_local_notifications:
 
 dev_dependencies:
   flutter_test:

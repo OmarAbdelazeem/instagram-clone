@@ -9,15 +9,16 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
+import '../../bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
 import '../../bloc/likes_bloc/likes_bloc.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
-import '../../models/post_model/post_model.dart';
+import '../../models/post_model/post_model_response/post_model_response.dart';
 import '../../repository/data_repository.dart';
 import '../../res/app_strings.dart';
 import '../screens/profile_screen/searched_user_profile_screen.dart';
 
 class PostView extends StatefulWidget {
-  final PostModel post;
+  final PostModelResponse post;
 
   PostView({
     required this.post,
@@ -28,7 +29,9 @@ class PostView extends StatefulWidget {
 }
 
 class _PostViewState extends State<PostView> {
+  late BottomNavigationBarCubit bottomNavigationBarCubit;
   late PostItemBloc postItemBloc;
+  late LoggedInUserBloc loggedInUserBloc;
   late Size mediaQuerySize;
 
   void _onLikeButtonTapped() {
@@ -52,6 +55,8 @@ class _PostViewState extends State<PostView> {
   void initState() {
     postItemBloc = PostItemBloc(
         context.read<DataRepository>(), context.read<LikesBloc>(), widget.post);
+    loggedInUserBloc = context.read<LoggedInUserBloc>();
+    bottomNavigationBarCubit = context.read<BottomNavigationBarCubit>();
     postItemBloc.add(CheckIfPostIsLikedStarted());
 // TODO: implement initState
     super.initState();
@@ -173,12 +178,7 @@ class _PostViewState extends State<PostView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         InkWell(
-          onTap: () {
-            NavigationUtils.pushScreen(
-                screen: SearchedUserProfileScreen(
-                    searchedUserId: widget.post.publisherId),
-                context: context);
-          },
+          onTap: _onPublisherNameTapped,
           child: Row(
             children: <Widget>[
               ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
@@ -228,7 +228,6 @@ class _PostViewState extends State<PostView> {
       child: SizedBox(
         width: double.infinity,
         child: TextButton(
-      
             onPressed: () {},
             child: Text(
               title,
@@ -237,10 +236,21 @@ class _PostViewState extends State<PostView> {
                   color: AppColors.black,
                   fontWeight: FontWeight.normal),
               textAlign: TextAlign.start,
-
             )),
       ),
     );
+  }
+
+  void _onPublisherNameTapped() {
+    // 1) check if it is not logged in user
+    if (widget.post.publisherId == loggedInUserBloc.loggedInUser!.id!) {
+      bottomNavigationBarCubit.changeCurrentScreen(3);
+    }else{
+      NavigationUtils.pushScreen(
+          screen:
+          SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
+          context: context);
+    }
 
   }
 }
