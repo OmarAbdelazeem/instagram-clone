@@ -1,12 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagramapp/src/bloc/notifications_bloc/notifications_bloc.dart';
 import 'package:instagramapp/src/ui/screens/activity_screen/activity_screen.dart';
 import 'package:instagramapp/src/ui/screens/explore_photos_screen/explore_photos_screen.dart';
 import 'package:instagramapp/src/ui/screens/main_home_screen/widgets/app_bottom_navigation_bar.dart';
 import '../../../bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
 import '../../../bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit_state.dart';
+import '../../../bloc/firebase_notifications_bloc/firebase_notifications_bloc.dart';
 import '../../../res/app_images.dart';
 import '../profile_screen/my_profile_screen.dart';
 import '../search_screen/search_screen.dart';
@@ -19,7 +19,7 @@ class MainHomeScreen extends StatefulWidget {
 
 class _MainHomeScreenState extends State<MainHomeScreen> {
   late BottomNavigationBarCubit bottomNavigationBarCubit;
-  late NotificationsBloc notificationsBloc;
+  late FirebaseNotificationsBloc notificationsBloc;
   final List<Widget> _screens = [
     TimeLineScreen(),
     ExplorePhotosScreen(),
@@ -45,7 +45,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   @override
   void initState() {
     bottomNavigationBarCubit = context.read<BottomNavigationBarCubit>();
-    notificationsBloc = context.read<NotificationsBloc>();
+    notificationsBloc = context.read<FirebaseNotificationsBloc>();
     notificationsBloc.add(ListenToForMessageOpeningAppStarted());
     notificationsBloc.add(ListenToForGroundMessageStarted());
     notificationsBloc.add(ListenToTokenStarted());
@@ -54,7 +54,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<NotificationsBloc, NotificationsState>(
+    return BlocConsumer<FirebaseNotificationsBloc, FirebaseNotificationsState>(
       listener: (context, state) {},
       builder: (context, state) {
         return BlocBuilder<BottomNavigationBarCubit,

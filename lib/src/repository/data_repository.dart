@@ -41,7 +41,6 @@ class DataRepository {
 
   Future createUserDetails(UserModel user) async {
     await usersRef.doc(user.id).set(user.toJson());
-
   }
 
   Future<QuerySnapshot> searchForUser(String term) {
@@ -56,8 +55,7 @@ class DataRepository {
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts(
-      String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts() async {
     return await postsRef.orderBy('timestamp', descending: true).get();
   }
 
@@ -109,11 +107,7 @@ class DataRepository {
         .doc(postId)
         .collection("postsLikes")
         .doc(userId)
-        .set({});
-
-    // /// 2) increment likesCount of post
-
-    // postsRef.doc(postId).update({"likesCount": FieldValue.increment(1)});
+        .set({"timestamp": Timestamp.now()});
   }
 
   removeLikeFromPost(
@@ -139,12 +133,6 @@ class DataRepository {
         .collection('postsComments')
         .doc(commentRequest.commentId)
         .set(commentRequest.toJson());
-
-    // /// 2) increment commentsCount of post
-
-    // postsRef
-    //     .doc(comment.postId)
-    //     .update({"commentsCount": FieldValue.increment(1)});
   }
 
   Future removeComment(CommentModelRequest comment) async {
@@ -155,12 +143,6 @@ class DataRepository {
         .collection('postsComments')
         .doc(comment.commentId)
         .delete();
-
-    // /// 2) decrement commentsCount of post
-
-    // postsRef
-    //     .doc(comment.postId)
-    //     .update({"commentsCount": FieldValue.increment(-1)});
   }
 
   Future addProfilePhoto(String userId, String photoUrl) async {
@@ -176,89 +158,22 @@ class DataRepository {
     await postsRef.doc(post.postId).set(post.toJson());
   }
 
-  addFollower({required String receiverId}) async {
-    //Todo try to implement this behaviour by cloud functions
-
+  addFollowing({required String receiverId}) async {
     ///1) add receiver id to sender usersFollowing collection
     await usersFollowingRef
         .doc(loggedInUserId)
         .collection("usersFollowing")
         .doc(receiverId)
-        .set({});
-
-    // /// 2) increment following count to sender
-
-    // await usersRef
-    //     .doc(senderId)
-    //     .update({"followingCount": FieldValue.increment(1)});
-
-    // ///3) add sender id to receiver usersFollowers receiver
-
-    // await usersFollowersRef
-    //     .doc(receiverId)
-    //     .collection("usersFollowers")
-    //     .doc(senderId)
-    //     .set({});
-
-    // ///4) increment followers count to receiver
-
-    // await usersRef
-    //     .doc(receiverId)
-    //     .update({"followersCount": FieldValue.increment(1)});
-
-    // ///5) add receiver posts to sender timeline
-    // var postsQuerySnapshot = await postsRef
-    //     .orderBy("timestamp", descending: true)
-    //     .where("publisherId", isEqualTo: receiverId)
-    //     .limit(3)
-    //     .get();
-    // postsQuerySnapshot.docs.forEach((doc) async {
-    //   await timelineRef
-    //       .doc(senderId)
-    //       .collection("timeline")
-    //       .doc(doc.id)
-    //       .set({"publisherId": receiverId});
-    // });
+        .set({"timestamp": Timestamp.now()});
   }
 
-  removeFollower({required String receiverId}) async {
+  removeFollowing({required String receiverId}) async {
     ///1) remove receiver id from sender usersFollowing collection
     await usersFollowingRef
         .doc(loggedInUserId)
         .collection("usersFollowing")
         .doc(receiverId)
         .delete();
-
-    // /// 2) decrement following count to sender
-    //
-    // await usersRef
-    //     .doc(loggedInUserId)
-    //     .update({"followingCount": FieldValue.increment(-1)});
-    //
-    // ///3) remove senderId from receiver usersFollowers receiver
-    //
-    // await usersFollowersRef
-    //     .doc(receiverId)
-    //     .collection("usersFollowers")
-    //     .doc(loggedInUserId)
-    //     .delete();
-    //
-    // ///4) decrement followers count to receiver
-    //
-    // await usersRef
-    //     .doc(receiverId)
-    //     .update({"followersCount": FieldValue.increment(-1)});
-    //
-    // ///5) delete receiver posts from sender timeline
-    //
-    // var senderTimelineRef = timelineRef.doc(senderId).collection("timeline");
-    // var timelineQueries = await senderTimelineRef
-    //     .where("publisherId", isEqualTo: receiverId)
-    //     .get();
-    //
-    // timelineQueries.docs.forEach((doc) async {
-    //   await senderTimelineRef.doc(doc.id).delete();
-    // });
   }
 
   Future<bool> checkIfUserFollowingSearched(
@@ -332,5 +247,7 @@ class DataRepository {
     await usersRef.doc(loggedInUserId).update(data);
   }
 
-
+  Future<QuerySnapshot> getNotifications() async {
+   return await notificationsRef.doc(loggedInUserId).collection("notifications").get();
+  }
 }

@@ -9,7 +9,7 @@ part 'comment_model_request.g.dart';
 @JsonSerializable()
 class CommentModelRequest {
   final String publisherId;
-  final String postUrl;
+  final String postPhotoUrl;
   final String comment;
   final String postId;
   final String postPublisherId;
@@ -23,7 +23,7 @@ class CommentModelRequest {
     required this.commentId,
     required this.postId,
     required this.postPublisherId,
-    required this.postUrl,
+    required this.postPhotoUrl,
     required this.timestamp,
   });
 
@@ -40,7 +40,7 @@ class CommentModelRequest {
       postId: commentResponse.postId,
       comment: commentResponse.comment,
       commentId: commentResponse.commentId,
-      postUrl: commentResponse.postUrl
+      postPhotoUrl: commentResponse.postPhotoUrl
     );
   }
 

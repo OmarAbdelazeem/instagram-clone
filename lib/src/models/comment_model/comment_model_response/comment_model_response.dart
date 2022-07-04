@@ -7,7 +7,7 @@ import '../../user_model/user_model.dart';
 
 class CommentModelResponse {
   final String publisherId;
-  final String postUrl;
+  final String postPhotoUrl;
   final String comment;
   final String publisherName;
   final String postId;
@@ -22,7 +22,7 @@ class CommentModelResponse {
     required this.publisherName,
     required this.postId,
     required this.postPublisherId,
-    required this.postUrl,
+    required this.postPhotoUrl,
     required this.timestamp,
     required this.publisherPhotoUrl});
 
@@ -32,7 +32,7 @@ class CommentModelResponse {
       comment: commentRequest.comment,
       postPublisherId: commentRequest.postPublisherId,
       commentId: commentRequest.commentId,
-      postUrl: commentRequest.postUrl,
+      postPhotoUrl: commentRequest.postPhotoUrl,
       publisherPhotoUrl: user.photoUrl!,
       postId: commentRequest.postId,
       publisherId: commentRequest.publisherId,

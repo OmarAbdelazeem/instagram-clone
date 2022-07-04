@@ -52,6 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _refreshPosts()async{
+    loggedInUserBloc!.add(FetchLoggedInUserPostsStarted());
+  }
+
   @override
   void initState() {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
@@ -70,9 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildContent(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async {
-        // setProfileInfo();
-      },
+      onRefresh: _refreshPosts,
       child: Column(
         children: <Widget>[
           _buildUpperDetails(),

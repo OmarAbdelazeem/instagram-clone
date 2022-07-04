@@ -41,13 +41,18 @@ class _FollowingAndFollowersScreenState
       child: Scaffold(
         appBar: _buildAppBar(),
         body: BlocProvider<UsersBloc>(
-            create: (_) => usersBloc,
-            child: TabBarView(
-              children: [
-                FollowersScreen(usersBloc: usersBloc),
-                FollowingScreen(usersBloc: usersBloc),
-              ],
-            )),
+          create: (_) => usersBloc,
+          child: TabBarView(
+            children: [
+              FollowersScreen(
+                usersBloc: usersBloc,
+              ),
+              FollowingScreen(
+                usersBloc: usersBloc,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -58,14 +63,24 @@ class _FollowingAndFollowersScreenState
         indicatorColor: AppColors.black,
         tabs: [
           Tab(
-              icon: Text(
-            "${loggedInUserBloc.loggedInUser!.followersCount} ${AppStrings.followers}",
-            style: AppTextStyles.defaultTextStyleBold,
+              icon: BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
+            bloc: loggedInUserBloc,
+            builder: (context, state) {
+              return Text(
+                "${loggedInUserBloc.loggedInUser!.followersCount} ${AppStrings.followers}",
+                style: AppTextStyles.defaultTextStyleBold,
+              );
+            },
           )),
           Tab(
-              icon: Text(
-            "${loggedInUserBloc.loggedInUser!.followingCount} ${AppStrings.following}",
-            style: AppTextStyles.defaultTextStyleBold,
+              icon: BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
+            bloc: loggedInUserBloc,
+            builder: (context, state) {
+              return Text(
+                "${loggedInUserBloc.loggedInUser!.followingCount} ${AppStrings.following}",
+                style: AppTextStyles.defaultTextStyleBold,
+              );
+            },
           )),
         ],
       ),

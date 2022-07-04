@@ -19,6 +19,8 @@ exports.onFollowingSomeone = functions.firestore
         // receiverId
         const receiverId = context.params.receiverId;
 
+        var followData = snapshot.data();
+
         //sender data
         var senderData = (await admin
             .firestore()
@@ -67,17 +69,19 @@ exports.onFollowingSomeone = functions.firestore
         //7) send notification
 
         admin.firestore().collection("notifications").doc(receiverId)
-        .collection("notifications").doc().set({
-            'userId': senderId,
-            'type': "1",
-            "postId": null
+            .collection("notifications").doc().set({
+                'userId': senderId,
+                'type': "1",
+                "postId": null,
+                "postPhotoUrl": null,
+                "timestamp": followData["timestamp"]
 
-        });
+            });
 
         payload = {
             notification: {
-                'title': '',
-                'body': senderData["userName"] + " Started following you ."
+                'title': senderData["userName"],
+                'body': "Started following you ."
             },
             data: {
                 "click_action": "FLUTTER_NOTIFICATION_CLICK",
@@ -244,6 +248,8 @@ exports.onLikingPost = functions.firestore
         // likeOwnerId
         const likeOwnerId = context.params.likeOwnerId;
 
+        var likeData = snapshot.data();
+
         var likeOwnerData = (await admin.firestore().collection("users").doc(likeOwnerId).get()).data();
 
         // postData
@@ -267,14 +273,15 @@ exports.onLikingPost = functions.firestore
             .collection("notifications").doc().set({
                 'userId': likeOwnerId,
                 'type': "2",
-                "postId": postId
-
+                "postId": postId,
+                "postPhotoUrl": postData["photoUrl"],
+                "timestamp": likeData["timestamp"]
             });
 
         payload = {
             notification: {
-                'title': '',
-                'body': likeOwnerData["userName"] + " Likes your post"
+                'title': likeOwnerData["userName"],
+                'body': "Likes your post"
             },
             data: {
                 "click_action": "FLUTTER_NOTIFICATION_CLICK",
@@ -346,14 +353,16 @@ exports.onAddingComment = functions.firestore
             .collection("notifications").doc().set({
                 'userId': commentData["publisherId"],
                 'type': "3",
-                "postId": postId
+                "postId": postId,
+                "postPhotoUrl": commentData["postPhotoUrl"],
+                "timestamp": commentData["timestamp"]
 
             });
 
         payload = {
             notification: {
-                'title': '',
-                'body': commentOwnerData["userName"] + " Likes your post"
+                'title': commentOwnerData["userName"],
+                'body': "Commented on your post"
             },
             data: {
                 "click_action": "FLUTTER_NOTIFICATION_CLICK",

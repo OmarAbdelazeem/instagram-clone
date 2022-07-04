@@ -6,14 +6,14 @@ import 'package:meta/meta.dart';
 
 import '../../repository/data_repository.dart';
 
-part 'notifications_event.dart';
+part 'firebase_notifications_event.dart';
 
-part 'notifications_state.dart';
+part 'firebase_notifications_state.dart';
 
-class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
+class FirebaseNotificationsBloc extends Bloc<FirebaseNotificationsEvent, FirebaseNotificationsState> {
   final DataRepository _dataRepository;
 
-  NotificationsBloc(this._dataRepository) : super(NotificationsInitial()) {
+  FirebaseNotificationsBloc(this._dataRepository) : super(NotificationsInitial()) {
     on<ListenToTokenStarted>(_onListenToTokenStarted);
     on<ListenToForGroundMessageStarted>(_onListenToForGroundMessageStarted);
     on<ListenToForMessageOpeningAppStarted>(
@@ -46,6 +46,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     */
   }
 
+
   void setUpNotifications() {
     // if (notificationProvider.initialMessage != null) {
     //   checkNotificationType(notificationProvider.initialMessage.data);
@@ -53,7 +54,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   _onListenToMessageOpeningAppStarted(ListenToForMessageOpeningAppStarted event,
-      Emitter<NotificationsState> emit) {
+      Emitter<FirebaseNotificationsState> emit) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -66,7 +67,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   _onListenToForGroundMessageStarted(
-      ListenToForGroundMessageStarted event, Emitter<NotificationsState> emit) {
+      ListenToForGroundMessageStarted event, Emitter<FirebaseNotificationsState> emit) {
     try {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         print('from ForGroundMessage data is ${message.data}');
@@ -80,7 +81,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   _onListenToTokenStarted(
-      ListenToTokenStarted event, Emitter<NotificationsState> emit) async {
+      ListenToTokenStarted event, Emitter<FirebaseNotificationsState> emit) async {
     try {
       String? token = await FirebaseMessaging.instance.getToken();
       print("token is $token");

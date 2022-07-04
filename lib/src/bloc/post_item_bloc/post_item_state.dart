@@ -27,6 +27,12 @@ class CommentsLoaded extends PostItemState {
 
 class PostLoading extends PostItemState {}
 
+class PostItemError extends PostItemState {
+  final String error;
+
+  PostItemError(this.error);
+}
+
 class PostLoaded extends PostItemState {
   final PostModelResponse post;
 

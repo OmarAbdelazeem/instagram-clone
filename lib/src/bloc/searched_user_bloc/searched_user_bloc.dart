@@ -56,6 +56,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   void _onFetchSearchedUserPostsStarted(FetchSearchedUserPostsStarted event,
       Emitter<SearchedUserState> emit) async {
     try {
+      _posts =[];
       emit(SearchedUserPostsLoading());
       final data = (await dataRepository.getUserPosts(searchedUserId)).docs;
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
@@ -89,7 +90,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       emit(SearchedUserIsFollowed());
       followingBloc.add(AddFollowerIdStarted(searchedUserId));
       _isFollowed = true;
-      await dataRepository.addFollower(receiverId: searchedUserId);
+      await dataRepository.addFollowing(receiverId: searchedUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -102,7 +103,7 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       emit(SearchedUserIsUnFollowed());
       followingBloc.add(RemoveFollowerIdStarted(searchedUserId));
       _isFollowed = false;
-      await dataRepository.removeFollower(
+      await dataRepository.removeFollowing(
           receiverId: searchedUserId);
     } catch (e) {
       print(e.toString());

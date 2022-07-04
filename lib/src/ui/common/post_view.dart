@@ -54,7 +54,9 @@ class _PostViewState extends State<PostView> {
   @override
   void initState() {
     postItemBloc = PostItemBloc(
-        context.read<DataRepository>(), context.read<LikesBloc>(), widget.post);
+        dataRepository: context.read<DataRepository>(),
+        likesBloc: context.read<LikesBloc>(),
+        post: widget.post);
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     bottomNavigationBarCubit = context.read<BottomNavigationBarCubit>();
     postItemBloc.add(CheckIfPostIsLikedStarted());
@@ -111,7 +113,7 @@ class _PostViewState extends State<PostView> {
     return BlocBuilder<PostItemBloc, PostItemState>(
       builder: (context, state) {
         return Text(
-          '${postItemBloc.currentPost.likesCount} ${AppStrings.likes}',
+          '${postItemBloc.currentPost!.likesCount} ${AppStrings.likes}',
           style: TextStyle(fontWeight: FontWeight.bold),
         );
       },
@@ -196,9 +198,7 @@ class _PostViewState extends State<PostView> {
         IconButton(
             onPressed: () {
               showAppBottomSheet(
-                  title: "Test",
-                  context: context,
-                  child: _buildBottomSheetView());
+                  title: "", context: context, child: _buildBottomSheetView());
             },
             icon: Icon(Icons.more_vert))
       ],
@@ -206,29 +206,27 @@ class _PostViewState extends State<PostView> {
   }
 
   Widget _buildBottomSheetView() {
-    return Container(
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTitle(AppStrings.edit),
-          _buildTitle(AppStrings.share),
-          _buildTitle(AppStrings.delete),
-          SizedBox(
-            height: 20,
-          )
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTitle(AppStrings.edit),
+        _buildTitle(AppStrings.share),
+        _buildTitle(AppStrings.delete),
+        SizedBox(
+          height: 20,
+        )
+      ],
     );
   }
 
   Widget _buildTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.all(12),
-      child: SizedBox(
-        width: double.infinity,
-        child: TextButton(
-            onPressed: () {},
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: TextButton(
+          onPressed: () {},
+          child: SizedBox(
+            width: double.infinity,
             child: Text(
               title,
               style: TextStyle(
@@ -236,8 +234,8 @@ class _PostViewState extends State<PostView> {
                   color: AppColors.black,
                   fontWeight: FontWeight.normal),
               textAlign: TextAlign.start,
-            )),
-      ),
+            ),
+          )),
     );
   }
 
@@ -245,12 +243,11 @@ class _PostViewState extends State<PostView> {
     // 1) check if it is not logged in user
     if (widget.post.publisherId == loggedInUserBloc.loggedInUser!.id!) {
       bottomNavigationBarCubit.changeCurrentScreen(3);
-    }else{
+    } else {
       NavigationUtils.pushScreen(
-          screen:
-          SearchedUserProfileScreen(searchedUserId: widget.post.publisherId),
+          screen: SearchedUserProfileScreen(
+              searchedUserId: widget.post.publisherId),
           context: context);
     }
-
   }
 }

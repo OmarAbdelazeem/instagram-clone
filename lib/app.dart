@@ -3,15 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
+import 'package:instagramapp/src/bloc/firebase_notifications_bloc/firebase_notifications_bloc.dart';
 import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
 import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
-import 'package:instagramapp/src/bloc/notifications_bloc/notifications_bloc.dart';
-import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
-import 'package:instagramapp/src/bloc/posts_bloc/posts_bloc.dart';
-import 'package:instagramapp/src/bloc/searched_user_bloc/searched_user_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
-import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/core/saved_posts_likes.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -70,9 +66,9 @@ class MyApp extends StatelessWidget {
                     context.read<DataRepository>(), context.read<LikesBloc>())),
             BlocProvider<BottomNavigationBarCubit>(
                 create: (context) => BottomNavigationBarCubit()),
-            BlocProvider<NotificationsBloc>(
+            BlocProvider<FirebaseNotificationsBloc>(
                 create: (context) =>
-                    NotificationsBloc(context.read<DataRepository>())),
+                    FirebaseNotificationsBloc(context.read<DataRepository>())),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

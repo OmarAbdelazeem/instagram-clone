@@ -8,7 +8,9 @@ import '../widgets/follower_view.dart';
 class FollowingScreen extends StatefulWidget {
   final UsersBloc usersBloc;
 
-  const FollowingScreen({Key? key, required this.usersBloc}) : super(key: key);
+  const FollowingScreen(
+      {Key? key, required this.usersBloc})
+      : super(key: key);
 
   @override
   State<FollowingScreen> createState() => _FollowingScreenState();

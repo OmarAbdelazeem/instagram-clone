@@ -13,7 +13,7 @@ CommentModelRequest _$CommentModelRequestFromJson(Map<String, dynamic> json) =>
       commentId: json['commentId'] as String?,
       postId: json['postId'] as String,
       postPublisherId: json['postPublisherId'] as String,
-      postUrl: json['postUrl'] as String,
+      postPhotoUrl: json['postPhotoUrl'] as String,
       timestamp:
           const TimestampConverter().fromJson(json['timestamp'] as Timestamp),
     );
@@ -22,7 +22,7 @@ Map<String, dynamic> _$CommentModelRequestToJson(
         CommentModelRequest instance) =>
     <String, dynamic>{
       'publisherId': instance.publisherId,
-      'postUrl': instance.postUrl,
+      'postPhotoUrl': instance.postPhotoUrl,
       'comment': instance.comment,
       'postId': instance.postId,
       'postPublisherId': instance.postPublisherId,

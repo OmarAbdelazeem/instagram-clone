@@ -30,7 +30,7 @@ class ExplorePostsBloc extends Bloc<ExplorePostsEvent, ExplorePostsState> {
       FetchExplorePostsStarted event, Emitter<ExplorePostsState> emit) async {
     try {
       emit(ExplorePostsLoading());
-      final data = (await _dataRepository.getExplorePosts(userId)).docs;
+      final data = (await _dataRepository.getExplorePosts()).docs;
       List<PostModelResponse> postsTemp = [];
       await Future.forEach(data, (QueryDocumentSnapshot item) async {
         PostModelRequest postRequest =
@@ -44,7 +44,7 @@ class ExplorePostsBloc extends Bloc<ExplorePostsEvent, ExplorePostsState> {
         PostModelResponse postResponse =
             PostModelResponse.getDataFromPostRequestAndUser(postRequest, user);
 
-        bool isLiked = await _dataRepository.checkIfUserLikesPost(userId);
+        bool isLiked = await _dataRepository.checkIfUserLikesPost(postResponse.postId);
         _likesBloc.add(AddPostLikesInfoStarted(
             id: postResponse.postId,
             likes: postResponse.likesCount,

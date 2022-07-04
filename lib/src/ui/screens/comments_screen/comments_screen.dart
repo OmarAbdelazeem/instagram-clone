@@ -41,7 +41,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           comment: commentController.text,
           publisherId: loggedInUserBloc.loggedInUser!.id!,
           postId: widget.post.postId,
-          postUrl: widget.post.photoUrl,
+          postPhotoUrl: widget.post.photoUrl,
           timestamp: Timestamp.now().toDate(),
           publisherName: loggedInUserBloc.loggedInUser!.userName!,
           publisherPhotoUrl: loggedInUserBloc.loggedInUser!.photoUrl!);

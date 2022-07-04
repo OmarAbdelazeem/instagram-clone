@@ -57,6 +57,10 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
     });
   }
 
+  Future<void> _refreshPosts()async{
+    searchedUserBloc.add(FetchSearchedUserPostsStarted());
+  }
+
   @override
   void initState() {
     setUpProfile();
@@ -119,9 +123,7 @@ class _SearchedUserProfileScreenState extends State<SearchedUserProfileScreen> {
 
   Widget _buildContent() {
     return RefreshIndicator(
-      onRefresh: () async {
-        //Todo implement this function
-      },
+      onRefresh: _refreshPosts,
       child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
           builder: (BuildContext _, state) {
             print("state is $state");
