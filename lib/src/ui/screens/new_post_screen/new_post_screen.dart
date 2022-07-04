@@ -42,7 +42,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
   @override
   void initState() {
     uploadPostBloc = UploadPostBloc(context.read<StorageRepository>(),
-        context.read<DataRepository>(), context.read<TimeLineBloc>());
+        context.read<DataRepository>());
     timeLineBloc = context.read<TimeLineBloc>();
     // TODO: implement initState
     super.initState();

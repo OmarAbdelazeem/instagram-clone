@@ -10,3 +10,9 @@ class PostUploadStarted extends UploadPostEvent {
 
   PostUploadStarted(this.imageFile, this.caption, this.user);
 }
+
+class PostEditStarted extends UploadPostEvent {
+  final String value;
+  final String postId;
+  PostEditStarted({required this.value ,required this.postId});
+}

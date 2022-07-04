@@ -22,34 +22,52 @@ part 'upload_post_state.dart';
 class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
   final StorageRepository _storageRepository;
   final DataRepository _dataRepository;
-  final TimeLineBloc _timeLineBloc;
 
-  UploadPostBloc(this._storageRepository, this._dataRepository,this._timeLineBloc)
+
+  UploadPostBloc(
+      this._storageRepository, this._dataRepository)
       : super(UploadPostInitial()) {
     on<PostUploadStarted>(_onPostUploadStarted);
+    on<PostEditStarted>(_onEditPostStarted);
   }
 
-  void _onPostUploadStarted(
+  Future<void> _onPostUploadStarted(
       PostUploadStarted event, Emitter<UploadPostState> emit) async {
     emit(UpLoadingPost());
     try {
       final String postId = Uuid().v4();
       final photoUrl = await _storageRepository.uploadPost(
-          selectedFile: event.imageFile, userId: event.user.id! ,imageId: postId);
+          selectedFile: event.imageFile,
+          userId: event.user.id!,
+          imageId: postId);
       final post = PostModelRequest(
-          caption: event.caption,
-          photoUrl: photoUrl,
-          postId: postId,
-          publisherId: event.user.id!,
-          timestamp: Timestamp.now().toDate(),
-          likesCount: 0,
-          commentsCount: 0,);
+        caption: event.caption,
+        photoUrl: photoUrl,
+        postId: postId,
+        publisherId: event.user.id!,
+        timestamp: Timestamp.now().toDate(),
+        likesCount: 0,
+        commentsCount: 0,
+      );
 
       await _dataRepository.addPost(post);
       emit(PostUploaded(post));
     } catch (e) {
       print(e.toString());
       emit(Error(e.toString()));
+    }
+  }
+
+  Future<void> _onEditPostStarted(
+      PostEditStarted event, Emitter<UploadPostState> emit) async {
+    try {
+      emit(EditingPost());
+      await _dataRepository.editPostCaption(
+          value: event.value, postId: event.postId);
+      emit(PostEdited());
+    } catch (e) {
+      print(e.toString());
+      emit(EditPostError(e.toString()));
     }
   }
 }

@@ -9,6 +9,7 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
+import 'package:instagramapp/src/ui/screens/edit_post_screen/edit_post_screen.dart';
 import '../../bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
 import '../../bloc/likes_bloc/likes_bloc.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
@@ -224,7 +225,7 @@ class _PostViewState extends State<PostView> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: TextButton(
-          onPressed: () {},
+          onPressed: ()=>onPostActionTap(title),
           child: SizedBox(
             width: double.infinity,
             child: Text(
@@ -248,6 +249,16 @@ class _PostViewState extends State<PostView> {
           screen: SearchedUserProfileScreen(
               searchedUserId: widget.post.publisherId),
           context: context);
+    }
+  }
+
+  void onPostActionTap(String title){
+    if(title == AppStrings.edit){
+      NavigationUtils.pushScreen(screen: EditPostScreen(postResponse: widget.post), context: context);
+    }else if(title == AppStrings.share){
+
+    }else if(title == AppStrings.delete){
+
     }
   }
 }

@@ -36,15 +36,14 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
   @override
   void initState() {
     _loggedInUserBloc = context.read<LoggedInUserBloc>();
-    uploadPostBloc = UploadPostBloc(context.read<StorageRepository>(),
-        context.read<DataRepository>(), context.read<TimeLineBloc>());
+    uploadPostBloc = UploadPostBloc(
+        context.read<StorageRepository>(), context.read<DataRepository>());
     _loggedInUserBloc!.add(FetchLoggedInUserPostsStarted());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
         builder: (context, state) {
       if (state is LoggedInUserError)
@@ -83,7 +82,8 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
             create: (_) => uploadPostBloc,
             child: BlocConsumer<UploadPostBloc, UploadPostState>(
               listener: (context, state) {
-                if (state is UpLoadingPost) showLoadingDialog(context, _keyLoader);
+                if (state is UpLoadingPost)
+                  showLoadingDialog(context, _keyLoader);
                 if (state is PostUploaded) {
                   print(
                       "_keyLoader.currentContext! is ${_keyLoader.currentContext!}");

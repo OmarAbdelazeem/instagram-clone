@@ -247,7 +247,14 @@ class DataRepository {
     await usersRef.doc(loggedInUserId).update(data);
   }
 
+  Future<void> editPostCaption({required String value,required String postId}) async {
+    await postsRef.doc(postId).update({"caption": value});
+  }
+
   Future<QuerySnapshot> getNotifications() async {
-   return await notificationsRef.doc(loggedInUserId).collection("notifications").get();
+    return await notificationsRef
+        .doc(loggedInUserId)
+        .collection("notifications")
+        .get();
   }
 }

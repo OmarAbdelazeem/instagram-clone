@@ -28,7 +28,7 @@ main() async {
 //5) make delete ,edit and share post active
 //6) make notification
 //7) reverse list of comments to show the last comment as first seen
-//8) make unavailable features open screen of coming soon 
+//8) make unavailable features open screen of coming soon
 //9) make paginagation
 //10) make share your first post active (done)
 //11) when following someone increase followers and following count not by stream and vise versa in unfollowing
