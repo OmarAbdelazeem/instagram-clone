@@ -1,7 +1,7 @@
 # instagramapp
 
 
-![Screenshot_1657063667](https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png)
+![Screenshot_1657063667](https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png| width=100)
 ![Screenshot_1657063674](https://user-images.githubusercontent.com/44911566/177434590-3eeedfb4-7088-4b0a-a306-f82a1c3efd4d.png)
 ![Screenshot_1657063685](https://user-images.githubusercontent.com/44911566/177434591-2722a024-858b-4e99-bc87-6677b3f5eb14.png)
 ![Screenshot_1657063689](https://user-images.githubusercontent.com/44911566/177434615-666836dc-516f-4c2f-9b87-1e66847e6ff7.png)
