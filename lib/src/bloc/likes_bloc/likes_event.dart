@@ -12,6 +12,13 @@ class AddPostLikesInfoStarted extends LikesEvent {
       {required this.isLiked, required this.likes, required this.id});
 }
 
+class EditPostCaptionStarted extends LikesEvent {
+  final String caption;
+  final String id;
+
+  EditPostCaptionStarted({required this.caption, required this.id});
+}
+
 class ListenToLikeChangesStarted extends LikesEvent {
   final String id;
 

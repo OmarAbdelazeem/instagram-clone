@@ -60,7 +60,8 @@ class _PostViewState extends State<PostView> {
         post: widget.post);
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     bottomNavigationBarCubit = context.read<BottomNavigationBarCubit>();
-    postItemBloc.add(CheckIfPostIsLikedStarted());
+    postItemBloc.add(CheckIfPostStateIsChangedStarted());
+    // postItemBloc.add(event)
 // TODO: implement initState
     super.initState();
   }
@@ -102,10 +103,16 @@ class _PostViewState extends State<PostView> {
         SizedBox(
           width: 5,
         ),
-        Text(
-          widget.post.caption,
-          style: TextStyle(fontSize: 16),
-        ),
+        BlocConsumer<PostItemBloc, PostItemState>(listener: (context, state) {
+          if (state is PostCaptionEdited) {
+            widget.post.caption = state.caption;
+          }
+        }, builder: (context, state) {
+          return Text(
+            widget.post.caption,
+            style: TextStyle(fontSize: 16),
+          );
+        }),
       ],
     );
   }
@@ -225,7 +232,7 @@ class _PostViewState extends State<PostView> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: TextButton(
-          onPressed: ()=>onPostActionTap(title),
+          onPressed: () => onPostActionTap(title),
           child: SizedBox(
             width: double.infinity,
             child: Text(
@@ -252,13 +259,15 @@ class _PostViewState extends State<PostView> {
     }
   }
 
-  void onPostActionTap(String title){
-    if(title == AppStrings.edit){
-      NavigationUtils.pushScreen(screen: EditPostScreen(postResponse: widget.post), context: context);
-    }else if(title == AppStrings.share){
-
-    }else if(title == AppStrings.delete){
-
-    }
+  void onPostActionTap(String title) {
+    if (title == AppStrings.edit) {
+      Navigator.pop(context);
+      NavigationUtils.pushScreen(
+        screen: EditPostScreen(
+            postResponse: widget.post, postItemBloc: postItemBloc),
+        context: context,
+      );
+    } else if (title == AppStrings.share) {
+    } else if (title == AppStrings.delete) {}
   }
 }

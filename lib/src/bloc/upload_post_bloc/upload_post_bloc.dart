@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
-import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:meta/meta.dart';
@@ -23,12 +22,10 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
   final StorageRepository _storageRepository;
   final DataRepository _dataRepository;
 
-
   UploadPostBloc(
       this._storageRepository, this._dataRepository)
       : super(UploadPostInitial()) {
     on<PostUploadStarted>(_onPostUploadStarted);
-    on<PostEditStarted>(_onEditPostStarted);
   }
 
   Future<void> _onPostUploadStarted(
@@ -58,16 +55,5 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
     }
   }
 
-  Future<void> _onEditPostStarted(
-      PostEditStarted event, Emitter<UploadPostState> emit) async {
-    try {
-      emit(EditingPost());
-      await _dataRepository.editPostCaption(
-          value: event.value, postId: event.postId);
-      emit(PostEdited());
-    } catch (e) {
-      print(e.toString());
-      emit(EditPostError(e.toString()));
-    }
-  }
+
 }

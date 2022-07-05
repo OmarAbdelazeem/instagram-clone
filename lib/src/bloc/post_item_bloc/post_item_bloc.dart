@@ -27,8 +27,9 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     on<RemoveLikeStarted>(_onRemoveLikeStarted);
     on<LoadCommentsStarted>(_onLoadCommentsStarted);
     on<AddCommentStarted>(_onAddCommentStarted);
-    on<CheckIfPostIsLikedStarted>(_onCheckIfPostIsLikedStarted);
+    on<CheckIfPostStateIsChangedStarted>(_onCheckIfPostStateIsChangedStarted);
     on<FetchPostDetailsStarted>(_onFetchPostDetailsStarted);
+    on<PostEditStarted>(_onEditPostCaptionStarted);
   }
 
   List<CommentModelResponse> comments = [];
@@ -103,23 +104,26 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     }
   }
 
-  _onCheckIfPostIsLikedStarted(
-      CheckIfPostIsLikedStarted event, Emitter<PostItemState> state) {
+  _onCheckIfPostStateIsChangedStarted(
+      CheckIfPostStateIsChangedStarted event, Emitter<PostItemState> state) {
     /// 1) initialize likes count and check if post isLiked
     getInitialValueOfLikes();
 
     /// 2) listen to likes count check if post isLiked if there is another event
-    likesBloc.stream.listen((likesState) {
-      if (likesState is LikesChanged) {
-        LikesInfo likesInfo = likesBloc.getPostLikesInfo(post!.postId)!;
-        _isLiked = likesInfo.isLiked;
-        post!.likesCount = likesInfo.likes;
-        if (!isClosed) {
+    likesBloc.stream.listen((postState) {
+      if (!isClosed) {
+        if (postState is LikesChanged) {
+          PostUpdates postUpdates = likesBloc.getPostUpdatesInfo(post!.postId)!;
+          _isLiked = postUpdates.isLiked;
+          post!.likesCount = postUpdates.likes;
           if (_isLiked) {
             emit(PostIsLiked());
           } else {
             emit(PostIsUnLiked());
           }
+        } else if (postState is CaptionChanged) {
+          post!.caption = postState.caption;
+          emit(PostCaptionEdited(postState.caption));
         }
       }
     });
@@ -158,8 +162,22 @@ class PostItemBloc extends Bloc<PostItemEvent, PostItemState> {
     }
   }
 
+  Future<void> _onEditPostCaptionStarted(
+      PostEditStarted event, Emitter<PostItemState> emit) async {
+    try {
+      emit(EditingPostCaption());
+      await dataRepository.editPostCaption(
+          value: event.value, postId: event.postId);
+      likesBloc
+          .add(EditPostCaptionStarted(caption: event.value, id: event.postId));
+    } catch (e) {
+      print(e.toString());
+      emit(EditPostError(e.toString()));
+    }
+  }
+
   void getInitialValueOfLikes() {
-    LikesInfo likesInfo = likesBloc.getPostLikesInfo(post!.postId)!;
+    PostUpdates likesInfo = likesBloc.getPostUpdatesInfo(post!.postId)!;
     _isLiked = likesInfo.isLiked;
     post!.likesCount = likesInfo.likes;
     if (_isLiked) {

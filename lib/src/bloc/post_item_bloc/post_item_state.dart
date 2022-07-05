@@ -38,3 +38,17 @@ class PostLoaded extends PostItemState {
 
   PostLoaded(this.post);
 }
+
+class EditingPostCaption extends PostItemState {}
+
+class PostCaptionEdited extends PostItemState {
+  final String caption;
+
+  PostCaptionEdited(this.caption);
+}
+
+class EditPostError extends PostItemState {
+  final String error;
+
+  EditPostError(this.error);
+}

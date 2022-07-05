@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
 import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
@@ -15,8 +16,10 @@ import '../../common/profile_photo.dart';
 
 class EditPostScreen extends StatefulWidget {
   final PostModelResponse postResponse;
+  final PostItemBloc postItemBloc;
 
-  const EditPostScreen({Key? key, required this.postResponse})
+  const EditPostScreen(
+      {Key? key, required this.postResponse, required this.postItemBloc})
       : super(key: key);
 
   @override
@@ -113,9 +116,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
           ),
         ),
         actions: <Widget>[
-          BlocProvider<UploadPostBloc>(
-              create: (_) => uploadPostBloc,
-              child: BlocListener<UploadPostBloc, UploadPostState>(
+          BlocProvider<PostItemBloc>(
+              create: (_) => widget.postItemBloc,
+              child: BlocListener<PostItemBloc, PostItemState>(
                 listener: _editFieldListener,
                 child: IconButton(
                   onPressed: _editCaption,
@@ -139,9 +142,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void _editFieldListener(BuildContext context, state) async {
-    if (state is EditingPost)
+    if (state is EditingPostCaption)
       showLoadingDialog(context, _keyLoader);
-    else if (state is PostEdited) {
+    else if (state is PostCaptionEdited) {
       await Future.delayed(Duration(milliseconds: 10));
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       Navigator.pop(context, captionController.text);
@@ -153,7 +156,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void _editCaption() {
-    uploadPostBloc.add(PostEditStarted(
+    widget.postItemBloc.add(PostEditStarted(
         postId: widget.postResponse.postId, value: captionController.text));
   }
 }

@@ -29,7 +29,9 @@ class AddCommentStarted extends PostItemEvent {
   AddCommentStarted({required this.comment});
 }
 
-class CheckIfPostIsLikedStarted extends PostItemEvent {}
+class CheckIfPostStateIsChangedStarted extends PostItemEvent {}
+
+class CheckIfPostIsEditedStarted extends PostItemEvent {}
 
 class ListenToPostStarted extends PostItemEvent {
   final String postId;
@@ -41,4 +43,10 @@ class FetchPostDetailsStarted extends PostItemEvent {
   final String postId;
 
   FetchPostDetailsStarted(this.postId);
+}
+
+class PostEditStarted extends PostItemEvent {
+  final String value;
+  final String postId;
+  PostEditStarted({required this.value ,required this.postId});
 }

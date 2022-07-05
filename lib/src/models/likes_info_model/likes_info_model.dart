@@ -1,10 +1,10 @@
-class LikesInfo {
+class PostUpdates {
   final int likes;
   final bool isLiked;
 
-  LikesInfo(this.likes, this.isLiked);
+  PostUpdates(this.likes, this.isLiked,);
 
-  factory LikesInfo.fromMap(Map<String, dynamic> map) {
-    return LikesInfo(map["likes"], map["isLiked"]);
+  factory PostUpdates.fromMap(Map<String, dynamic> map) {
+    return PostUpdates(map["likes"], map["isLiked"]);
   }
 }

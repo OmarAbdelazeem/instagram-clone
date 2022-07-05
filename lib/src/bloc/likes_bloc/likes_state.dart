@@ -10,3 +10,9 @@ class LikesChanged extends LikesState {
 
   LikesChanged(this.postId);
 }
+
+class CaptionChanged extends LikesState {
+  final String caption;
+
+  CaptionChanged(this.caption);
+}
