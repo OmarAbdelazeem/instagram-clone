@@ -1,6 +1,6 @@
 # instagramapp
 
-<img src="[url](https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png)" alt="alt text" width="250" height="500">
+<img src="[url](https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png)" alt="alt text" width="250px" height="500px">
 
 
 ![Screenshot_1657063667](https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png)
