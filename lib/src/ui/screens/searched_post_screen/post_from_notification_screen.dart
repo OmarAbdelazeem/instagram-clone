@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
+import 'package:instagramapp/src/repository/posts_repository.dart';
+import '../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../res/app_strings.dart';
 import '../../../res/app_text_styles.dart';
 import '../../common/post_view.dart';
@@ -25,8 +26,10 @@ class _PostFromNotificationScreenState
   @override
   void initState() {
     postItemBloc = PostItemBloc(
-        dataRepository: context.read<DataRepository>(),
-        likesBloc: context.read<LikesBloc>());
+      dataRepository: context.read<DataRepository>(),
+      postsBloc: context.read<PostsBloc>(),
+    );
+
     postItemBloc.add(FetchPostDetailsStarted(widget.postId));
     // TODO: implement initState
     super.initState();
@@ -52,7 +55,6 @@ class _PostFromNotificationScreenState
           return PostView(
             post: postItemBloc.currentPost!,
           );
-
         }),
       ),
     );

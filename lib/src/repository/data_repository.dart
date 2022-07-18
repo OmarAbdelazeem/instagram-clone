@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model_request/comment_model_request.dart';
-import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:instagramapp/src/repository/auth_repository.dart';
+
+import '../models/comment_model/comment_model.dart';
+import '../models/post_model/post_model.dart';
 
 class DataRepository {
   final AuthRepository _authRepository;
@@ -43,29 +44,55 @@ class DataRepository {
     await usersRef.doc(user.id).set(user.toJson());
   }
 
-  Future<QuerySnapshot> searchForUser(String term) {
-    return usersRef.where("userName", isGreaterThanOrEqualTo: term).get();
+  Stream<Iterable<QueryDocumentSnapshot<Map<String, dynamic>>>> searchForUser(
+      {required String term, DocumentSnapshot? documentSnapshot}) {
+    final usersSnapshot =
+        usersRef.snapshots().map((event) => event.docs.where((doc) {
+              final bool condition = (doc.data()["userName"] as String)
+                  .trim()
+                  .toLowerCase()
+                  .contains(term.trim().toLowerCase());
+              return condition;
+            }));
+    return usersSnapshot;
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts(
-      String userId) async {
-    return await postsRef
+      {required String userId, DocumentSnapshot? documentSnapshot}) async {
+    var postsRequest = postsRef
         .orderBy('timestamp', descending: true)
-        .where("publisherId", isEqualTo: userId)
-        .get();
+        .limit(12)
+        .where("publisherId", isEqualTo: userId);
+    if (documentSnapshot == null) {
+      return await postsRequest.get();
+    } else {
+      return await postsRequest.startAfterDocument(documentSnapshot).get();
+    }
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts() async {
-    return await postsRef.orderBy('timestamp', descending: true).get();
+  Future<QuerySnapshot<Map<String, dynamic>>> getExplorePosts(
+      {DocumentSnapshot? documentSnapshot}) async {
+    final postsRequest =
+        postsRef.orderBy('timestamp', descending: true).limit(18);
+    if (documentSnapshot == null) {
+      return await postsRequest.get();
+    } else {
+      return await postsRequest.startAfterDocument(documentSnapshot).get();
+    }
   }
 
-  Future<QuerySnapshot?>? getTimelinePostsIds(String userId) {
-    return timelineRef
-        .doc(userId)
+  Future<QuerySnapshot> getTimelinePostsIds(
+      {DocumentSnapshot? documentSnapshot}) {
+    var timelineRequest = timelineRef
+        .doc(loggedInUserId)
         .collection('timeline')
         .orderBy("timestamp", descending: true)
-        // .limit(10)
-        .get();
+        .limit(10);
+    if (documentSnapshot == null) {
+      return timelineRequest.get();
+    } else {
+      return timelineRequest.startAfterDocument(documentSnapshot).get();
+    }
   }
 
   Stream<QuerySnapshot> listenToTimeline(String userId) {
@@ -73,8 +100,17 @@ class DataRepository {
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getPostComments(
-      String postId) async {
-    return await postsCommentsRef.doc(postId).collection("postsComments").get();
+      {required String postId, DocumentSnapshot? documentSnapshot}) async {
+    final commentsRequest = postsCommentsRef
+        .doc(postId)
+        .collection("postsComments")
+        .orderBy("timestamp", descending: true)
+        .limit(15);
+    if (documentSnapshot == null) {
+      return await commentsRequest.get();
+    } else {
+      return await commentsRequest.startAfterDocument(documentSnapshot).get();
+    }
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>?> getPostDetails(
@@ -100,32 +136,27 @@ class DataRepository {
         .exists;
   }
 
-  addLikeToPost({required String postId, required String userId}) async {
+  addLikeToPost({required String postId}) async {
     /// 1) add user id to postsLikes collection of post
 
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
-        .doc(userId)
+        .doc(loggedInUserId)
         .set({"timestamp": Timestamp.now()});
   }
 
-  removeLikeFromPost(
-      {required String postId, required String publisherId}) async {
+  removeLikeFromPost({required String postId}) async {
     /// 1) remove user id from postsLikes collection of post
 
     await postsLikesRef
         .doc(postId)
         .collection("postsLikes")
-        .doc(publisherId)
+        .doc(loggedInUserId)
         .delete();
-
-    // /// 2) decrement likesCount of post
-
-    // postsRef.doc(postId).update({"likesCount": FieldValue.increment(-1)});
   }
 
-  Future addComment(CommentModelRequest commentRequest) async {
+  Future addComment(CommentModel commentRequest) async {
     /// 1) add comment to postsComments collection of post
 
     await postsCommentsRef
@@ -135,7 +166,7 @@ class DataRepository {
         .set(commentRequest.toJson());
   }
 
-  Future removeComment(CommentModelRequest comment) async {
+  Future removeComment(CommentModel comment) async {
     /// 1) remove comment from postsComments collection of post
 
     await postsCommentsRef
@@ -152,7 +183,7 @@ class DataRepository {
   }
 
   Future addPost(
-    PostModelRequest post,
+    PostModel post,
   ) async {
     /// 1) add post in publisher postsRef
     await postsRef.doc(post.postId).set(post.toJson());
@@ -190,7 +221,7 @@ class DataRepository {
   Future<List<QueryDocumentSnapshot>> getRecommendedUsers() async {
     List<QueryDocumentSnapshot> queryDocumentSnapshots = [];
 
-    await for (var snapshot in usersRef.snapshots()) {
+    await for (var snapshot in usersRef.limit(12).snapshots()) {
       for (var snapshotDoc in snapshot.docs) {
         String userId = snapshotDoc.data()['id'];
         if (userId == loggedInUserId) continue;
@@ -209,52 +240,54 @@ class DataRepository {
     return [];
   }
 
-  Future<List<DocumentSnapshot>> getFollowers() async {
-    List<DocumentSnapshot> followersDocumentSnapshots = [];
+  Future<QuerySnapshot> getFollowersIds(
+      {DocumentSnapshot? documentSnapshot, required String userId}) async {
+    final userFollowersRequest =
+        usersFollowersRef.doc(userId).collection("usersFollowers").limit(15);
 
-    final loggedInUserFollowersRef =
-        usersFollowersRef.doc(loggedInUserId).collection("usersFollowers");
-    await for (var snapshot in loggedInUserFollowersRef.snapshots()) {
-      for (var snapshotDoc in snapshot.docs) {
-        final followerData = await usersRef.doc(snapshotDoc.id).get();
-
-        followersDocumentSnapshots.add(followerData);
-      }
-      return followersDocumentSnapshots;
+    if (documentSnapshot == null) {
+      return await userFollowersRequest.get();
+    } else {
+      return await userFollowersRequest
+          .startAfterDocument(documentSnapshot)
+          .get();
     }
-
-    return [];
   }
 
-  Future<List<DocumentSnapshot>> getFollowing() async {
-    List<DocumentSnapshot> followingDocumentSnapshots = [];
+  Future<QuerySnapshot> getFollowingIds(
+      {DocumentSnapshot? documentSnapshot, required String userId}) async {
+    final userFollowingRequest =
+        usersFollowingRef.doc(userId).collection("usersFollowing").limit(15);
 
-    final loggedInUserFollowingRef =
-        usersFollowingRef.doc(loggedInUserId).collection("usersFollowing");
-    await for (var snapshot in loggedInUserFollowingRef.snapshots()) {
-      for (var snapshotDoc in snapshot.docs) {
-        final followerData = await usersRef.doc(snapshotDoc.id).get();
-
-        followingDocumentSnapshots.add(followerData);
-      }
-      return followingDocumentSnapshots;
+    if (documentSnapshot == null) {
+      return userFollowingRequest.get();
+    } else {
+      return userFollowingRequest.startAfterDocument(documentSnapshot).get();
     }
-
-    return [];
   }
 
   Future<void> updateUserData(Map<String, dynamic> data) async {
     await usersRef.doc(loggedInUserId).update(data);
   }
 
-  Future<void> editPostCaption({required String value,required String postId}) async {
+  Future<void> editPostCaption(
+      {required String value, required String postId}) async {
     await postsRef.doc(postId).update({"caption": value});
   }
 
-  Future<QuerySnapshot> getNotifications() async {
-    return await notificationsRef
+  Future<QuerySnapshot> getNotifications(
+      {DocumentSnapshot? documentSnapshot}) async {
+    var notificationRequest = notificationsRef
         .doc(loggedInUserId)
         .collection("notifications")
-        .get();
+        .orderBy('timestamp', descending: true)
+        .limit(10);
+    if (documentSnapshot != null) {
+      return await notificationRequest
+          .startAfterDocument(documentSnapshot)
+          .get();
+    } else {
+      return await notificationRequest.get();
+    }
   }
 }

@@ -1,13 +1,11 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagramapp/src/bloc/likes_bloc/likes_bloc.dart';
-import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
 import 'package:meta/meta.dart';
-import '../../models/post_model/post_model_response/post_model_response.dart';
+import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
+import '../posts_bloc/posts_bloc.dart';
 
 part 'time_line_event.dart';
 
@@ -15,47 +13,57 @@ part 'time_line_state.dart';
 
 class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   final DataRepository _dataRepository;
-  final LikesBloc _likesBloc;
+  final PostsBloc _postsBloc;
 
-  TimeLineBloc(this._dataRepository, this._likesBloc)
+  TimeLineBloc(this._dataRepository, this._postsBloc)
       : super(TimeLineInitial()) {
     on<FetchTimeLinePostsStarted>(_onFetchTimelinePostsStarted);
     on<ListenToTimelinePostsStarted>(_onListenToTimelinePostsStarted);
     on<AddNewUploadedPostStarted>(_onNewPostUploaded);
   }
 
-  List<PostModelResponse> _posts = [];
-  PostModelResponse? lastUploadedPost;
+  List<PostModel> _timelinePosts = [];
+  PostModel? lastUploadedPost;
+  QueryDocumentSnapshot? lastDocument;
+  bool isReachedToTheEnd = false;
 
   void _onFetchTimelinePostsStarted(
       FetchTimeLinePostsStarted event, Emitter<TimeLineState> emit) async {
     try {
-      emit(TimeLineLoading());
+      List<QueryDocumentSnapshot> timelinePostsDocs = [];
 
-      // 1) get posts ids
-      QuerySnapshot? timelinePostsQuerySnapshot = (await _dataRepository
-          .getTimelinePostsIds(_dataRepository.loggedInUserId));
-
-      // 2) get every post data that related to it's id
-      if (timelinePostsQuerySnapshot != null &&
-          timelinePostsQuerySnapshot.docs.isNotEmpty) {
-        List<PostModelResponse> postsTemp = [];
-        if(lastUploadedPost !=null){
-          postsTemp.add(lastUploadedPost!);
-          lastUploadedPost = null;
-        }
-        for (var doc in timelinePostsQuerySnapshot.docs) {
-          PostModelResponse? postResponse = await getPostData(doc.id);
-          if (postResponse != null) postsTemp.add(postResponse);
-        }
-        _posts = postsTemp;
-
-        emit(_posts.isNotEmpty ? TimeLineLoaded(_posts) : EmptyTimeline());
-
+      if (!event.nextList) {
+        emit(FirstTimeLineLoading());
+        _timelinePosts = [];
+        isReachedToTheEnd = false;
+        timelinePostsDocs = (await _dataRepository.getTimelinePostsIds()).docs;
       } else {
-        emit(EmptyTimeline());
+        emit(NextTimeLineLoading());
+        timelinePostsDocs = (await _dataRepository.getTimelinePostsIds(
+                documentSnapshot: lastDocument))
+            .docs;
       }
+
+      for (var doc in timelinePostsDocs) {
+        PostModel? postResponse = await getPostResponse(doc.id);
+        if (postResponse != null) {
+          _postsBloc.addPost(postResponse);
+          _timelinePosts.add(postResponse);
+        }
+      }
+      if (timelinePostsDocs.isNotEmpty) {
+        lastDocument = timelinePostsDocs.last;
+      } else if (timelinePostsDocs.isEmpty && _timelinePosts.isNotEmpty) {
+        isReachedToTheEnd = true;
+      }
+      // if (lastUploadedPost != null) {
+      //   _timelinePosts.add(lastUploadedPost!);
+      //   lastUploadedPost = null;
+      // }
+
+      emit(TimeLineLoaded(_timelinePosts));
     } on Exception catch (e) {
+      print(e.toString());
       emit(TimeLineError(e.toString()));
     }
   }
@@ -67,7 +75,6 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
           _dataRepository.listenToTimeline(_dataRepository.loggedInUserId);
       await for (var docStream in postsIdsStream) {
         for (var doc in docStream.docs) {
-
           // if (doc.id == _lastUploadedPostId) {
           //   PostModelResponse? postResponse = await getPostData(doc.id);
           //   if (postResponse != null){
@@ -135,41 +142,30 @@ class TimeLineBloc extends Bloc<TimeLineEvent, TimeLineState> {
   //   }
   // }
 
-
-
-  Future<PostModelResponse?> getPostData(String id) async {
+  Future<PostModel?> getPostResponse(String id) async {
     final postData = await _dataRepository.getPostDetails(
       postId: id,
     );
 
     if (postData != null) {
-      PostModelRequest postRequest =
-          PostModelRequest.fromJson(postData.data()!);
-      //3) get user data to add profile photo and username
-      final userData =
-          await _dataRepository.getUserDetails(postRequest.publisherId);
-      UserModel user =
-          UserModel.fromJson(userData.data() as Map<String, dynamic>);
+      PostModel post =
+          PostModel.fromJson(postData.data() as Map<String, dynamic>);
+      // get user data to add profile photo and username
+      final userData = (await _dataRepository.getUserDetails(post.publisherId))
+          .data() as Map<String, dynamic>;
+      UserModel user = UserModel.fromJson(userData);
+      post.owner = user;
 
-      PostModelResponse postResponse =
-          PostModelResponse.getDataFromPostRequestAndUser(postRequest, user);
-      // 4) check if logged in user liked this post
-      bool isLiked =
-          await _dataRepository.checkIfUserLikesPost(postRequest.postId);
-      _likesBloc.add(AddPostLikesInfoStarted(
-          id: postRequest.postId,
-          likes: postRequest.likesCount,
-          isLiked: isLiked));
-
-      return postResponse;
+      bool isLiked = await _dataRepository.checkIfUserLikesPost(post.postId);
+      post.isLiked = isLiked;
+      return post;
     }
     return null;
   }
 
-  List<PostModelResponse> get posts => _posts;
+  List<PostModel> get posts => _timelinePosts;
 
-  void addUploadedPost(PostModelResponse postResponse){
+  void addUploadedPost(PostModel postResponse) {
     lastUploadedPost = postResponse;
   }
-
 }

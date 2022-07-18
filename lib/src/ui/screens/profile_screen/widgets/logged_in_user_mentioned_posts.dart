@@ -5,19 +5,22 @@ import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/widgets/logged_in_user_empty_mentioned_photos.dart';
 import 'package:instagramapp/src/ui/screens/profile_screen/widgets/searched_user_empty_posts.dart';
 
-import '../../../../models/post_model/post_model_response/post_model_response.dart';
+import '../../../../bloc/post_item_bloc/post_item_bloc.dart';
+import '../../../../models/post_model/post_model.dart';
+import '../../../../repository/data_repository.dart';
+import '../../../../repository/posts_repository.dart';
 import '../../../common/post_view.dart';
 
 
 class LoggedInUserMentionedPostsView extends StatelessWidget {
-  final String userId;
 
-  const LoggedInUserMentionedPostsView({Key? key, required this.userId})
+  const LoggedInUserMentionedPostsView({Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<PostModelResponse> posts = [];
+    List<PostModel> posts = [];
+
     return posts.length == 0
         ? LoggedInUserEmptyMentionedPhotos()
         : ListView.builder(

@@ -10,7 +10,7 @@ class PeopleSuggestionsScreen extends StatelessWidget {
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
   void _onSkipTapped(BuildContext context) {
-    context.read<LoggedInUserBloc>().add(FetchLoggedInUserDetailsStarted());
+
   }
 
   @override
@@ -32,11 +32,11 @@ class PeopleSuggestionsScreen extends StatelessWidget {
                 showLoadingDialog(context, _keyLoader);
               }
             },
-            child: IconButton(
-                icon: Icon(
-                  Icons.arrow_forward,
-                ),
-                onPressed: () => _onSkipTapped(context)),
+            // child: IconButton(
+            //     icon: Icon(
+            //       Icons.arrow_forward,
+            //     ),
+            //     onPressed: () => _onSkipTapped(context)),
           )
         ],
       ),

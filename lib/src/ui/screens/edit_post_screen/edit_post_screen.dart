@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
-import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 
 import '../../../core/utils/loading_dialogue.dart';
+import '../../../models/post_model/post_model.dart';
 import '../../../repository/data_repository.dart';
 import '../../../res/app_colors.dart';
 import '../../../res/app_strings.dart';
@@ -15,11 +15,11 @@ import '../../common/app_text_field.dart';
 import '../../common/profile_photo.dart';
 
 class EditPostScreen extends StatefulWidget {
-  final PostModelResponse postResponse;
+  final PostModel post;
   final PostItemBloc postItemBloc;
 
   const EditPostScreen(
-      {Key? key, required this.postResponse, required this.postItemBloc})
+      {Key? key, required this.post, required this.postItemBloc})
       : super(key: key);
 
   @override
@@ -28,7 +28,6 @@ class EditPostScreen extends StatefulWidget {
 
 class _EditPostScreenState extends State<EditPostScreen> {
   late TextEditingController captionController;
-  late UploadPostBloc uploadPostBloc;
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   late Size mediaQuerySize;
 
@@ -39,11 +38,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   @override
   void initState() {
     captionController =
-        TextEditingController(text: widget.postResponse.caption);
-    uploadPostBloc = UploadPostBloc(
-      context.read<StorageRepository>(),
-      context.read<DataRepository>(),
-    );
+        TextEditingController(text: widget.post.caption);
     // TODO: implement initState
     super.initState();
   }
@@ -77,13 +72,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
         Row(
           children: <Widget>[
             ProfilePhoto(
-                photoUrl: widget.postResponse.publisherProfilePhotoUrl),
+                photoUrl: widget.post.owner!.photoUrl),
             SizedBox(
               width: 8,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text(widget.postResponse.publisherName,
+              child: Text(widget.post.owner!.userName!,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
@@ -94,7 +89,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   CachedNetworkImage _buildPostImage() {
     return CachedNetworkImage(
-      imageUrl: widget.postResponse.photoUrl,
+      imageUrl: widget.post.photoUrl,
       fit: BoxFit.fitWidth,
       placeholder: (context, url) => SizedBox(
           height: mediaQuerySize.height * 0.45,
@@ -142,13 +137,16 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void _editFieldListener(BuildContext context, state) async {
-    if (state is EditingPostCaption)
+    if (state is EditingPostCaption){
       showLoadingDialog(context, _keyLoader);
+    }
+
     else if (state is PostCaptionEdited) {
       await Future.delayed(Duration(milliseconds: 10));
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      Navigator.pop(context, captionController.text);
-    } else if (state is EditPostError) {
+      Navigator.pop(context);
+      await Future.delayed(Duration(milliseconds: 10));
+    } else if (state is EditPostCaptionError) {
       //Todo show alert here
       await Future.delayed(Duration(milliseconds: 10));
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -157,6 +155,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   void _editCaption() {
     widget.postItemBloc.add(PostEditStarted(
-        postId: widget.postResponse.postId, value: captionController.text));
+        postId: widget.post.postId, value: captionController.text));
   }
 }

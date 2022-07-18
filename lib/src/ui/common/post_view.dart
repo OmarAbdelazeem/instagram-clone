@@ -5,21 +5,22 @@ import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/core/utils/app_bottom_sheet.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/repository/posts_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
 import 'package:instagramapp/src/ui/common/profile_photo.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import 'package:instagramapp/src/ui/screens/edit_post_screen/edit_post_screen.dart';
 import '../../bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
-import '../../bloc/likes_bloc/likes_bloc.dart';
 import '../../bloc/post_item_bloc/post_item_bloc.dart';
-import '../../models/post_model/post_model_response/post_model_response.dart';
+import '../../bloc/posts_bloc/posts_bloc.dart';
+import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
 import '../../res/app_strings.dart';
 import '../screens/profile_screen/searched_user_profile_screen.dart';
 
 class PostView extends StatefulWidget {
-  final PostModelResponse post;
+  PostModel post;
 
   PostView({
     required this.post,
@@ -29,66 +30,76 @@ class PostView extends StatefulWidget {
   _PostViewState createState() => _PostViewState();
 }
 
-class _PostViewState extends State<PostView> {
+class _PostViewState extends State<PostView>
+    with AutomaticKeepAliveClientMixin<PostView> {
   late BottomNavigationBarCubit bottomNavigationBarCubit;
   late PostItemBloc postItemBloc;
   late LoggedInUserBloc loggedInUserBloc;
   late Size mediaQuerySize;
 
   void _onLikeButtonTapped() {
-    if (postItemBloc.isLiked) {
+    if (widget.post.isLiked!) {
       postItemBloc.add(RemoveLikeStarted(
-          postId: widget.post.postId,
-          userId: context.read<LoggedInUserBloc>().loggedInUser!.id!));
+        postId: widget.post.postId,
+      ));
     } else {
       postItemBloc.add(AddLikeStarted(
-          postId: widget.post.postId,
-          userId: context.read<LoggedInUserBloc>().loggedInUser!.id!));
+        postId: widget.post.postId,
+      ));
     }
   }
 
   void _onCommentButtonTapped() {
     NavigationUtils.pushScreen(
-        screen: CommentsScreen(widget.post, postItemBloc), context: context);
+        screen: CommentsScreen(postItemBloc.currentPost!, postItemBloc),
+        context: context);
   }
 
   @override
   void initState() {
     postItemBloc = PostItemBloc(
         dataRepository: context.read<DataRepository>(),
-        likesBloc: context.read<LikesBloc>(),
-        post: widget.post);
+        postsBloc: context.read<PostsBloc>(),
+        currentPost: widget.post);
+    postItemBloc.add(ListenForPostUpdatesStarted());
     loggedInUserBloc = context.read<LoggedInUserBloc>();
     bottomNavigationBarCubit = context.read<BottomNavigationBarCubit>();
-    postItemBloc.add(CheckIfPostStateIsChangedStarted());
-    // postItemBloc.add(event)
 // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     mediaQuerySize = MediaQuery.of(context).size;
-    return BlocProvider(
+    return BlocProvider<PostItemBloc>(
       create: (_) => postItemBloc,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: _buildPostHeader()),
-            Center(child: _buildPostImage()),
-            _buildPostActions(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [_buildLikesCount(), _buildPublisherNameAndCaption()],
-              ),
-            )
-          ],
-        ),
+      child: BlocConsumer<PostItemBloc, PostItemState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    child: _buildPostHeader()),
+                Center(child: _buildPostImage()),
+                _buildPostActions(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLikesCount(),
+                      _buildPublisherNameAndCaption()
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -97,7 +108,7 @@ class _PostViewState extends State<PostView> {
     return Row(
       children: <Widget>[
         Text(
-          widget.post.publisherName,
+          widget.post.owner!.userName!,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(
@@ -105,11 +116,11 @@ class _PostViewState extends State<PostView> {
         ),
         BlocConsumer<PostItemBloc, PostItemState>(listener: (context, state) {
           if (state is PostCaptionEdited) {
-            widget.post.caption = state.caption;
+            postItemBloc.currentPost!.caption = state.caption;
           }
         }, builder: (context, state) {
           return Text(
-            widget.post.caption,
+            postItemBloc.currentPost!.caption,
             style: TextStyle(fontSize: 16),
           );
         }),
@@ -136,7 +147,7 @@ class _PostViewState extends State<PostView> {
           children: <Widget>[
             BlocBuilder<PostItemBloc, PostItemState>(builder: (context, state) {
               return IconButton(
-                  icon: postItemBloc.isLiked
+                  icon: widget.post.isLiked!
                       ? Icon(
                           Icons.favorite,
                         )
@@ -174,7 +185,7 @@ class _PostViewState extends State<PostView> {
 
   CachedNetworkImage _buildPostImage() {
     return CachedNetworkImage(
-      imageUrl: widget.post.photoUrl,
+      imageUrl: postItemBloc.currentPost!.photoUrl,
       fit: BoxFit.fitWidth,
       placeholder: (context, url) => SizedBox(
           height: mediaQuerySize.height * 0.45,
@@ -191,13 +202,13 @@ class _PostViewState extends State<PostView> {
           onTap: _onPublisherNameTapped,
           child: Row(
             children: <Widget>[
-              ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
+              ProfilePhoto(photoUrl: widget.post.owner!.photoUrl!),
               SizedBox(
                 width: 8,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(widget.post.publisherName,
+                child: Text(widget.post.owner!.userName!,
                     style: TextStyle(fontWeight: FontWeight.bold)),
               )
             ],
@@ -249,12 +260,12 @@ class _PostViewState extends State<PostView> {
 
   void _onPublisherNameTapped() {
     // 1) check if it is not logged in user
-    if (widget.post.publisherId == loggedInUserBloc.loggedInUser!.id!) {
+    if (postItemBloc.currentPost!.publisherId ==
+        loggedInUserBloc.loggedInUser!.id!) {
       bottomNavigationBarCubit.changeCurrentScreen(3);
     } else {
       NavigationUtils.pushScreen(
-          screen: SearchedUserProfileScreen(
-              searchedUserId: widget.post.publisherId),
+          screen: SearchedUserProfileScreen(user: widget.post.owner!),
           context: context);
     }
   }
@@ -264,10 +275,14 @@ class _PostViewState extends State<PostView> {
       Navigator.pop(context);
       NavigationUtils.pushScreen(
         screen: EditPostScreen(
-            postResponse: widget.post, postItemBloc: postItemBloc),
+            post: postItemBloc.currentPost!, postItemBloc: postItemBloc),
         context: context,
       );
     } else if (title == AppStrings.share) {
     } else if (title == AppStrings.delete) {}
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

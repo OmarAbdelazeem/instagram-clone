@@ -16,6 +16,8 @@ class UserModel {
   int? followingCount;
   int? followersCount;
   int? postsCount;
+  @JsonKey(ignore: true)
+   bool? isFollowed;
   String? token;
   @TimestampConverter()
   DateTime timestamp;
@@ -27,13 +29,15 @@ class UserModel {
       this.id,
       this.email,
       this.postsCount,
-        this.token,
+      this.token,
+      this.isFollowed,
       this.followersCount,
       this.followingCount,
-     required this.timestamp});
+      required this.timestamp});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
+
 
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }

@@ -1,22 +1,40 @@
 part of 'explore_posts_bloc.dart';
 
 @immutable
-abstract class ExplorePostsState {}
+abstract class ExplorePostsState extends Equatable{}
 
-class ExplorePostsInitial extends ExplorePostsState {}
+class ExplorePostsInitial extends ExplorePostsState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
 
-class ExplorePostsLoading extends ExplorePostsState {}
-
-class ExplorePostsEmpty extends ExplorePostsState {}
+class FirstExplorePostsLoading extends ExplorePostsState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+class NextExplorePostsLoading extends ExplorePostsState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
 
 class ExplorePostsLoaded extends ExplorePostsState {
-  final List<PostModelResponse> posts;
+  final List<PostModel> posts;
 
   ExplorePostsLoaded(this.posts);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [posts];
 }
 
 class ExplorePostsError extends ExplorePostsState {
   final String error;
 
   ExplorePostsError(this.error);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [error];
 }

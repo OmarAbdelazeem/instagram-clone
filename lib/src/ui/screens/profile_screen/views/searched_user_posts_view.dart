@@ -20,12 +20,29 @@ class SearchedUserPostsView extends StatefulWidget {
 
 class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
   late SearchedUserBloc _searchedUserBloc;
+  late ScrollController scrollController;
+
+  Future<void> fetchPosts(bool nextList) async {
+    _searchedUserBloc.add(FetchSearchedUserPostsStarted(nextList));
+  }
+
+  void _scrollListener() {
+    bool isNextPostsLoading =
+        _searchedUserBloc.state is SearchedUserNextPostsLoading;
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      if (!isNextPostsLoading && !_searchedUserBloc.isReachedToTheEnd)
+        fetchPosts(true);
+    }
+  }
 
   @override
-  void didChangeDependencies() {
+  void initState() {
     _searchedUserBloc = context.read<SearchedUserBloc>();
-    _searchedUserBloc.add(FetchSearchedUserPostsStarted());
-    super.didChangeDependencies();
+    fetchPosts(false);
+    scrollController = ScrollController();
+    scrollController.addListener(_scrollListener);
+    super.initState();
   }
 
   @override
@@ -34,17 +51,46 @@ class _SearchedUserPostsViewState extends State<SearchedUserPostsView> {
         builder: (context, state) {
       if (state is SearchedUserError)
         return Text(state.error);
-      else if (state is SearchedUserPostsLoading) {
+      else if (state is SearchedUserFirstPostsLoading ||
+          state is SearchedUserInitial) {
         return Center(
           child: CircularProgressIndicator(),
         );
       } else {
-        if (_searchedUserBloc.posts.isNotEmpty) {
-          return SmallPostsGridView(_searchedUserBloc.posts);
-        } else {
+        if (_searchedUserBloc.posts.isEmpty) {
           return Center(child: SearchedUserEmptyPostsView());
+        } else {
+          return _buildPosts(state);
         }
       }
     });
+  }
+
+  Widget _buildPosts(SearchedUserState state) {
+    return Column(
+      children: [
+        Expanded(
+          child: GridView.builder(
+            controller: scrollController,
+            padding: EdgeInsets.zero,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1,
+              mainAxisExtent: 120,
+            ),
+            itemCount: _searchedUserBloc.posts.length,
+            itemBuilder: (BuildContext context, int index) {
+              return SmallPostView(post: _searchedUserBloc.posts[index]);
+            },
+          ),
+        ),
+        SizedBox(height: 12),
+        state is SearchedUserNextPostsLoading
+            ? CircularProgressIndicator()
+            : Container()
+        // state is
+      ],
+    );
   }
 }

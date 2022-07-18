@@ -3,12 +3,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/app.dart';
 
+//flutter pub run build_runner build --delete-conflicting-outputs
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('A bg message just showed up :  ${message.messageId}');
 }
 
 // RemoteMessage? initialMessage;
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -39,6 +41,16 @@ main() async {
 //16) open notification from outside app
 //17) fix followers bug
 
-
-
+// show error when login (done)
+// recommendation users unexpected behaviour (done)
+// when search the second time unexpected behaviour
+// fix following and unfollowing screen
+// test search , followers pagination
+// activate delete
+// can't upload post
+// add forms validation (done)
+// fix button listener in login (done)
+// fix name and password screen (done)
+// fix people suugestion in signup
+// when logout reset bottom navigation index (done)
 

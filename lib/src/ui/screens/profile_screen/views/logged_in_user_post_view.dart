@@ -33,12 +33,31 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
   late UploadPostBloc uploadPostBloc;
   XFile? _imageFile;
 
+  late ScrollController scrollController;
+
+  Future<void> fetchPosts(bool nextList) async {
+    _loggedInUserBloc!.add(FetchLoggedInUserPostsStarted(nextList));
+  }
+
+  void _scrollListener() {
+    bool isNextPostLoading =
+        _loggedInUserBloc!.state is LoggedInUserNextPostsLoading;
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      print("at the end of list");
+      if (!isNextPostLoading && !_loggedInUserBloc!.isReachedToTheEnd) {
+        fetchPosts(true);
+      }
+    }
+  }
+
   @override
   void initState() {
     _loggedInUserBloc = context.read<LoggedInUserBloc>();
     uploadPostBloc = UploadPostBloc(
         context.read<StorageRepository>(), context.read<DataRepository>());
-    _loggedInUserBloc!.add(FetchLoggedInUserPostsStarted());
+    scrollController = ScrollController();
+    scrollController.addListener(_scrollListener);
     super.initState();
   }
 
@@ -47,14 +66,15 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
     return BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
         builder: (context, state) {
       if (state is LoggedInUserError)
-        return Text(state.error);
-      else if (state is LoggedInUserPostsLoading) {
+        return _buildErrorView(state.error);
+      else if (state is LoggedInUserFirstPostsLoading ||
+          state is LoggedInUserInitial) {
         return Center(
           child: CircularProgressIndicator(),
         );
       } else
         return _loggedInUserBloc!.posts.isNotEmpty
-            ? SmallPostsGridView(_loggedInUserBloc!.posts)
+            ? _buildPosts(state)
             : Center(child: _buildEmptyOwnPosts());
     });
   }
@@ -108,6 +128,37 @@ class _LoggedInUserPostsViewState extends State<LoggedInUserPostsView> {
                 );
               },
             )),
+      ],
+    );
+  }
+
+  Widget _buildErrorView(String error) {
+    return Text(error);
+  }
+
+  Widget _buildPosts(LoggedInUserState state) {
+    return Column(
+      children: [
+        Expanded(
+          child: GridView.builder(
+            controller: scrollController,
+            padding: EdgeInsets.zero,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1,
+              mainAxisExtent: 120,
+            ),
+            itemCount: _loggedInUserBloc!.posts.length,
+            itemBuilder: (BuildContext context, int index) {
+              return SmallPostView(post: _loggedInUserBloc!.posts[index]);
+            },
+          ),
+        ),
+        SizedBox(height: 12),
+        state is LoggedInUserNextPostsLoading
+            ? CircularProgressIndicator()
+            : Container()
       ],
     );
   }

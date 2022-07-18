@@ -3,15 +3,25 @@ part of 'searched_user_bloc.dart';
 @immutable
 abstract class SearchedUserEvent {}
 
-
 class ListenToSearchedUserStarted extends SearchedUserEvent {}
 
-class FollowUserEventStarted extends SearchedUserEvent {}
+class FollowUserEventStarted extends SearchedUserEvent {
+  final UserModel user;
 
-class UnFollowUserEventStarted extends SearchedUserEvent {}
+  FollowUserEventStarted(this.user);
+}
 
-class CheckIfUserIsFollowedStarted extends SearchedUserEvent {}
+class UnFollowUserEventStarted extends SearchedUserEvent {
+  final UserModel user;
+
+  UnFollowUserEventStarted(this.user);
+}
+
 
 class FetchSearchedUserPostsStarted extends SearchedUserEvent {
+  final nextList;
 
+  FetchSearchedUserPostsStarted(this.nextList);
 }
+
+class ListenToFollowUpdatesStarted extends SearchedUserEvent {}

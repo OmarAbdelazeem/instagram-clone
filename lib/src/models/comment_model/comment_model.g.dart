@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'comment_model_request.dart';
+part of 'comment_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CommentModelRequest _$CommentModelRequestFromJson(Map<String, dynamic> json) =>
-    CommentModelRequest(
+CommentModel _$CommentModelFromJson(Map<String, dynamic> json) => CommentModel(
       comment: json['comment'] as String,
       publisherId: json['publisherId'] as String,
       commentId: json['commentId'] as String?,
@@ -18,8 +17,7 @@ CommentModelRequest _$CommentModelRequestFromJson(Map<String, dynamic> json) =>
           const TimestampConverter().fromJson(json['timestamp'] as Timestamp),
     );
 
-Map<String, dynamic> _$CommentModelRequestToJson(
-        CommentModelRequest instance) =>
+Map<String, dynamic> _$CommentModelToJson(CommentModel instance) =>
     <String, dynamic>{
       'publisherId': instance.publisherId,
       'postPhotoUrl': instance.postPhotoUrl,

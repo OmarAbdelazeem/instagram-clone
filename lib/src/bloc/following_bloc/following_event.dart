@@ -1,16 +1,14 @@
 part of 'following_bloc.dart';
 
 @immutable
-abstract class FollowingEvent {}
+abstract class FollowingEvent extends Equatable {}
 
-class AddFollowerIdStarted extends FollowingEvent {
-  final String id;
+class FetchFollowingUsersStarted extends FollowingEvent {
+  final bool nextList;
 
-  AddFollowerIdStarted(this.id);
-}
+  FetchFollowingUsersStarted(this.nextList);
 
-class RemoveFollowerIdStarted extends FollowingEvent {
-  final String id;
-
-  RemoveFollowerIdStarted(this.id);
+  @override
+// TODO: implement props
+  List<Object?> get props => [nextList];
 }

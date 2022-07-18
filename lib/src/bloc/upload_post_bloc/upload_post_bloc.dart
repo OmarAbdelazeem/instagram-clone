@@ -5,12 +5,12 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagramapp/src/models/post_model/post_model_request/post_model_request.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../models/post_model/post_model.dart';
 import '../../models/user_model/user_model.dart';
 import '../time_line_bloc/time_line_bloc.dart';
 
@@ -37,7 +37,7 @@ class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
           selectedFile: event.imageFile,
           userId: event.user.id!,
           imageId: postId);
-      final post = PostModelRequest(
+      final post = PostModel(
         caption: event.caption,
         photoUrl: photoUrl,
         postId: postId,

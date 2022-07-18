@@ -16,13 +16,17 @@ import '../../common/app_tabs.dart';
 import '../../common/profile_details.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final LoggedInUserBloc loggedInUserBloc;
+
+  ProfileScreen(this.loggedInUserBloc);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with AutomaticKeepAliveClientMixin<ProfileScreen> {
   int selectedIndex = 0;
-  LoggedInUserBloc? loggedInUserBloc;
   List<AppTabItemModel> tabsItems = [
     AppTabItemModel(
         selectedItem: Icon(
@@ -44,7 +48,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ))
   ];
 
-  List<Widget>? _views;
+  List<Widget> _views = [
+    LoggedInUserPostsView(),
+    LoggedInUserMentionedPostsView()
+  ];
 
   void onItemChanged(int index) {
     setState(() {
@@ -52,19 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future<void> _refreshPosts()async{
-    loggedInUserBloc!.add(FetchLoggedInUserPostsStarted());
-  }
-
-  @override
-  void initState() {
-    loggedInUserBloc = context.read<LoggedInUserBloc>();
-    loggedInUserBloc!.add(ListenToLoggedInUserStarted());
-    _views = [
-      LoggedInUserPostsView(),
-      LoggedInUserMentionedPostsView(userId: loggedInUserBloc!.loggedInUser!.id!)
-    ];
-    super.initState();
+  Future<void> _refreshPosts() async {
+    widget.loggedInUserBloc.add(FetchLoggedInUserPostsStarted(false));
   }
 
   @override
@@ -78,8 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: <Widget>[
           _buildUpperDetails(),
-          Expanded(
-              child: IndexedStack(children: _views!, index: selectedIndex)),
+          Expanded(child: IndexedStack(children: _views, index: selectedIndex)),
         ],
       ),
     );
@@ -88,8 +83,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUpperDetails() {
     return Column(
       children: [
-        BlocBuilder<LoggedInUserBloc, LoggedInUserState>(builder: (context, state) {
-          return ProfileDetails(user: loggedInUserBloc!.loggedInUser!);
+        BlocBuilder<LoggedInUserBloc, LoggedInUserState>(
+            builder: (context, state) {
+          return ProfileDetails(user: widget.loggedInUserBloc.loggedInUser!);
         }),
         SizedBox(
           height: 12,
@@ -142,4 +138,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

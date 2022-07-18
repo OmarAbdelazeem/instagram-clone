@@ -5,8 +5,6 @@ abstract class PostItemState {}
 
 class PostItemInitial extends PostItemState {}
 
-class PostIsLiked extends PostItemState {}
-
 class AddingComment extends PostItemState {
   final String commentId;
 
@@ -15,14 +13,22 @@ class AddingComment extends PostItemState {
 
 class CommentAdded extends PostItemState {}
 
-class PostIsUnLiked extends PostItemState {}
+class FirstCommentsLoading extends PostItemState {}
 
-class CommentsLoading extends PostItemState {}
+class NextCommentsLoading extends PostItemState {}
 
 class CommentsLoaded extends PostItemState {
-  final List<CommentModelResponse> comments;
+  final List<CommentModel> comments;
 
   CommentsLoaded(this.comments);
+}
+
+class PostStateChanged extends PostItemState {}
+
+class CommentsError extends PostItemState {
+  final String error;
+
+  CommentsError(this.error);
 }
 
 class PostLoading extends PostItemState {}
@@ -34,7 +40,7 @@ class PostItemError extends PostItemState {
 }
 
 class PostLoaded extends PostItemState {
-  final PostModelResponse post;
+  final PostModel post;
 
   PostLoaded(this.post);
 }
@@ -47,8 +53,8 @@ class PostCaptionEdited extends PostItemState {
   PostCaptionEdited(this.caption);
 }
 
-class EditPostError extends PostItemState {
+class EditPostCaptionError extends PostItemState {
   final String error;
 
-  EditPostError(this.error);
+  EditPostCaptionError(this.error);
 }

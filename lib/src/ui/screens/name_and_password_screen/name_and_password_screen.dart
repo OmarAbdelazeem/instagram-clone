@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/core/utils/validator_utils.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
@@ -42,9 +43,15 @@ class _NameAndPasswordScreenState extends State<NameAndPasswordScreen> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
-          AppTextField(controller: nameController, hintText: AppStrings.name),
           AppTextField(
-              controller: passwordController, hintText: AppStrings.password),
+              validator: ValidatorUtils.validateName,
+              controller: nameController,
+              hintText: AppStrings.name),
+          SizedBox(height: 20),
+          AppTextField(
+              validator: ValidatorUtils.validatePassword,
+              controller: passwordController,
+              hintText: AppStrings.password),
           SizedBox(
             height: 10,
           ),

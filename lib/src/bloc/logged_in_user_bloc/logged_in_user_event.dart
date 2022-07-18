@@ -12,12 +12,18 @@ class SetLoggedInUserStarted extends LoggedInUserEvent {
 class UpdateUserDataEventStarted extends LoggedInUserEvent {
   final UserData userData;
   final dynamic value;
-  UpdateUserDataEventStarted({required this.userData,required this.value});
-}
 
+  UpdateUserDataEventStarted({required this.userData, required this.value});
+}
 
 class FetchLoggedInUserDetailsStarted extends LoggedInUserEvent {}
 
 class ListenToLoggedInUserStarted extends LoggedInUserEvent {}
 
-class FetchLoggedInUserPostsStarted extends LoggedInUserEvent {}
+
+class FetchLoggedInUserPostsStarted extends LoggedInUserEvent {
+  final bool nextList;
+
+  FetchLoggedInUserPostsStarted(this.nextList);
+}
+

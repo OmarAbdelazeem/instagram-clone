@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
+import 'package:instagramapp/src/bloc/bottom_navigation_bar_cubit/bottom_navigation_bar_cubit.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
+import 'package:instagramapp/src/core/utils/validator_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
@@ -45,6 +47,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       onTap: () async {
         final name = await NavigationUtils.pushScreen(
             screen: UpdateFieldScreen(
+                validator: ValidatorUtils.validateName,
                 title: AppStrings.name,
                 value: loggedInUserBloc!.loggedInUser!.userName!),
             context: context);
@@ -73,10 +76,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 title: AppStrings.bio,
                 value: loggedInUserBloc!.loggedInUser!.bio!),
             context: context);
-        if(bio!=null){
-          setState((){
+        if (bio != null) {
+          setState(() {
             bioController = TextEditingController(text: bio);
-
           });
         }
       },
@@ -90,27 +92,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  updateProfileData() {
+  popScreen() {
     Navigator.pop(context);
-    // setState(() {
-    //   displayNameController.text.trim().length < 3 ||
-    //           displayNameController.text.isEmpty
-    //       ? _displayNameValid = false
-    //       : _displayNameValid = true;
-    //   bioController.text.trim().length > 100
-    //       ? _bioValid = false
-    //       : _bioValid = true;
-    // });
-    //
-    // if (_displayNameValid && _bioValid) {
-    //   usersRef.doc(Data.defaultUser.id).update({
-    //     "displayName": displayNameController.text,
-    //     "bio": bioController.text,
-    //   });
-    //   SnackBar snackbar = SnackBar(content: Text("Profile updated!"));
-    //   _scaffoldKey.currentState.showSnackBar(snackbar);
-    //   Navigator.pop(context);
-    // }
   }
 
   logout() async {
@@ -175,7 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       automaticallyImplyLeading: false,
       leading: IconButton(
-        onPressed: updateProfileData,
+        onPressed: popScreen,
         icon: Icon(
           Icons.close_sharp,
           size: 30.0,
@@ -184,7 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       actions: <Widget>[
         IconButton(
-          onPressed: updateProfileData,
+          onPressed: popScreen,
           icon: Icon(
             Icons.done,
             size: 30.0,
@@ -219,7 +202,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     else if (state is UserLoggedOut) {
       await Future.delayed(Duration(milliseconds: 10));
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      context.read<BottomNavigationBarCubit>().changeCurrentScreen(0);
       NavigationUtils.pushNamedAndPopUntil(AppRoutes.authScreen, context);
+
     } else if (state is Error) {
       //Todo show alert here
       await Future.delayed(Duration(milliseconds: 10));

@@ -11,7 +11,7 @@ class LoggedInUserDetailsLoading extends LoggedInUserState {}
 
 class LoggedInUserDetailsLoaded extends LoggedInUserState {}
 
-class LoggedInUserEmptyPosts extends LoggedInUserState {}
+// class LoggedInUserEmptyPosts extends LoggedInUserState {}
 
 class LoggedInUserError extends LoggedInUserState {
   final String error;
@@ -19,10 +19,12 @@ class LoggedInUserError extends LoggedInUserState {
   LoggedInUserError(this.error);
 }
 
-class LoggedInUserPostsLoading extends LoggedInUserState {}
+class LoggedInUserFirstPostsLoading extends LoggedInUserState {}
+
+class LoggedInUserNextPostsLoading extends LoggedInUserState {}
 
 class LoggedInUserPostsLoaded extends LoggedInUserState {
-  final List<PostModelResponse> posts;
+  final List<PostModel> posts;
 
   LoggedInUserPostsLoaded(this.posts);
 }

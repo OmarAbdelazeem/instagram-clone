@@ -1,40 +1,48 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
-import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
-import 'package:instagramapp/src/core/saved_posts_likes.dart';
-import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_images.dart';
+import 'package:instagramapp/src/ui/screens/time_line_screen/timeline_scroll_offset.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/recommended_user.dart';
 import 'package:instagramapp/src/ui/screens/time_line_screen/widgets/time_line_actions_drob_down.dart';
-import '../../../../router.dart';
-import '../../../bloc/likes_bloc/likes_bloc.dart';
-import '../../../bloc/posts_bloc/posts_bloc.dart';
-import '../../../models/post_model/post_model_response/post_model_response.dart';
-import '../../../models/user_model/user_model.dart';
-import '../../../models/viewed_post_model/viewed_post_model.dart';
-import '../../../repository/auth_repository.dart';
+import '../../../bloc/search_users_bloc/search_users_bloc.dart';
+import '../../../bloc/users_bloc/users_bloc.dart';
+import '../../../repository/posts_repository.dart';
 import '../../../res/app_strings.dart';
 import '../../common/app_logo.dart';
 import '../../common/post_view.dart';
 
 class TimeLineScreen extends StatefulWidget {
+  final TimeLineBloc timeLineBloc;
+
+  TimeLineScreen(this.timeLineBloc);
+
   @override
   _TimeLineScreenState createState() => _TimeLineScreenState();
 }
 
-class _TimeLineScreenState extends State<TimeLineScreen> {
-  late TimeLineBloc timeLineBloc;
+class _TimeLineScreenState extends State<TimeLineScreen>
+    with AutomaticKeepAliveClientMixin<TimeLineScreen> {
   late LoggedInUserBloc loggedInUserBloc;
-  late UsersBloc usersBloc;
+  late UsersSearchBloc usersBloc;
+  late ScrollController scrollController;
 
-  Future getTimeLinePosts() async {
-    timeLineBloc.add(FetchTimeLinePostsStarted());
+  Future fetchTimeLinePosts(bool nextList) async {
+    widget.timeLineBloc.add(FetchTimeLinePostsStarted(nextList));
+  }
+
+  void _scrollListener() {
+    bool isFetchingNextList = widget.timeLineBloc.state is NextTimeLineLoading;
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      if (!isFetchingNextList && !widget.timeLineBloc.isReachedToTheEnd)
+        fetchTimeLinePosts(true);
+    }
   }
 
   @override
@@ -42,47 +50,51 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     loggedInUserBloc = context.read<LoggedInUserBloc>();
 
     final dataRepository = context.read<DataRepository>();
+    scrollController = ScrollController();
 
-    timeLineBloc = context.read<TimeLineBloc>();
+    usersBloc = UsersSearchBloc(dataRepository, context.read<UsersBloc>());
 
-    timeLineBloc.add(FetchTimeLinePostsStarted());
-
-    timeLineBloc.add(ListenToTimelinePostsStarted());
-
-    usersBloc = UsersBloc(dataRepository, loggedInUserBloc.loggedInUser!.id!);
-    // TODO: implement initState
+    scrollController.addListener(_scrollListener);
     super.initState();
   }
 
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: _buildAppBar(),
       body: MultiBlocProvider(
         providers: [
-          BlocProvider<UsersBloc>(
+          BlocProvider<UsersSearchBloc>(
             create: (context) => usersBloc,
           ),
         ],
         child: RefreshIndicator(
-          onRefresh: () => getTimeLinePosts(),
+          onRefresh: () => fetchTimeLinePosts(false),
           child: BlocConsumer<TimeLineBloc, TimeLineState>(
-            bloc: timeLineBloc,
+              bloc: widget.timeLineBloc,
               listener: (BuildContext context, state) {
-            if (state is EmptyTimeline) {
-              usersBloc.add(FetchRecommendedUsersStarted());
-            }
-          }, builder: (BuildContext context, state) {
-            if (state is TimeLineLoading)
-              return Center(child: CircularProgressIndicator());
-            else if (state is EmptyTimeline)
-              return _buildRecommendedUsers();
-            else if (state is TimeLineError)
-              return Text(state.error);
-            else
-              return _buildTimelinePosts();
-          }),
+                if (state is TimeLineLoaded &&
+                    widget.timeLineBloc.posts.isEmpty) {
+                  usersBloc.add(FetchRecommendedUsersStarted());
+                }
+              },
+              builder: (BuildContext context, state) {
+                if (state is FirstTimeLineLoading)
+                  return Center(child: CircularProgressIndicator());
+                else if (state is TimeLineError)
+                  return Text(state.error);
+                else if (widget.timeLineBloc.posts.isEmpty) {
+                  return _buildRecommendedUsers();
+                }
+                return _buildTimelinePosts(state);
+              }),
         ),
       ),
     );
@@ -105,17 +117,30 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     );
   }
 
-  _buildTimelinePosts() {
-    return ListView.builder(
-      itemBuilder: (context, index) => PostView(
-        post: timeLineBloc.posts[index],
-      ),
-      itemCount: timeLineBloc.posts.length,
+  _buildTimelinePosts(TimeLineState state) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            controller: scrollController,
+            itemBuilder: (context, index) {
+              return PostView(
+                post: widget.timeLineBloc.posts[index],
+              );
+            },
+            itemCount: widget.timeLineBloc.posts.length,
+          ),
+        ),
+        SizedBox(
+          height: 12,
+        ),
+        state is NextTimeLineLoading ? CircularProgressIndicator() : Container()
+      ],
     );
   }
 
   _buildRecommendedUsers() {
-    return BlocBuilder<UsersBloc, UsersState>(
+    return BlocBuilder<UsersSearchBloc, SearchUsersState>(
       builder: (BuildContext context, state) {
         return ListView(
           children: [
@@ -157,4 +182,8 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
       },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

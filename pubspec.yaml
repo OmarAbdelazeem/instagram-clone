@@ -50,6 +50,7 @@ dependencies:
   image_pixels:
   video_editor:
   flutter_local_notifications:
+  equatable: ^2.0.3
 
 dev_dependencies:
   flutter_test:

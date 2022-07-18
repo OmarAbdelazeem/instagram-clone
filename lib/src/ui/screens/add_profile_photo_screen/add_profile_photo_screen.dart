@@ -7,9 +7,9 @@ import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_strings.dart';
 import 'package:instagramapp/src/ui/common/app_button.dart';
 import '../../../../router.dart';
+import '../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import '../../../core/utils/image_utils.dart';
 import '../../../core/utils/loading_dialogue.dart';
-
 
 class AddProfilePhotoScreen extends StatefulWidget {
   @override
@@ -23,13 +23,12 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
     //Todo fix this as before
     Navigator.pop(context);
     final imageFile = await ImageUtils.pickImage(source);
-    if(imageFile!=null)
-    context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
+    if (imageFile != null)
+      context.read<AuthBloc>().add(ProfilePhotoPicked(imageFile));
   }
 
   onSkipTapped() {
-    NavigationUtils.pushNamedAndPopUntil(
-        AppRoutes.peopleSuggestionsScreen, context);
+    context.read<LoggedInUserBloc>().add(FetchLoggedInUserDetailsStarted());
   }
 
   @override
@@ -69,15 +68,28 @@ class _AddProfilePhotoScreenState extends State<AddProfilePhotoScreen> {
                 width: double.infinity,
                 onTap: () => _showPickImageDialogue(context),
               ),
-              AppButton(
-                title: AppStrings.skip,
-                width: double.infinity,
-                color: AppColors.scaffoldBackgroundColor,
-                titleStyle: TextStyle(
-                    color: AppColors.blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17),
-                onTap: onSkipTapped,
+              BlocListener<LoggedInUserBloc, LoggedInUserState>(
+                listener: (context, state) {
+                  if (state is LoggedInUserDetailsLoaded) {
+                    Navigator.of(_keyLoader.currentContext!,
+                            rootNavigator: true)
+                        .pop();
+                    NavigationUtils.pushNamedAndPopUntil(
+                        AppRoutes.mainHomeScreen, context);
+                  } else if (state is LoggedInUserDetailsLoading) {
+                    showLoadingDialog(context, _keyLoader);
+                  }
+                },
+                child: AppButton(
+                  title: AppStrings.skip,
+                  width: double.infinity,
+                  color: AppColors.scaffoldBackgroundColor,
+                  titleStyle: TextStyle(
+                      color: AppColors.blue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17),
+                  onTap: onSkipTapped,
+                ),
               ),
             ],
           ),

@@ -12,8 +12,10 @@ import '../../../core/utils/loading_dialogue.dart';
 class UpdateFieldScreen extends StatefulWidget {
   final String title;
   final String value;
+  String? Function(String?)? validator;
 
-  const UpdateFieldScreen({Key? key, required this.title, required this.value})
+  UpdateFieldScreen(
+      {Key? key, required this.title, required this.value, this.validator})
       : super(key: key);
 
   @override
@@ -24,6 +26,7 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
   late TextEditingController controller;
   late LoggedInUserBloc loggedInUserBloc;
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -36,7 +39,7 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildTextField(),
+      body: Form(key: _formKey, child: _buildTextField()),
     );
   }
 
@@ -72,6 +75,7 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
       padding: const EdgeInsets.all(8.0),
       child: AppTextField(
         controller: controller,
+        validator: widget.validator,
         autoFocus: true,
         fillColor: AppColors.scaffoldBackgroundColor,
         border: UnderlineInputBorder(),
@@ -84,17 +88,20 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
   }
 
   void updateField() {
-    UserData? userData;
-    switch (widget.title) {
-      case AppStrings.bio:
-        userData = UserData.bio;
-        break;
-      case AppStrings.name:
-        userData = UserData.name;
-        break;
+    if(_formKey.currentState!.validate()){
+      UserData? userData;
+      switch (widget.title) {
+        case AppStrings.bio:
+          userData = UserData.bio;
+          break;
+        case AppStrings.name:
+          userData = UserData.name;
+          break;
+      }
+      loggedInUserBloc.add(UpdateUserDataEventStarted(
+          userData: userData!, value: controller.text));
     }
-    loggedInUserBloc.add(UpdateUserDataEventStarted(
-        userData: userData!, value: controller.text));
+
   }
 
   void _updateFieldListener(BuildContext context, state) async {
@@ -103,7 +110,7 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
     else if (state is UpdatedUserData) {
       await Future.delayed(Duration(milliseconds: 10));
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      Navigator.pop(context,controller.text);
+      Navigator.pop(context, controller.text);
     } else if (state is UpdateUserDataError) {
       //Todo show alert here
       await Future.delayed(Duration(milliseconds: 10));

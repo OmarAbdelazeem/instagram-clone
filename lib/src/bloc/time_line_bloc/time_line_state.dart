@@ -5,12 +5,14 @@ abstract class TimeLineState {}
 
 class TimeLineInitial extends TimeLineState {}
 
-class TimeLineLoading extends TimeLineState {}
+class FirstTimeLineLoading extends TimeLineState {}
+
+class NextTimeLineLoading extends TimeLineState {}
 
 class EmptyTimeline extends TimeLineState {}
 
 class TimeLineLoaded extends TimeLineState {
-  final List<PostModelResponse> posts;
+  final List<PostModel> posts;
 
   TimeLineLoaded(this.posts);
 }
@@ -23,4 +25,4 @@ class TimeLineError extends TimeLineState {
   TimeLineError(this.error);
 }
 
-class NewUploadedPostAdded extends TimeLineState{}
+class NewUploadedPostAdded extends TimeLineState {}

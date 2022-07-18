@@ -6,8 +6,8 @@ class AppStrings {
   static const getHelpSigningIn = "Get help signing in";
   static const phoneNumberOrEmailOrUserName =
       "Phone number, email, or username";
-  static const logInWithFacebook = 'logInWithFacebook';
-  static const signUpWithEmailOrPhoneNumber = 'signUpWithEmailOrPhoneNumber';
+  static const logInWithFacebook = 'Login with facebook';
+  static const signUpWithEmailOrPhoneNumber = 'Sign up with email or phone number';
   static const login = 'Login';
   static const signup = 'Signup';
   static const password = 'password';

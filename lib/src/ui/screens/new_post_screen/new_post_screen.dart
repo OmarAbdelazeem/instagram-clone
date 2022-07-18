@@ -5,7 +5,6 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/time_line_bloc/time_line_bloc.dart';
 import 'package:instagramapp/src/bloc/upload_post_bloc/upload_post_bloc.dart';
-import 'package:instagramapp/src/models/post_model/post_model_response/post_model_response.dart';
 import 'package:instagramapp/src/repository/data_repository.dart';
 import 'package:instagramapp/src/repository/storage_repository.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
@@ -16,6 +15,7 @@ import 'package:instagramapp/src/ui/common/app_text_field.dart';
 import '../../../../router.dart';
 import '../../../core/utils/navigation_utils.dart';
 import '../../../core/utils/loading_dialogue.dart';
+import '../../../models/post_model/post_model.dart';
 
 class NewPostScreen extends StatefulWidget {
   @override
@@ -41,8 +41,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   void initState() {
-    uploadPostBloc = UploadPostBloc(context.read<StorageRepository>(),
-        context.read<DataRepository>());
+    uploadPostBloc = UploadPostBloc(
+        context.read<StorageRepository>(), context.read<DataRepository>());
     timeLineBloc = context.read<TimeLineBloc>();
     // TODO: implement initState
     super.initState();
@@ -138,9 +138,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 AppRoutes.mainHomeScreen,
                 context,
               );
-              timeLineBloc.addUploadedPost(
-                  PostModelResponse.getDataFromPostRequestAndUser(
-                      state.postRequest, loggedInUserBloc.loggedInUser!));
+              timeLineBloc.addUploadedPost(state.post);
               // Todo Add uploaded post to timeline posts
             } else if (state is Error)
               Navigator.of(_keyLoader.currentContext!, rootNavigator: true)

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:instagramapp/src/ui/screens/activity_screen/activity_screen.dart';
 import 'package:instagramapp/src/ui/screens/comments_screen/comments_screen.dart';
 import 'package:instagramapp/src/ui/screens/edit_profile_screen/edit_profile_screen.dart';
-import 'package:instagramapp/src/ui/screens/explore_photos_screen/explore_photos_screen.dart';
 import 'package:instagramapp/src/ui/screens/following_and_followers_screen/following_and_followers_screen.dart';
 import 'package:instagramapp/src/ui/screens/new_post_screen/new_post_screen.dart';
 import 'package:instagramapp/src/ui/screens/people_suggestions_screen/people_suggestions_screen.dart';
@@ -26,14 +25,11 @@ class AppRoutes {
   static const String nameAndPasswordScreen = "/nameAndPasswordScreen";
   static const String profilePhotoAddedScreen = "/profilePhotoAddedScreen";
   static const String addProfilePhotoScreen = "/addProfilePhotoScreen";
-  static const String peopleSuggestionsScreen = "/peopleSuggestionsScreen";
-  static const String activityScreen = "/activityScreen";
   static const String editProfileScreen = "/editProfileScreen";
   static const String postDetailsScreen = "/postDetailsScreen";
   static const String profileScreen = "/profileScreen";
   static const String newPostScreen = "/newPostScreen";
   static const String searchScreen = "/searchScreen";
-  static const String followingAndFollowersScreen = "/followingAndFollowersScreen";
 }
 
 class AppRouter {
@@ -51,10 +47,6 @@ class AppRouter {
         return _customMaterialPageRoute(ProfilePhotoAddedScreen(), settings);
       case AppRoutes.addProfilePhotoScreen:
         return _customMaterialPageRoute(AddProfilePhotoScreen(), settings);
-      case AppRoutes.peopleSuggestionsScreen:
-        return _customMaterialPageRoute(PeopleSuggestionsScreen(), settings);
-      case AppRoutes.activityScreen:
-        return _customMaterialPageRoute(ActivityScreen(), settings);
       case AppRoutes.searchScreen:
         return _customMaterialPageRoute(SearchScreen(), settings);
       case AppRoutes.editProfileScreen:
@@ -63,8 +55,6 @@ class AppRouter {
         return _customMaterialPageRoute(PostDetailsScreen(), settings);
       case AppRoutes.newPostScreen:
         return _customMaterialPageRoute(NewPostScreen(), settings);
-        case AppRoutes.followingAndFollowersScreen:
-        return _customMaterialPageRoute(FollowingAndFollowersScreen(), settings);
       default:
         return _customMaterialPageRoute(UnKnownRouteScreen(), settings);
     }

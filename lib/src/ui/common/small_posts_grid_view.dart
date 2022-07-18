@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/ui/common/small_post_view.dart';
-import '../../models/post_model/post_model_response/post_model_response.dart';
 
-class SmallPostsGridView extends StatelessWidget {
-  final List<PostModelResponse> posts;
+import '../../models/post_model/post_model.dart';
+
+class SmallPostsGridView extends StatefulWidget {
+  final List<PostModel> posts;
+
   SmallPostsGridView(this.posts);
+
+  @override
+  State<SmallPostsGridView> createState() => _SmallPostsGridViewState();
+}
+
+class _SmallPostsGridViewState extends State<SmallPostsGridView> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -15,12 +23,10 @@ class SmallPostsGridView extends StatelessWidget {
         mainAxisSpacing: 1,
         mainAxisExtent: 120,
       ),
-      itemCount: posts.length,
+      itemCount: widget.posts.length,
       itemBuilder: (BuildContext context, int index) {
-        return SmallPostView(post: posts[index]);
+        return SmallPostView(post: widget.posts[index]);
       },
     );
   }
 }
-
-

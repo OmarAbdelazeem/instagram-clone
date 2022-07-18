@@ -5,31 +5,30 @@ abstract class PostItemEvent {}
 
 class AddLikeStarted extends PostItemEvent {
   final String postId;
-  final String userId;
 
-  AddLikeStarted({required this.postId, required this.userId});
+  AddLikeStarted({required this.postId});
 }
 
 class RemoveLikeStarted extends PostItemEvent {
   final String postId;
-  final String userId;
 
-  RemoveLikeStarted({required this.userId, required this.postId});
+  RemoveLikeStarted({required this.postId});
 }
 
-class LoadCommentsStarted extends PostItemEvent {
+class FetchCommentsStarted extends PostItemEvent {
   final String postId;
+  final bool nextList;
 
-  LoadCommentsStarted(this.postId);
+  FetchCommentsStarted(this.postId, this.nextList);
 }
 
 class AddCommentStarted extends PostItemEvent {
-  final CommentModelResponse comment;
+  final CommentModel comment;
 
   AddCommentStarted({required this.comment});
 }
 
-class CheckIfPostStateIsChangedStarted extends PostItemEvent {}
+class ListenForPostUpdatesStarted extends PostItemEvent {}
 
 class CheckIfPostIsEditedStarted extends PostItemEvent {}
 
@@ -48,5 +47,6 @@ class FetchPostDetailsStarted extends PostItemEvent {
 class PostEditStarted extends PostItemEvent {
   final String value;
   final String postId;
-  PostEditStarted({required this.value ,required this.postId});
+
+  PostEditStarted({required this.value, required this.postId});
 }

@@ -7,8 +7,6 @@ class SearchedUserInitial extends SearchedUserState {}
 
 class SearchedUserLoading extends SearchedUserState {}
 
-class SearchedUserEmptyPosts extends SearchedUserState {}
-
 class SearchedUserLoaded extends SearchedUserState {
   final UserModel user;
 
@@ -16,12 +14,20 @@ class SearchedUserLoaded extends SearchedUserState {
 }
 
 class SearchedUserPostsLoaded extends SearchedUserState {
-  final List<PostModelResponse> posts;
+  final List<PostModel> posts;
 
   SearchedUserPostsLoaded(this.posts);
 }
 
-class SearchedUserPostsLoading extends SearchedUserState {}
+class SearchedUserStateChanged extends SearchedUserState {
+  final UserModel user;
+
+  SearchedUserStateChanged(this.user);
+}
+
+class SearchedUserFirstPostsLoading extends SearchedUserState {}
+
+class SearchedUserNextPostsLoading extends SearchedUserState {}
 
 class SearchedUserError extends SearchedUserState {
   final String error;

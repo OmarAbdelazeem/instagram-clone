@@ -2,22 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
-import 'package:instagramapp/src/models/notification_model/notification_response_model/notification_response_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '../../../../models/notification_model/notification_model.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/profile_photo.dart';
 import '../../profile_screen/searched_user_profile_screen.dart';
 import '../../searched_post_screen/post_from_notification_screen.dart';
 
 class NotificationItem extends StatelessWidget {
-  final NotificationResponseModel notification;
+  final NotificationModel notification;
 
   NotificationItem(this.notification);
 
   void onUserProfilePhotoTapped(BuildContext context) {
     NavigationUtils.pushScreen(
-        screen: SearchedUserProfileScreen(searchedUserId: notification.userId),
+        screen: SearchedUserProfileScreen(
+          user: notification.user!,
+        ),
         context: context);
   }
 
@@ -47,7 +49,7 @@ class NotificationItem extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Text(
-                    '${notification.userName} ',
+                    '${notification.user!.userName!} ',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -77,7 +79,7 @@ class NotificationItem extends StatelessWidget {
     return GestureDetector(
       onTap: () => onUserProfilePhotoTapped(context),
       child: ProfilePhoto(
-        photoUrl: notification.userPhotoUrl,
+        photoUrl: notification.user!.photoUrl!,
       ),
     );
   }
@@ -91,7 +93,7 @@ class NotificationItem extends StatelessWidget {
         width: 50,
         height: 50,
         child: Image.network(
-          notification.postPhotoUrl!,
+          notification.post!.photoUrl,
           fit: BoxFit.cover,
         ),
       ),

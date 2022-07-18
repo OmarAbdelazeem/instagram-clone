@@ -37,5 +37,6 @@ class AuthRepository {
 
   Future<Null> logout() async {
     _firebaseInstance.signOut();
+    loggedInUser = null;
   }
 }

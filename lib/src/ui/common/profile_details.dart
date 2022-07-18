@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
+import 'package:instagramapp/src/ui/screens/following_and_followers_screen/following_and_followers_screen.dart';
 
 import '../../../router.dart';
 import '../../core/utils/navigation_utils.dart';
@@ -61,19 +62,19 @@ class ProfileDetails extends StatelessWidget {
               _buildNumericInfo(user.postsCount!, AppStrings.posts),
               InkWell(
                   onTap: () {
-                    NavigationUtils.pushNamed(
-                        route: AppRoutes.followingAndFollowersScreen,
-                        context: context,
-                    arguments: 0)
-                    ;
+                    NavigationUtils.pushScreen(
+                        screen: FollowingAndFollowersScreen(
+                            user: user, initialIndex: 0),
+                        context: context);
                   },
                   child: _buildNumericInfo(
                       user.followersCount!, AppStrings.followers)),
               InkWell(
                   onTap: () {
-                    NavigationUtils.pushNamed(
-                        route: AppRoutes.followingAndFollowersScreen,
-                        context: context,arguments: 1);
+                    NavigationUtils.pushScreen(
+                        screen: FollowingAndFollowersScreen(
+                            user: user, initialIndex: 1),
+                        context: context);
                   },
                   child: _buildNumericInfo(
                       user.followingCount!, AppStrings.following)),

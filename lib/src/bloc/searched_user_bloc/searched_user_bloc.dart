@@ -1,46 +1,47 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramapp/src/bloc/following_bloc/following_bloc.dart';
+import 'package:instagramapp/src/bloc/users_bloc/users_bloc.dart';
 import 'package:instagramapp/src/models/user_model/user_model.dart';
+import 'package:instagramapp/src/repository/posts_repository.dart';
 import 'package:meta/meta.dart';
-import '../../models/post_model/post_model_request/post_model_request.dart';
-import '../../models/post_model/post_model_response/post_model_response.dart';
+import '../../core/utils/initialize_post.dart';
+import '../../models/post_model/post_model.dart';
 import '../../repository/data_repository.dart';
-import '../likes_bloc/likes_bloc.dart';
+import '../posts_bloc/posts_bloc.dart';
 
 part 'searched_user_event.dart';
 
 part 'searched_user_state.dart';
 
 class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
-  final DataRepository dataRepository;
-  final String searchedUserId;
-  final LikesBloc likesBloc;
-  final FollowingBloc followingBloc;
+  final DataRepository _dataRepository;
+  final String _searchedUserId;
+  final PostsBloc _postsBloc;
+  final UsersBloc _usersBloc;
 
-  SearchedUserBloc(
-      {required this.dataRepository,
-      required this.likesBloc,
-      required this.searchedUserId,
-      required this.followingBloc})
+  SearchedUserBloc(this._dataRepository, this._postsBloc, this._searchedUserId,
+      this._usersBloc)
       : super(SearchedUserInitial()) {
     on<ListenToSearchedUserStarted>(_onListenToSearchedUserStarted);
     on<FollowUserEventStarted>(_onFollowStarted);
     on<UnFollowUserEventStarted>(_onUnFollowStarted);
-    on<CheckIfUserIsFollowedStarted>(_onCheckUserFollowingStateStarted);
+    on<ListenToFollowUpdatesStarted>(_onListenToFollowUpdatesStarted);
     on<FetchSearchedUserPostsStarted>(_onFetchSearchedUserPostsStarted);
   }
 
-  List<PostModelResponse> _posts = [];
+  List<PostModel> _posts = [];
   UserModel? _searchedUser;
-  bool? _isFollowed;
-  Map<String, dynamic> userData = {};
+
+  // bool? _isFollowed;
+  QueryDocumentSnapshot? lastDocument;
+  bool isReachedToTheEnd = false;
 
   _onListenToSearchedUserStarted(
       ListenToSearchedUserStarted event, Emitter<SearchedUserState> state) {
     try {
-      dataRepository
-          .listenToUserDetails(searchedUserId)
+      _dataRepository
+          .listenToUserDetails(_searchedUserId)
           .listen((streamEvent) {
         if (streamEvent.data() != null) {
           _searchedUser =
@@ -56,29 +57,35 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
   void _onFetchSearchedUserPostsStarted(FetchSearchedUserPostsStarted event,
       Emitter<SearchedUserState> emit) async {
     try {
-      _posts =[];
-      emit(SearchedUserPostsLoading());
-      final data = (await dataRepository.getUserPosts(searchedUserId)).docs;
-      await Future.forEach(data, (QueryDocumentSnapshot item) async {
-        PostModelRequest postRequest =
-        PostModelRequest.fromJson(item.data() as Map<String, dynamic>);
-        // get user data to add profile photo and username
-        final userData =
-        await dataRepository.getUserDetails(postRequest.publisherId);
-        UserModel user =
-        UserModel.fromJson(userData.data() as Map<String, dynamic>);
-        PostModelResponse postResponse = PostModelResponse
-            .getDataFromPostRequestAndUser(postRequest, user);
-        bool isLiked = await dataRepository.checkIfUserLikesPost(postResponse.postId);
+      List<QueryDocumentSnapshot> postsDocs = [];
 
-        likesBloc.add(AddPostLikesInfoStarted(
-            id: postResponse.postId, likes: postResponse.likesCount, isLiked: isLiked));
+      if (!event.nextList) {
+        emit(SearchedUserFirstPostsLoading());
+        _posts = [];
+        isReachedToTheEnd = false;
+        postsDocs =
+            (await _dataRepository.getUserPosts(userId: _searchedUserId)).docs;
+      } else {
+        emit(SearchedUserNextPostsLoading());
+        postsDocs = (await _dataRepository.getUserPosts(
+                documentSnapshot: lastDocument, userId: _searchedUserId))
+            .docs;
+      }
+
+      for (var doc in postsDocs) {
+        PostModel postResponse = await initializePost(
+            doc.data() as Map<String, dynamic>, _dataRepository);
+        _postsBloc.addPost(postResponse);
         _posts.add(postResponse);
-      });
+      }
 
-      emit(_posts.isNotEmpty
-          ? SearchedUserPostsLoaded(_posts)
-          : SearchedUserEmptyPosts());
+      if (postsDocs.isNotEmpty) {
+        lastDocument = postsDocs.last;
+      } else if (postsDocs.isEmpty && _posts.isNotEmpty) {
+        isReachedToTheEnd = true;
+      }
+
+      emit(SearchedUserPostsLoaded(_posts));
     } on Exception catch (e) {
       emit(SearchedUserError(e.toString()));
     }
@@ -88,9 +95,8 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       FollowUserEventStarted event, Emitter<SearchedUserState> state) async {
     try {
       emit(SearchedUserIsFollowed());
-      followingBloc.add(AddFollowerIdStarted(searchedUserId));
-      _isFollowed = true;
-      await dataRepository.addFollowing(receiverId: searchedUserId);
+      _usersBloc.add(UpdateUserStarted(event.user));
+      await _dataRepository.addFollowing(receiverId: _searchedUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
@@ -101,38 +107,54 @@ class SearchedUserBloc extends Bloc<SearchedUserEvent, SearchedUserState> {
       UnFollowUserEventStarted event, Emitter<SearchedUserState> state) async {
     try {
       emit(SearchedUserIsUnFollowed());
-      followingBloc.add(RemoveFollowerIdStarted(searchedUserId));
-      _isFollowed = false;
-      await dataRepository.removeFollowing(
-          receiverId: searchedUserId);
+      _usersBloc.add(UpdateUserStarted(event.user));
+      await _dataRepository.removeFollowing(receiverId: _searchedUserId);
     } catch (e) {
       print(e.toString());
       emit(SearchedUserError(e.toString()));
     }
   }
 
-  void _onCheckUserFollowingStateStarted(CheckIfUserIsFollowedStarted event,
-      Emitter<SearchedUserState> state) async {
-    try {
-      emit(SearchedUserLoading());
-      _isFollowed = await dataRepository.checkIfUserFollowingSearched(
-          receiverId: searchedUserId);
-      if (_isFollowed!) {
-        emit(SearchedUserIsFollowed());
-      } else
-        emit(SearchedUserIsUnFollowed());
-    } catch (e) {
-      emit(SearchedUserError(e.toString()));
+  _onListenToFollowUpdatesStarted(
+      ListenToFollowUpdatesStarted event, Emitter<SearchedUserState> state) {
+    UserModel? user = _usersBloc.getUser(_searchedUserId);
+    if (user != null) {
+      emit(SearchedUserStateChanged(user));
     }
+
+    _usersBloc.stream.listen((postState) {
+      if (!isClosed) {
+        if (postState is UserAdded) {
+          if (postState.user.id == _searchedUserId) {
+            emit(SearchedUserStateChanged(postState.user));
+          }
+        }
+      }
+    });
   }
 
-  void setFollowInitialValue(bool condition) {
-    _isFollowed = condition;
-  }
+  // void _onCheckUserFollowingStateStarted(CheckIfUserIsFollowedStarted event,
+  //     Emitter<SearchedUserState> state) async {
+  //   try {
+  //     emit(SearchedUserLoading());
+  //     _isFollowed = await _dataRepository.checkIfUserFollowingSearched(
+  //         receiverId: _searchedUserId);
+  //     if (_isFollowed!) {
+  //       emit(SearchedUserIsFollowed());
+  //     } else
+  //       emit(SearchedUserIsUnFollowed());
+  //   } catch (e) {
+  //     emit(SearchedUserError(e.toString()));
+  //   }
+  // }
 
-  get isFollowed => _isFollowed;
+  // void setFollowInitialValue(bool condition) {
+  //   _isFollowed = condition;
+  // }
+
+  // get isFollowed => _isFollowed;
 
   get searchedUser => _searchedUser;
 
-  List<PostModelResponse> get posts => _posts;
+  List<PostModel> get posts => _posts;
 }

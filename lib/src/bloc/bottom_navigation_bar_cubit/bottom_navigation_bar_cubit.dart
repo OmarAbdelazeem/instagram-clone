@@ -16,5 +16,5 @@ class BottomNavigationBarCubit extends Cubit<BottomNavigationBarCubitState> {
     emit(BottomNavigationBarChanged());
   }
 
-  get currentIndex => _currentIndex;
+ int  get currentIndex => _currentIndex;
 }

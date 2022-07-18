@@ -6,17 +6,19 @@ import 'package:instagramapp/src/ui/screens/profile_screen/my_profile_screen.dar
 import 'package:instagramapp/src/ui/screens/profile_screen/searched_user_profile_screen.dart';
 
 import '../../../../bloc/following_bloc/following_bloc.dart';
-import '../../../../bloc/likes_bloc/likes_bloc.dart';
 import '../../../../bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import '../../../../bloc/posts_bloc/posts_bloc.dart';
 import '../../../../bloc/searched_user_bloc/searched_user_bloc.dart';
+import '../../../../bloc/users_bloc/users_bloc.dart';
 import '../../../../models/user_model/user_model.dart';
 import '../../../../repository/data_repository.dart';
+import '../../../../repository/posts_repository.dart';
 import '../../../../res/app_colors.dart';
 import '../../../../res/app_strings.dart';
 import '../../../common/app_button.dart';
 
 class FollowerView extends StatefulWidget {
-  final UserModel user;
+  UserModel user;
 
   FollowerView(this.user);
 
@@ -26,18 +28,18 @@ class FollowerView extends StatefulWidget {
 
 class _FollowerViewState extends State<FollowerView> {
   late SearchedUserBloc searchedUserBloc;
-  late FollowingBloc followingBloc;
+  late UsersBloc usersBloc;
 
   @override
   void didChangeDependencies() {
-    followingBloc = context.read<FollowingBloc>();
+    usersBloc = context.read<UsersBloc>();
     searchedUserBloc = SearchedUserBloc(
-        dataRepository: context.read<DataRepository>(),
-        likesBloc: context.read<LikesBloc>(),
-        searchedUserId: widget.user.id!,
-        followingBloc: followingBloc);
-    searchedUserBloc.setFollowInitialValue(true);
-    // TODO: implement didChangeDependencies
+      context.read<DataRepository>(),
+      context.read<PostsBloc>(),
+      widget.user.id!,
+      usersBloc,
+    );
+    searchedUserBloc.add(ListenToFollowUpdatesStarted());
     super.didChangeDependencies();
   }
 
@@ -48,8 +50,7 @@ class _FollowerViewState extends State<FollowerView> {
       child: GestureDetector(
         onTap: () {
           NavigationUtils.pushScreen(
-              screen:
-                  SearchedUserProfileScreen(searchedUserId: widget.user.id!),
+              screen: SearchedUserProfileScreen(user: widget.user),
               context: context);
         },
         child: Padding(
@@ -106,74 +107,35 @@ class _FollowerViewState extends State<FollowerView> {
   }
 
   Widget _buildFollowButton() {
-    return BlocProvider<SearchedUserBloc>(
-      create: (_) => searchedUserBloc,
-      child: BlocBuilder<SearchedUserBloc, SearchedUserState>(
-        builder: (context, state) {
-          return AppButton(
-            height: 40,
-            color:
-            searchedUserBloc.isFollowed ? AppColors.white : AppColors.blue,
-            titleStyle: TextStyle(
-              color: searchedUserBloc.isFollowed
-                  ? AppColors.black
-                  : AppColors.white,
-            ),
-            title: searchedUserBloc.isFollowed
-                ? AppStrings.following
-                : AppStrings.follow,
-            onTap: () {
-              if (searchedUserBloc.isFollowed) {
-                searchedUserBloc.add(UnFollowUserEventStarted());
-              } else {
-                searchedUserBloc.add(FollowUserEventStarted());
-              }
-            },
-          );
-        },
-      ),
+    return BlocConsumer<SearchedUserBloc, SearchedUserState>(
+      listener: (context, state) {
+        if (state is SearchedUserStateChanged) {
+          widget.user = state.user;
+        }
+      },
+      builder: (context, state) {
+        return AppButton(
+          height: 40,
+          color: widget.user.isFollowed! ? AppColors.white : AppColors.blue,
+          titleStyle: TextStyle(
+            color: widget.user.isFollowed! ? AppColors.black : AppColors.white,
+          ),
+          title: widget.user.isFollowed!
+              ? AppStrings.following
+              : AppStrings.follow,
+          onTap: () {
+            if (widget.user.isFollowed!) {
+              widget.user.isFollowed = false;
+              widget.user.followingCount = widget.user.followingCount! - 1;
+              searchedUserBloc.add(UnFollowUserEventStarted(widget.user));
+            } else {
+              widget.user.isFollowed = true;
+              widget.user.followingCount = widget.user.followingCount! + 1;
+              searchedUserBloc.add(FollowUserEventStarted(widget.user));
+            }
+          },
+        );
+      },
     );
   }
-
-  // Widget _buildFollowButton() {
-  //   return AppButton(
-  //     height: 40,
-  //     color: searchedUserBloc.isFollowed ? AppColors.white : AppColors.blue,
-  //     titleStyle: TextStyle(
-  //       color: searchedUserBloc.isFollowed ? AppColors.black : AppColors.white,
-  //     ),
-  //     title: searchedUserBloc.isFollowed
-  //         ? AppStrings.following
-  //         : AppStrings.follow,
-  //     onTap: () {
-  //       if (searchedUserBloc.isFollowed) {
-  //         searchedUserBloc.add(UnFollowUserEventStarted());
-  //       } else {
-  //         searchedUserBloc.add(FollowUserEventStarted());
-  //       }
-  //     },
-  //   );
-  // }
-
-  // Widget _buildFollowButton() {
-  //   return BlocBuilder<FollowingBloc, FollowingState>(
-  //       builder: (context, state) {
-  //     bool isFollowing = followingBloc.getFollowerId(widget.user.id!) != null;
-  //     return AppButton(
-  //       height: 40,
-  //       color: isFollowing ? AppColors.white : AppColors.blue,
-  //       titleStyle: TextStyle(
-  //         color: isFollowing ? AppColors.black : AppColors.white,
-  //       ),
-  //       title: isFollowing ? AppStrings.following : AppStrings.follow,
-  //       onTap: () {
-  //         if (isFollowing) {
-  //           searchedUserBloc.add(UnFollowUserEventStarted());
-  //         } else {
-  //           searchedUserBloc.add(FollowUserEventStarted());
-  //         }
-  //       },
-  //     );
-  //   });
-  // }
 }

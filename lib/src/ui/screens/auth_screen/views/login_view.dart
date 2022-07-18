@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:instagramapp/router.dart';
 import 'package:instagramapp/src/bloc/auth_bloc/auth_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
+import 'package:instagramapp/src/core/utils/error_dialogue.dart';
 import 'package:instagramapp/src/core/utils/navigation_utils.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_images.dart';
@@ -24,35 +25,38 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   bool loginEnabled = false;
+  String email = "";
+  String password = "";
 
   @override
   void initState() {
     super.initState();
     //Todo fix this as before
-    // emailController.addListener(() {
-    //   setState(() {
-    //     loginEnabled = emailController.text.isNotEmpty &&
-    //         passwordController.text.isNotEmpty;
-    //   });
-    // });
-    //
-    // passwordController.addListener(() {
-    //   setState(() {
-    //     loginEnabled = passwordController.text.isNotEmpty &&
-    //         emailController.text.isNotEmpty;
-    //   });
-    // });
+    emailController.addListener(() {
+      setState(() {
+        email = emailController.text;
+      });
+    });
+
+    passwordController.addListener(() {
+      setState(() {
+        password = passwordController.text;
+      });
+    });
   }
 
-  void _usersBlocListener(BuildContext context, AuthState state) {
+  void _usersBlocListener(BuildContext context, AuthState state) async {
     if (state is Loading)
       showLoadingDialog(context, _keyLoader);
     else if (state is AuthSuccess) {
       Navigator.of(_keyLoader.currentContext!).pop();
       NavigationUtils.pushNamedAndPopUntil(AppRoutes.mainHomeScreen, context);
       context.read<LoggedInUserBloc>().add(SetLoggedInUserStarted(state.user));
-    } else if (state is Error)
+    } else if (state is Error) {
       Navigator.of(_keyLoader.currentContext!).pop();
+      await Future.delayed(Duration(milliseconds: 10));
+      showErrorDialogue(context, state.error);
+    }
   }
 
   @override
@@ -65,26 +69,28 @@ class _LoginViewState extends State<LoginView> {
       padding: const EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
-          ),
-          AppLogo(),
-          SizedBox(height: 30),
-          _buildUserNameField(),
-          SizedBox(height: 10),
-          _buildPasswordField(),
-          SizedBox(height: 10),
-          _buildLoginButton(),
-          SizedBox(height: 10),
-          _buildForgotYourLoginDetails(),
-          SizedBox(height: 10),
-          OrDivider(),
-          SizedBox(height: 20),
-          _buildLoginWithFacebook(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+            ),
+            AppLogo(),
+            SizedBox(height: 30),
+            _buildUserNameField(),
+            SizedBox(height: 10),
+            _buildPasswordField(),
+            SizedBox(height: 10),
+            _buildLoginButton(),
+            SizedBox(height: 10),
+            _buildForgotYourLoginDetails(),
+            SizedBox(height: 10),
+            OrDivider(),
+            SizedBox(height: 20),
+            _buildLoginWithFacebook(),
+          ],
+        ),
       ),
     );
   }
@@ -113,8 +119,8 @@ class _LoginViewState extends State<LoginView> {
           color: loginEnabled ? Colors.white : Colors.white70,
         ),
         width: double.infinity,
-        onTap: emailController.text.isNotEmpty &&
-                passwordController.text.isNotEmpty
+        onTap: email.isNotEmpty &&
+               password.isNotEmpty
             ? _onLoginTapped
             : null,
       ),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagramapp/src/core/utils/image_utils.dart';
@@ -67,6 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     User? loggedInUser;
     try {
       loggedInUser = _authRepository.getCurrentUser();
+
       if (loggedInUser != null) {
         final userJson =
             (await _dataRepository.getUserDetails(loggedInUser.uid)).data();

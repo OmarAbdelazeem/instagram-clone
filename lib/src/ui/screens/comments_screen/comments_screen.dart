@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagramapp/src/bloc/logged_in_user_bloc/logged_in_user_bloc.dart';
 import 'package:instagramapp/src/bloc/post_item_bloc/post_item_bloc.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model_request/comment_model_request.dart';
-import 'package:instagramapp/src/models/comment_model/comment_model_response/comment_model_response.dart';
 import 'package:instagramapp/src/res/app_colors.dart';
 import 'package:instagramapp/src/res/app_text_styles.dart';
 import 'package:instagramapp/src/ui/common/app_text_field.dart';
@@ -14,13 +12,14 @@ import 'package:instagramapp/src/ui/screens/comments_screen/widgets/no_comments_
 import 'package:uuid/uuid.dart';
 
 import '../../../core/utils/navigation_utils.dart';
-import '../../../models/post_model/post_model_response/post_model_response.dart';
+import '../../../models/comment_model/comment_model.dart';
+import '../../../models/post_model/post_model.dart';
 import '../../../res/app_strings.dart';
 import '../../common/timestamp_view.dart';
 import '../profile_screen/searched_user_profile_screen.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final PostModelResponse post;
+  final PostModel post;
   final PostItemBloc postItemBloc;
 
   CommentsScreen(this.post, this.postItemBloc);
@@ -32,28 +31,45 @@ class CommentsScreen extends StatefulWidget {
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
   late LoggedInUserBloc loggedInUserBloc;
+  late ScrollController scrollController;
 
   void onPostButtonTapped() {
     if (commentController.text.isNotEmpty) {
-      final CommentModelResponse comment = CommentModelResponse(
-          commentId: Uuid().v4(),
-          postPublisherId: widget.post.publisherId,
-          comment: commentController.text,
-          publisherId: loggedInUserBloc.loggedInUser!.id!,
-          postId: widget.post.postId,
-          postPhotoUrl: widget.post.photoUrl,
-          timestamp: Timestamp.now().toDate(),
-          publisherName: loggedInUserBloc.loggedInUser!.userName!,
-          publisherPhotoUrl: loggedInUserBloc.loggedInUser!.photoUrl!);
+      final CommentModel comment = CommentModel(
+        commentId: Uuid().v4(),
+        postPublisherId: widget.post.publisherId,
+        comment: commentController.text,
+        publisherId: loggedInUserBloc.loggedInUser!.id!,
+        postId: widget.post.postId,
+        postPhotoUrl: widget.post.photoUrl,
+        timestamp: Timestamp.now().toDate(),
+        owner: loggedInUserBloc.loggedInUser
+      );
       widget.postItemBloc.add(AddCommentStarted(comment: comment));
       commentController.clear();
     }
   }
 
+  Future<void> fetchComments(bool nextList) async {
+    widget.postItemBloc.add(FetchCommentsStarted(widget.post.postId, nextList));
+  }
+
+  void _scrollListener() {
+    bool isFetchingNextList = widget.postItemBloc.state is NextCommentsLoading;
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      if (!isFetchingNextList && !widget.postItemBloc.isReachedToTheEnd)
+        fetchComments(true);
+    }
+  }
+
   @override
   void initState() {
-    widget.postItemBloc.add(LoadCommentsStarted(widget.post.postId));
     loggedInUserBloc = context.read<LoggedInUserBloc>();
+    fetchComments(false);
+    scrollController = ScrollController();
+
+    scrollController.addListener(_scrollListener);
     // TODO: implement initState
     super.initState();
   }
@@ -83,7 +99,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   Widget _buildCaptionWithComments() {
     return Column(
-      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         widget.post.caption.isNotEmpty ? _buildPostCaption() : Container(),
         widget.post.caption.isNotEmpty
@@ -94,7 +109,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         BlocBuilder<PostItemBloc, PostItemState>(
           bloc: widget.postItemBloc,
           builder: (_, state) {
-            if (state is CommentsLoading)
+            if (state is FirstCommentsLoading)
               return Center(
                 child: CircularProgressIndicator(),
               );
@@ -116,20 +131,19 @@ class _CommentsScreenState extends State<CommentsScreen> {
         InkWell(
           onTap: () {
             NavigationUtils.pushScreen(
-                screen: SearchedUserProfileScreen(
-                    searchedUserId: widget.post.publisherId),
+                screen: SearchedUserProfileScreen(user: widget.post.owner!),
                 context: context);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
             child: Row(
               children: <Widget>[
-                ProfilePhoto(photoUrl: widget.post.publisherProfilePhotoUrl),
+                ProfilePhoto(photoUrl: widget.post.owner!.photoUrl),
                 SizedBox(
                   width: 5,
                 ),
                 Text(
-                  widget.post.publisherName,
+                  widget.post.owner!.userName!,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -145,7 +159,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: TimeStampView(widget.post.timestamp),
+          child: TimeStampView(widget.post.timestamp!),
         ),
         SizedBox(
           height: 8,
@@ -156,12 +170,25 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   Widget _buildComments(PostItemState state) {
-    return ListView.builder(
-      itemBuilder: (_, index) => CommentView(
-          commentResponse: widget.postItemBloc.comments[index],
-          isUploaded: state is AddingComment &&
-              state.commentId == widget.postItemBloc.comments[index].commentId),
-      itemCount: widget.postItemBloc.comments.length,
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            controller: scrollController,
+            itemBuilder: (_, index) => CommentView(
+                comment: widget.postItemBloc.comments[index],
+                isUploaded: state is AddingComment &&
+                    state.commentId ==
+                        widget.postItemBloc.comments[index].commentId),
+            itemCount: widget.postItemBloc.comments.length,
+          ),
+        ),
+        SizedBox(height: 12),
+        state is NextCommentsLoading
+            ? CircularProgressIndicator()
+            : Container(),
+        SizedBox(height: 12),
+      ],
     );
   }
 

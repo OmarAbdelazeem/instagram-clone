@@ -268,8 +268,10 @@ exports.onLikingPost = functions.firestore
 
 
         //2) send notification
+        // check if it is the logged in user
+        if(recieverData["id"] != likeOwnerId){
 
-        admin.firestore().collection("notifications").doc(recieverData["id"])
+            admin.firestore().collection("notifications").doc(recieverData["id"])
             .collection("notifications").doc().set({
                 'userId': likeOwnerId,
                 'type': "2",
@@ -292,6 +294,9 @@ exports.onLikingPost = functions.firestore
         }
 
         fcm.sendToDevice(recieverData["token"], payload)
+        }
+
+      
 
 
 
@@ -348,8 +353,10 @@ exports.onAddingComment = functions.firestore
 
 
         //5) send notification
+        // check if it is the logged in user 
 
-        admin.firestore().collection("notifications").doc(recieverData["id"])
+        if(commentData["publisherId"] != recieverData["id"]){
+            admin.firestore().collection("notifications").doc(recieverData["id"])
             .collection("notifications").doc().set({
                 'userId': commentData["publisherId"],
                 'type': "3",
@@ -373,6 +380,8 @@ exports.onAddingComment = functions.firestore
         }
 
         fcm.sendToDevice(recieverData["token"], payload)
+        }
+      
 
 
     });
