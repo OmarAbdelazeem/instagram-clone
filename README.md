@@ -1,8 +1,11 @@
 # instagramapp
 
-<img src="https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png" alt="alt text" width="250px" height="500px">
+<p float="left">
+  <img src="https://user-images.githubusercontent.com/44911566/177434585-f820fdec-04d3-43ca-8709-561e51000d78.png" alt="alt text" width="250px" height="500px">
 <img src="https://user-images.githubusercontent.com/44911566/177434590-3eeedfb4-7088-4b0a-a306-f82a1c3efd4d.png" alt="alt text" width="250px" height="500px">
 <img src="https://user-images.githubusercontent.com/44911566/177434591-2722a024-858b-4e99-bc87-6677b3f5eb14.png" alt="alt text" width="250px" height="500px">
+  </p>
+
 <img src="https://user-images.githubusercontent.com/44911566/177434615-666836dc-516f-4c2f-9b87-1e66847e6ff7.png" alt="alt text" width="250px" height="500px">
 <img src="https://user-images.githubusercontent.com/44911566/177434648-67fb6f66-54e7-4094-a077-a6010f38f4d6.png" alt="alt text" width="250px" height="500px">
 <img src="https://user-images.githubusercontent.com/44911566/177434650-b0addb99-4003-401e-a370-7c64cac81fc9.png" alt="alt text" width="250px" height="500px">
